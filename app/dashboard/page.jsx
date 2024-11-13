@@ -1,4 +1,5 @@
 import { AppSidebar } from "@/components/dashboard/app-sidebar"
+import Cardhome from "@/components/dashboard/Cardhome";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -13,6 +14,36 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
+
+
+
+const stats = [
+  {
+    title: "Total Revenue",
+    value: "$45,231.89",
+    change: "+20.1% from last month",
+    icon: "💵",
+  },
+  {
+    title: "Subscriptions",
+    value: "+2350",
+    change: "+180.1% from last month",
+    icon: "📈",
+  },
+  {
+    title: "Sales",
+    value: "+12,234",
+    change: "+19% from last month",
+    icon: "🛒",
+  },
+  {
+    title: "Active Now",
+    value: "+573",
+    change: "+201 since last hour",
+    icon: "📊",
+  },
+];
+
 
 export default function Dashboard() {
   return (
@@ -40,13 +71,18 @@ export default function Dashboard() {
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-            <div className="aspect-video rounded-xl bg-zinc-100/50 dark:bg-zinc-800/50" />
-            <div className="aspect-video rounded-xl bg-zinc-100/50 dark:bg-zinc-800/50" />
-            <div className="aspect-video rounded-xl bg-zinc-100/50 dark:bg-zinc-800/50" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
+            {stats.map((stat, index) => (
+              <Cardhome
+                key={index}
+                title={stat.title}
+                value={stat.value}
+                change={stat.change}
+                icon={stat.icon}
+              />
+            ))}
           </div>
-          <div
-            className="min-h-[100vh] flex-1 rounded-xl bg-zinc-100/50 md:min-h-min dark:bg-zinc-800/50" />
+
         </div>
       </SidebarInset>
     </SidebarProvider>)

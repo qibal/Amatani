@@ -52,86 +52,32 @@ const data = {
   ],
   navMain: [
     {
-      title: "Playground",
+      title: "Product",
       url: "#",
       icon: SquareTerminal,
       isActive: true,
       items: [
         {
-          title: "History",
+          title: "List Product",
           url: "#",
         },
         {
-          title: "Starred",
-          url: "#",
-        },
-        {
-          title: "Settings",
+          title: "Kategori",
           url: "#",
         },
       ],
     },
     {
-      title: "Models",
+      title: "Orders",
       url: "#",
       icon: Bot,
       items: [
         {
-          title: "Genesis",
+          title: "Shipping",
           url: "#",
         },
         {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings2,
-      items: [
-        {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
+          title: "Trancation",
           url: "#",
         },
       ],
@@ -139,19 +85,38 @@ const data = {
   ],
   projects: [
     {
-      name: "Design Engineering",
+      name: "Home",
       url: "#",
       icon: Frame,
     },
     {
-      name: "Sales & Marketing",
+      name: "FAQ",
       url: "#",
-      icon: PieChart,
+      icon: Frame,
     },
     {
-      name: "Travel",
+      name: "Customers",
       url: "#",
-      icon: Map,
+      icon: Frame,
+    },
+  ],
+  product: [
+    {
+      name: "Customer",
+      url: "#",
+      icon: Frame,
+    },
+    {
+      name: "FAQ",
+      url: "#",
+      icon: Frame,
+    },
+  ],
+  home: [
+    {
+      name: "Home",
+      url: "#",
+      icon: Frame,
     },
   ],
 }
@@ -162,14 +127,15 @@ export function AppSidebar({
   return (
     (<Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+        {/* <TeamSwitcher teams={data.teams} /> */}
+        <NavUser user={data.user} />
+        {/* <NavProjects projects={data.home} /> */}
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
+        <NavProjects projects={data.product} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>)
