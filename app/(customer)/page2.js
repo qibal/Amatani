@@ -23,7 +23,7 @@ export default function ProductGrid() {
 
 function ProductCard({ imageSrc, categoryName }) {
     return (
-        <div className="flex flex-col justify-start items-center flex-none w-[500px] h-[600px] relative">
+        <div className="flex flex-col justify-start items-center flex-none w-[400px] h-[500px] relative">
             <div
                 className="w-full h-full bg-cover bg-no-repeat bg-center rounded-lg shadow-lg"
                 style={{ backgroundImage: `url(${imageSrc})` }}
