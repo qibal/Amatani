@@ -1,6 +1,8 @@
 'use client'
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
+import ProductGrid from './page2';
+import ProductGrid2 from './page3';
 
 export default function Home() {
   const [namaProduk, setnamaProduk] = useState('');
@@ -58,7 +60,7 @@ export default function Home() {
   return (
     <div>
       {/* Form Section */}
-      <form onSubmit={handleSubmit} className="mb-8">
+      {/* <form onSubmit={handleSubmit} className="mb-8">
         <input
           type="text"
           className="text-black"
@@ -79,7 +81,7 @@ export default function Home() {
             {produk.nama_produk}
           </p>
         ))}
-      </div>
+      </div> */}
 
       {/* HOMEPAGE */}
       <div>
@@ -205,6 +207,11 @@ export default function Home() {
             ))}
           </div>
         </div>
+
+
+        {/* page2.js */}
+        <ProductGrid />
+        <ProductGrid2 />
       </div>
     </div>
   );
