@@ -220,8 +220,8 @@ export default function Home() {
 // ProductCard Component
 function ProductCard({ imageSrc, name, category, type, priceRange }) {
   return (
-    <div className="w-48 flex-none bg-white rounded-lg shadow-md overflow-hidden">
-      <div className="h-48 bg-cover bg-center" style={{ backgroundImage: `url(${imageSrc})` }}></div>
+    <div className="w-[400px] h-[500px] flex-none bg-white rounded-lg shadow-md overflow-hidden">
+      <div className="w-[400px] h-[370px] bg-cover bg-center" style={{ backgroundImage: `url(${imageSrc})` }}></div>
       <div className="p-4">
         <h3 className="text-lg font-bold text-gray-900">{name}</h3>
         <p className="text-sm text-gray-600">{category}</p>
