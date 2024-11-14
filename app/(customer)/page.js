@@ -10,40 +10,6 @@ export default function Home() {
   const [listProduk, setListProduk] = useState([]);
   console.log("🚀 ~ Home ~ listProduk:", listProduk);
 
-  // async function handleSubmit(e) {
-  //   e.preventDefault();
-  //   if (!namaProduk) {
-  //     setMessage('nama_produk tidak boleh kosong');
-  //     return;
-  //   }
-
-  //   const response = await fetch('/api/be/produk', {
-  //     method: 'POST',
-  //     headers: { 'Content-Type': 'application/json' },
-  //     body: JSON.stringify({ nama_produk: namaProduk }),
-  //   });
-
-  //   const data = await response.json();
-  //   console.log("🚀 ~ handleSubmit ~ data:", data);
-
-  //   if (response.ok) {
-  //     setMessage(data.message);
-  //   } else {
-  //     setMessage('produk gagal ditambah');
-  //   }
-  // }
-
-  // async function ListDocument() {
-  //   const response = await fetch('/api/be/produk', { method: 'GET' });
-  //   const data = await response.json();
-  //   console.log("🚀 ~ ListDocument ~ data:", data);
-  //   setListProduk(data.documents);
-  // }
-
-  // useEffect(() => {
-  //   ListDocument();
-  // }, []);
-
   // Dummy product data for the Product Section
   const products = [
     { imageSrc: "/FE/img01.jpg", name: "Apel Gala", category: "Buah-buahan", type: "3 Jenis", priceRange: "Rp 210,000 - Rp 980,000" },
