@@ -27,7 +27,7 @@ export default function Product() {
             <h2 className="text-xl font-semibold mb-4 text-gray-800">
                 Buah Buahan &gt;
             </h2>
-            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-x-2 gap-y-12">
+            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-x-2 gap-y-10">
                 {products.length > 0 ? (
                     products.map((p) => (
                         <ProductCard
