@@ -3,8 +3,12 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import ProductGrid from '../../components/customer/HomeProduk';
 import ProductGrid2 from '../../components/customer/HomeLayanan';
+import supabase from '@/lib/supabase';
 
 export default function Home() {
+  const session = supabase.auth.getSession();
+  console.log("sesi", session);
+
   const [namaProduk, setnamaProduk] = useState('');
   const [message, setMessage] = useState('');
   const [listProduk, setListProduk] = useState([]);
