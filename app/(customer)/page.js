@@ -2,6 +2,8 @@
 
 import HomeBuah from "@/components/customer/HomeBuah";
 import HomeKPangan from "@/components/customer/HomeKPangan";
+import HomeTestimoni from "@/components/customer/HomeTestimoni";
+import Footer from "@/components/customer/Footer";
 import { useState } from "react";
 import { Search, Menu, X, Globe, ShoppingCart, ArrowDown, AlignJustify, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -139,7 +141,7 @@ export default function CustomerPage() {
             </main>
 
             <section className="py-8 bg-white">
-                <div className="max-w-7xl mx-auto px-4 md:px-16">
+                <div className="max-w-5xl mx-auto px-4 md:px-16">
                     {/* Heading */}
                     <h2 className="text-2xl font-semibold text-center text-gray-800 mb-4">
                         Kostumisasi Produk <br /> Sesuai Kebutuhan Usaha Anda.
@@ -151,17 +153,53 @@ export default function CustomerPage() {
                         </span>
                     </div>
                     {/* Grid */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         {features.map((feature, index) => (
-                            <FeatureCard
+                            <div
                                 key={index}
-                                name={feature.name}
-                                imageSrc={feature.imageSrc}
-                            />
+                                className="relative group flex flex-col items-center overflow-hidden"
+                            >
+                                {/* Gambar */}
+                                <div
+                                    className="w-full h-[400px] bg-cover bg-center transform group-hover:scale-105 transition duration-300"
+                                    style={{ backgroundImage: `url(${feature.imageSrc})` }}
+                                ></div>
+                                {/* Overlay Label */}
+                                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white text-gray-800 text-sm font-semibold py-1 px-4 rounded-full shadow-md">
+                                    {feature.name}
+                                </div>
+                            </div>
                         ))}
                     </div>
                 </div>
             </section>
+
+            <section className="py-8 bg-white">
+                <div className="max-w-7xl mx-auto px-4 md:px-16">
+                    {/* Heading */}
+                    <h2 className="text-2xl font-semibold text-center text-gray-800 mb-6">
+                        Fasilitas Distribusi & Packing House
+                    </h2>
+                    {/* Map */}
+                    <div className="relative flex justify-center">
+                        {/* SVG Map */}
+                        <img
+                            src="/FE/Map.svg"
+                            alt="Map of Indonesia"
+                            className="w-full max-w-6xl h-auto"
+                        />
+                    </div>
+                </div>
+            </section>
+
+            <main>
+            <HomeTestimoni />
+            </main>
+
+            <main>
+            <Footer />
+            </main>
+
         </div>
 
     );
