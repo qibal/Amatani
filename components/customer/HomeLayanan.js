@@ -23,6 +23,10 @@ export default function ProductGrid2() {
                     imageSrc="/FE/img01.jpg"
                     categoryName="Giling"
                 />
+                <ProductCard
+                    imageSrc="/FE/img01.jpg"
+                    categoryName="Giling"
+                />
             </div>
         </div>
     );

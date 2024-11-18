@@ -1,5 +1,7 @@
 "use client";
 
+import HomeBuah from "@/components/customer/HomeBuah";
+import HomeKPangan from "@/components/customer/HomeKPangan";
 import { useState } from "react";
 import { Search, Menu, X, Globe, ShoppingCart, ArrowDown, AlignJustify } from "lucide-react";
 import { Button } from "@/components/ui/button"; // Komponen Button dari shadcn
@@ -7,11 +9,33 @@ import { Input } from "@/components/ui/input";
 
 export default function CustomerPage() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    async function fetchData() {
+        try {
+            const data = await fetchProducts();
+            console.log("Data fetched:", data); // Debugging
+            if (data) {
+                setProducts(data);
+            } else {
+                setProducts([]);
+            }
+        } catch (error) {
+            console.error("Error fetching products:", error);
+            setProducts([]);
+        }
+    }
+
+    const features = [
+        { name: "Kupas", imageSrc: "/FE/img01.jpg" },
+        { name: "Potong", imageSrc: "/FE/img01.jpg" },
+        { name: "Giling", imageSrc: "/FE/img01.jpg" },
+        { name: "Bersihkan", imageSrc: "/FE/img01.jpg" },
+    ];
+
 
     return (
         <div className="relative">
             {/* Navbar */}
-            <header className="fixed w-full top-0 left-0 z-50 bg-transparent">
+            <header className="fixed w-full top-0 left-0 z-50 bg-trbansparent">
                 {/* Tingkatan 1 */}
                 <div className="max-w-7xl mx-auto flex items-center justify-between px-4 md:px-16 py-3">
                     {/* Logo */}
@@ -165,7 +189,55 @@ export default function CustomerPage() {
                 </div>
             </section>
 
+            <main>
+                <HomeBuah />
+            </main>
 
+            <main>
+                <HomeKPangan />
+            </main>
+
+            <section className="py-8 bg-white">
+                <div className="max-w-7xl mx-auto px-4 md:px-16">
+                    {/* Heading */}
+                    <h2 className="text-2xl font-semibold text-center text-gray-800 mb-4">
+                        Kostumisasi Produk <br /> Sesuai Kebutuhan Usaha Anda.
+                    </h2>
+                    {/* Subheading */}
+                    <div className="flex justify-center mb-8">
+                        <span className="bg-red-500 text-white px-4 py-2 rounded-full text-sm font-semibold">
+                            Gratis!
+                        </span>
+                    </div>
+                    {/* Grid */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                        {features.map((feature, index) => (
+                            <FeatureCard
+                                key={index}
+                                name={feature.name}
+                                imageSrc={feature.imageSrc}
+                            />
+                        ))}
+                    </div>
+                </div>
+            </section>
         </div>
+        
     );
+    function FeatureCard({ name, imageSrc }) {
+        return (
+            <div className="flex flex-col items-center justify-center">
+                {/* Gambar */}
+                <div
+                    className="w-full h-[180px] md:h-[200px] bg-cover bg-center rounded-lg shadow-lg"
+                    style={{ backgroundImage: `url(${imageSrc})` }}
+                ></div>
+                {/* Nama */}
+                <div className="mt-4 bg-black text-white text-sm font-semibold py-1 px-3 rounded-full">
+                    {name}
+                </div>
+            </div>
+        );      }
 }
+
+
