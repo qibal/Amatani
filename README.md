@@ -14,10 +14,8 @@ npm install
 Create a `.env` file and add the following code:
 
 ```
-NEXT_PUBLIC_APPWRITE_ENDPOINT=https://api.appwrite.io/v1
-NEXT_PUBLIC_APPWRITE_PROJECT_ID='<your_project_id_appwrite>'
-NEXT_PUBLIC_DATABASE_APPWRITE_ID=<your_database_id_appwrite>
-NEXT_PUBLIC_COLLECTION_PRODUK_ID=<your_collection_id_appwrite>
+NEXT_PUBLIC_SUPABASE_URL='<your_supabase_pr0ject>'
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<your_supabase_anon_key>
 ```
 
 Run the development server:
@@ -31,13 +29,13 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 ## Our Priority
 
 - **Low Budget**
-    - Appwrite: Free, $15 if you want to scale the project.
+    - Supabase: Free, $25 if you want to scale the project.
     - Vercel: Free, $20 if you want to scale the project.
 
 - **Privacy**
     - In this project, we are starting to implement encryption for important data before storing it in the database.
 
 - **Technology Minimization**
-    - Appwrite: Covers database, OAuth, and cloud file storage, everything needed for this project.
+    - Supabase: Covers database, OAuth, and cloud file storage, everything needed for this project.
     - Vercel: Used for hosting the Next.js application.
 
