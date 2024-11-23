@@ -1,33 +1,17 @@
-"use client";
+
+
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 import HomeBuah from "@/components/customer/HomeBuah";
 import HomeKPangan from "@/components/customer/HomeKPangan";
 import HomeTestimoni from "@/components/customer/HomeTestimoni";
 import Footer from "@/components/customer/Footer";
-import { useState } from "react";
-import { Search, Menu, X, Globe, ShoppingCart, ArrowDown, AlignJustify, ChevronDown } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import Navbar from "@/components/customer/Navbar";
+
+
 
 
 export default function CustomerPage() {
-
-    async function fetchData() {
-        try {
-            const data = await fetchProducts();
-            console.log("Data fetched:", data); // Debugging
-            if (data) {
-                setProducts(data);
-            } else {
-                setProducts([]);
-            }
-        } catch (error) {
-            console.error("Error fetching products:", error);
-            setProducts([]);
-        }
-    }
-
     const features = [
         { name: "Kupas", imageSrc: "/FE/img01.jpg" },
         { name: "Potong", imageSrc: "/FE/img01.jpg" },
@@ -35,136 +19,121 @@ export default function CustomerPage() {
         { name: "Bersihkan", imageSrc: "/FE/img01.jpg" },
     ];
 
-
     return (
-        <div className="relative">
+        <div className="">
 
-            <Navbar />
-            {/* Main Content */}
-            <main
-                className="h-screen bg-cover bg-center flex items-center justify-end px-4 md:px-16"
-                style={{ backgroundImage: "url('/FE/img01.jpg')" }}
-            >
-                <div className="text-right w-full">
-                    {/* Heading */}
-                    <h1 className="text-white font-bold leading-tight">
-                        <span className="block text-5xl md:text-6xl">Sumber Segar</span>
-                        <span className="block text-5xl md:text-6xl">Untuk Usaha Anda</span>
-                    </h1>
 
-                    {/* Search Bar */}
-                    <div className="mt-8 flex items-center bg-white/80 rounded-full shadow-lg overflow-hidden max-w-md ml-auto">
-                        <div className="px-4">
-                            <Search className="w-5 h-5 text-gray-400" />
-                        </div>
-                        <Input
-                            type="text"
-                            placeholder="Cari produk"
-                            className="border-none outline-none flex-1 bg-transparent text-gray-700 placeholder-gray-400"
-                        />
-                        <Button className="rounded-full bg-[#DB2439] text-white px-6 py-2">
-                            Cari
-                        </Button>
-                    </div>
+            {/* Hero Section */}
+            <section className="relative h-screen bg-cover bg-center" style={{ backgroundImage: "url('/FE/img01.jpg')" }}>
+                {/* Overlay Gelap di Atas dan Kanan Kiri */}
+                <div className="absolute inset-0 pointer-events-none">
+                    {/* Overlay Vertikal */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent"></div>
+                    {/* Overlay Horizontal */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/40"></div>
                 </div>
-            </main>
 
-            <section className="py-8 bg-white">
-                <div className="max-w-7xl mx-auto px-4 md:px-16">
-                    {/* Grid Statistik */}
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-8">
-                        {/* Statistik 1 */}
-                        <div className="text-center pb-6 lg:pb-0">
-                            <h2 className="text-3xl font-bold text-gray-800">18,000+</h2>
-                            <p className="text-gray-600 text-sm mt-2">Serving Culinary Businesses</p>
-                        </div>
-                        {/* Statistik 2 */}
-                        <div className="text-center pb-6 lg:pb-0">
-                            <h2 className="text-3xl font-bold text-gray-800">1,000+</h2>
-                            <p className="text-gray-600 text-sm mt-2">Petani, Peternak, Nelayan</p>
-                        </div>
-                        {/* Statistik 3 */}
-                        <div className="text-center pb-6 lg:pb-0">
-                            <h2 className="text-3xl font-bold text-gray-800">100+</h2>
-                            <p className="text-gray-600 text-sm mt-2">Produk Hasil Panen</p>
-                        </div>
-                        {/* Statistik 4 */}
-                        <div className="text-center">
-                            <h2 className="text-3xl font-bold text-gray-800">20th+</h2>
-                            <p className="text-gray-600 text-sm mt-2">Berpengalaman</p>
+                {/* Konten */}
+                <div className="relative h-full flex items-center">
+                    <div className="container mx-auto">
+                        <h1 className="text-white font-bold  text-5xl md:text-6xl">
+                            <span className="block">Sumber Segar</span>
+                            <span className="block">Untuk Usaha Anda</span>
+                        </h1>
+                        <div className="flex items-center gap-2 max-w-lg h-9  mt-14">
+                            <Input
+                                type="text"
+                                placeholder="Cari produk"
+                                className="flex-grow rounded-full bg-gray-50 text-gray-500 text-sm px-3 py-2 border border-gray-50"
+                            />
+                            <Button className="px-4 py-2 rounded-full bg-rose-600 text-white text-sm font-medium">
+                                Cari
+                            </Button>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <section className="py-5 bg-white">
-                <div className="max-w-7xl mx-auto px-4 md:px-16">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                        {/* Bagian Kiri */}
-                        <div className="text-center lg:text-left">
-                            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 leading-tight">
-                                Mulai Dari Kedai Kopi Hingga Restoran
-                            </h2>
-                            <p className="mt-4 text-gray-600 text-base md:text-lg leading-relaxed">
-                                Produk Hasil Panen Kami Telah Dipercaya Oleh Para Pengusaha Bisnis Kuliner Untuk
-                                Menyediakan Bahan Baku Segar Dan Berkualitas, Mendukung Cita Rasa Terbaik Dalam
-                                Setiap Hidangan.
-                            </p>
-                        </div>
 
-                        {/* Bagian Kanan */}
-                        <div className="grid grid-cols-4 gap-4">
-                            {[...Array(12)].map((_, index) => (
-                                <div
-                                    key={index}
-                                    className={`flex items-center justify-center ${index >= 8 ? 'hidden md:flex' : ''
-                                        }`}
-                                >
-                                    <img
-                                        src="/FE/img02.png"
-                                        alt={`Icon ${index + 1}`}
-                                        className="w-16 h-16 md:w-20 md:h-20 object-contain"
-                                    />
-                                </div>
-                            ))}
+
+
+
+
+
+
+
+
+            {/* Statistik Section */}
+            <section className=" bg-white ">
+                <div className="container border py-14 mx-auto px-4 grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-8 text-center">
+                    {[
+                        { number: "18,000+", description: "Serving Culinary Businesses" },
+                        { number: "1,000+", description: "Petani, Peternak, Nelayan" },
+                        { number: "100+", description: "Produk Hasil Panen" },
+                        { number: "20th+", description: "Berpengalaman" },
+                    ].map((stat, index) => (
+                        <div key={index}>
+                            <h2 className="text-3xl font-bold text-gray-800">{stat.number}</h2>
+                            <p className="text-gray-600 text-sm mt-2">{stat.description}</p>
                         </div>
+                    ))}
+                </div>
+            </section>
+
+            {/* Business Highlight Section */}
+            <section className="py-5 bg-white ">
+                <div className="container border py-60 mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <div className="text-center lg:text-left">
+                        <h2 className="text-3xl md:text-4xl font-bold text-gray-800 leading-tight">
+                            Mulai Dari Kedai Kopi Hingga Restoran
+                        </h2>
+                        <p className="mt-4 text-gray-600 text-base md:text-lg leading-relaxed">
+                            Produk Hasil Panen Kami Telah Dipercaya Oleh Para Pengusaha Bisnis Kuliner Untuk
+                            Menyediakan Bahan Baku Segar Dan Berkualitas, Mendukung Cita Rasa Terbaik Dalam
+                            Setiap Hidangan.
+                        </p>
+                    </div>
+                    <div className="grid grid-cols-4 gap-4">
+                        {Array.from({ length: 12 }).map((_, index) => (
+                            <div
+                                key={index}
+                                className={`flex items-center justify-center ${index >= 8 ? "hidden md:flex" : ""}`}
+                            >
+                                <img
+                                    src="/FE/img02.png"
+                                    alt={`Icon ${index + 1}`}
+                                    className="w-16 h-16 md:w-20 md:h-20 object-contain"
+                                />
+                            </div>
+                        ))}
                     </div>
                 </div>
             </section>
 
+            {/* Home Buah dan Home KPangan */}
             <main>
                 <HomeBuah />
-            </main>
-
-            <main>
                 <HomeKPangan />
             </main>
 
+            {/* Kostumisasi Produk Section */}
             <section className="py-8 bg-white">
-                <div className="max-w-5xl mx-auto px-4 md:px-16">
-                    {/* Heading */}
+                <div className="container border mx-auto py-40">
                     <h2 className="text-2xl font-semibold text-center text-gray-800 mb-4">
                         Kostumisasi Produk <br /> Sesuai Kebutuhan Usaha Anda.
                     </h2>
-                    {/* Subheading */}
                     <div className="flex justify-center mb-8">
                         <span className="bg-red-500 text-white px-4 py-2 rounded-full text-sm font-semibold">
                             Gratis!
                         </span>
                     </div>
-                    {/* Grid */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         {features.map((feature, index) => (
-                            <div
-                                key={index}
-                                className="relative group flex flex-col items-center overflow-hidden"
-                            >
-                                {/* Gambar */}
+                            <div key={index} className="relative group flex flex-col items-center overflow-hidden">
                                 <div
                                     className="w-full h-[400px] bg-cover bg-center transform group-hover:scale-105 transition duration-300"
                                     style={{ backgroundImage: `url(${feature.imageSrc})` }}
                                 ></div>
-                                {/* Overlay Label */}
                                 <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white text-gray-800 text-sm font-semibold py-1 px-4 rounded-full shadow-md">
                                     {feature.name}
                                 </div>
@@ -174,48 +143,27 @@ export default function CustomerPage() {
                 </div>
             </section>
 
-            <section className="py-8 bg-white">
-                <div className="max-w-7xl mx-auto px-4 md:px-16">
-                    {/* Heading */}
+            {/* Packing Facilities Section */}
+            <section className="">
+                <div className="container border mx-auto  py-8 bg-white">
                     <h2 className="text-2xl font-semibold text-center text-gray-800 mb-6">
                         Fasilitas Distribusi & Packing House
                     </h2>
-                    {/* Map */}
                     <div className="relative flex justify-center">
-                        {/* SVG Map */}
                         <img
                             src="/FE/Map.svg"
                             alt="Map of Indonesia"
-                            className="w-full max-w-6xl h-auto"
+                            className="w-full h-auto"
                         />
                     </div>
                 </div>
             </section>
 
+            {/* Testimoni dan Footer */}
             <main>
-            <HomeTestimoni />
+                <HomeTestimoni />
+                <Footer />
             </main>
-
-            <main>
-            <Footer />
-            </main>
-
         </div>
-
     );
-    function FeatureCard({ name, imageSrc }) {
-        return (
-            <div className="flex flex-col items-center justify-center">
-                {/* Gambar */}
-                <div
-                    className="w-full h-[180px] md:h-[200px] bg-cover bg-center rounded-lg shadow-lg"
-                    style={{ backgroundImage: `url(${imageSrc})` }}
-                ></div>
-                {/* Nama */}
-                <div className="mt-4 bg-black text-white text-sm font-semibold py-1 px-3 rounded-full">
-                    {name}
-                </div>
-            </div>
-        );
-    }
 }
