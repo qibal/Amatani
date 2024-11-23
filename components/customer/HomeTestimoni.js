@@ -1,96 +1,85 @@
 import React from "react";
+import { Card, CardContent, CardHeader } from "../ui/card";
+import { Avatar, AvatarImage } from "../ui/avatar";
+import { Heart } from "lucide-react"; // Import ikon dari Lucide
 
 const testimonials = [
     {
-        name: "Iqbal Herlambang",
-        username: "@qibal.h",
-        message:
-            "Produk Hasil Panen Kami Telah Dipercaya Oleh Para Pengusaha Bisnis Kuliner Untuk Menyediakan Bahan Baku Segar Dan Berkualitas, Mendukung Cita Rasa Terbaik Dalam Setiap Hidangan.",
+        name: "Olivia Martin",
+        email: "olivia.martin@email.com",
+        avatar: "/FE/img02.png",
+        feedback:
+            "Dashboard, cards, authentication. Some examples built using the components. Use this as a guide to build your own.",
     },
     {
-        name: "Iqbal Herlambang",
-        username: "@qibal.h",
-        message:
-            "Produk Hasil Panen Kami Telah Dipercaya Oleh Para Pengusaha Bisnis Kuliner Untuk Menyediakan Bahan Baku Segar Dan Berkualitas, Mendukung Cita Rasa Terbaik Dalam Setiap Hidangan.",
+        name: "James Smith",
+        email: "james.smith@email.com",
+        avatar: "/FE/img02.png",
+        feedback:
+            "This platform has transformed the way I approach my projects. The UI components are intuitive and easy to implement.",
     },
     {
-        name: "Iqbal Herlambang",
-        username: "@qibal.h",
-        message:
-            "Produk Hasil Panen Kami Telah Dipercaya Oleh Para Pengusaha Bisnis Kuliner Untuk Menyediakan Bahan Baku Segar Dan Berkualitas, Mendukung Cita Rasa Terbaik Dalam Setiap Hidangan.",
+        name: "Sophia Brown",
+        email: "sophia.brown@email.com",
+        avatar: "/FE/img02.png",
+        feedback:
+            "I highly recommend these tools for anyone building modern web applications. A great time-saver!",
     },
     {
-        name: "Iqbal Herlambang",
-        username: "@qibal.h",
-        message:
-            "Produk Hasil Panen Kami Telah Dipercaya Oleh Para Pengusaha Bisnis Kuliner Untuk Menyediakan Bahan Baku Segar Dan Berkualitas, Mendukung Cita Rasa Terbaik Dalam Setiap Hidangan.",
+        name: "Sophia Brown",
+        email: "sophia.brown@email.com",
+        avatar: "/FE/img02.png",
+        feedback:
+            "I highly recommend these tools for anyone building modern web applications. A great time-saver!",
     },
     {
-        name: "Iqbal Herlambang",
-        username: "@qibal.h",
-        message:
-            "Produk Hasil Panen Kami Telah Dipercaya Oleh Para Pengusaha Bisnis Kuliner Untuk Menyediakan Bahan Baku Segar Dan Berkualitas, Mendukung Cita Rasa Terbaik Dalam Setiap Hidangan.",
+        name: "Sophia Brown",
+        email: "sophia.brown@email.com",
+        avatar: "/FE/img02.png",
+        feedback:
+            "I highly recommend these tools for anyone building modern web applications. A great time-saver!",
     },
     {
-        name: "Iqbal Herlambang",
-        username: "@qibal.h",
-        message:
-            "Produk Hasil Panen Kami Telah Dipercaya Oleh Para Pengusaha Bisnis Kuliner Untuk Menyediakan Bahan Baku Segar Dan Berkualitas, Mendukung Cita Rasa Terbaik Dalam Setiap Hidangan.",
+        name: "Sophia Brown",
+        email: "sophia.brown@email.com",
+        avatar: "/FE/img02.png",
+        feedback:
+            "I highly recommend these tools for anyone building modern web applications. A great time-saver!",
     },
 ];
 
 export default function HomeTestimoni() {
     return (
         <section className="py-8 bg-white">
-            <div className="max-w-7xl mx-auto px-4 md:px-16">
-                {/* Heading */}
-                <h2 className="text-2xl font-semibold text-center text-gray-800 mb-6">
-                    Disukai oleh Pedagang seperti Anda
-                </h2>
-                {/* Testimonial Grid */}
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-                    {testimonials.map((testimonial, index) => (
-                        <div
-                            key={index}
-                            className={`p-4 bg-gray-100 rounded-lg shadow-md flex flex-col gap-4 ${
-                                index >= 4 ? "hidden md:block" : ""
-                            }`}
-                        >
-                            {/* Header */}
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-gray-400 rounded-full"></div>
-                                <div>
-                                    <h3 className="font-semibold text-gray-800">
-                                        {testimonial.name}
-                                    </h3>
-                                    <p className="text-sm text-gray-500">
-                                        {testimonial.username}
-                                    </p>
+            <div className=" mx-auto border py-40 container grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                {testimonials.map((testimonial, index) => (
+                    <Card
+                        key={index}
+                        className="border border-gray-300 shadow-sm rounded-lg"
+                    >
+                        <CardHeader className="px-4 pt-4 pb-2 flex flex-col gap-2">
+                            <div className="flex justify-between items-center">
+                                {/* Avatar and Info */}
+                                <div className="flex items-center gap-3">
+                                    <Avatar>
+                                        <AvatarImage src={testimonial.avatar} alt={testimonial.name} />
+                                    </Avatar>
+                                    <div>
+                                        <p className="text-sm font-medium text-gray-900">
+                                            {testimonial.name}
+                                        </p>
+                                        <p className="text-sm text-gray-500">{testimonial.email}</p>
+                                    </div>
                                 </div>
-                                <div className="ml-auto">
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        strokeWidth={1.5}
-                                        stroke="currentColor"
-                                        className="w-6 h-6 text-gray-500"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            d="M7.5 21h9m-9-3h9m-9-3h9m-9-3h9m-9-3h9m-9-3h9M4.5 3h15a2.25 2.25 0 012.25 2.25v15A2.25 2.25 0 0119.5 21H4.5A2.25 2.25 0 014.5 3z"
-                                        />
-                                    </svg>
-                                </div>
+                                {/* Lucide Icon */}
+                                <Heart className="w-6 h-6 text-pink-600" />
                             </div>
-                            {/* Message */}
-                            <p className="text-sm text-gray-700 leading-relaxed">
-                                {testimonial.message}
-                            </p>
-                        </div>
-                    ))}
-                </div>
+                        </CardHeader>
+                        <CardContent className="px-4 pb-4">
+                            <p className="text-sm text-gray-500">{testimonial.feedback}</p>
+                        </CardContent>
+                    </Card>
+                ))}
             </div>
         </section>
     );

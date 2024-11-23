@@ -16,7 +16,7 @@ const categories = [
 export default function HomeKPangan() {
     return (
         <section className="py-8 bg-white">
-            <div className="max-w-7xl mx-auto px-4 md:px-16">
+            <div className="container border mx-auto">
                 {/* Judul */}
                 <h2 className="text-xl font-semibold mb-4 text-gray-800">
                     Kategori Pangan &gt;
