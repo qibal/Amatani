@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { ShoppingCart, Globe } from "lucide-react";
+import { ShoppingCart, Globe, AlignJustify } from "lucide-react";
+import NavbarSheet from "@/components/customer/Navbar/Sheet";
 import { Button } from "@/components/ui/button";
 import CategoryMenu from "./CategoryMenu";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 
 export default function Navbar({ isRootPath }) {
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [scrolled, setScrolled] = useState(false);
 
     useEffect(() => {
@@ -32,9 +34,9 @@ export default function Navbar({ isRootPath }) {
 
     return (
         <header
-            className={`navbar w-full z-50 transition-all duration-300 ${isRootPath ? "fixed" : "relative"} ${navbarClass}`}
+            className={`navbar w-full z-50 transition-all duration-300 px-4 ${isRootPath ? "fixed" : "relative"} ${navbarClass}`}
         >
-            <div className="container mx-auto flex items-center justify-between py-3">
+            <div className="container mx-auto flex items-center justify-between py-4">
                 {/* Logo */}
                 <div className="flex items-center space-x-4">
                     <div
@@ -74,14 +76,17 @@ export default function Navbar({ isRootPath }) {
 
                     {/* Login and Register Buttons */}
                     <Button
-                        className={`outline outline-1 outline-rose-600 rounded-md hover:outline hover:bg-transparent hover:outline-2 hover:outline-rose-500 ${isRootPath && !scrolled ? "bg-transparent text-white" : "bg-white text-gray-950"
+                        className={`hidden md:block outline outline-1 outline-rose-600 rounded-md hover:outline hover:bg-transparent hover:outline-2 hover:outline-rose-500 ${isRootPath && !scrolled ? "bg-transparent text-white" : "bg-white text-gray-950"
                             }`}
                     >
                         <Link href="/masuk">Masuk</Link>
                     </Button>
+
                     <Button className="bg-rose-600 text-white rounded-md hover:bg-rose-700">
                         <Link href="/daftar">Daftar</Link>
                     </Button>
+                    {/* Sheet Trigger */}
+                    <NavbarSheet isLoggedIn={isLoggedIn} scrolled={scrolled} />
                 </div>
             </div>
 
