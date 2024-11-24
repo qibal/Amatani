@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
+import Image from 'next/image';
 
 export default function SignUpPage() {
     return (
@@ -48,7 +49,7 @@ export default function SignUpPage() {
 
             {/* Right side with image */}
             <div className="hidden md:flex w-1/2 bg-gray-100 items-center justify-center">
-                <img src="/FE/img01.jpg" alt="Background Image" className="w-full h-full object-cover" />
+                <Image width={400} height={400} src="/FE/img01.jpg" alt="Background Image" className=" w-full h-full object-cover" />
             </div>
         </div>
     );
