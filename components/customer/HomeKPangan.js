@@ -15,14 +15,17 @@ const categories = [
 
 export default function HomeKPangan() {
     return (
-        <section className="py-8 bg-white">
-            <div className="container border mx-auto">
+        <section className="px-4 py-8 bg-white">
+            <div className="container mx-auto">
                 {/* Judul */}
                 <h2 className="text-xl font-semibold mb-4 text-gray-800">
-                    Kategori Pangan &gt;
+                    Kategori Pangan
                 </h2>
                 {/* Grid Produk */}
-                <div className="flex overflow-x-auto space-x-4 py-4 w-full">
+                <div
+                    className="flex overflow-x-auto space-x-4 py-4 w-full scroll-snap-x"
+                    style={{ scrollSnapType: "x mandatory" }}
+                >
                     {categories.map((product, index) => (
                         <ProductCard
                             key={index}
@@ -38,7 +41,10 @@ export default function HomeKPangan() {
 
 function ProductCard({ imageSrc, categoryName }) {
     return (
-        <div className="flex flex-col justify-start items-center flex-none w-[240px] sm:w-[280px] md:w-[365px] h-[320px] sm:h-[400px] md:h-[480px] relative">
+        <div
+            className="flex flex-col justify-start items-center flex-none w-[240px] sm:w-[280px] md:w-[365px] h-[320px] sm:h-[400px] md:h-[480px] relative"
+            style={{ scrollSnapAlign: "center" }}
+        >
             {/* Gambar Background */}
             <div
                 className="w-full h-full bg-cover bg-no-repeat bg-center rounded-lg shadow-lg"

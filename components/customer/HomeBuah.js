@@ -24,8 +24,8 @@ export default function HomeBuah() {
     }, []);
 
     return (
-        <section className="py-8 bg-white">
-            <div className="container mx-auto  border">
+        <section className="py-8 px-4 bg-white">
+            <div className="container mx-auto">
                 {/* Judul */}
                 <h2 className="text-2xl font-semibold mb-6 text-gray-800">Buah Buahan</h2>
 

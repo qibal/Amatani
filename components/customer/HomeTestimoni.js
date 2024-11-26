@@ -50,12 +50,12 @@ const testimonials = [
 
 export default function HomeTestimoni() {
     return (
-        <section className="py-8 bg-white">
-            <div className=" mx-auto border py-40 container grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        <section className="px-4 py-12 bg-white">
+            <div className=" mx-auto py-4 container grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                 {testimonials.map((testimonial, index) => (
                     <Card
                         key={index}
-                        className="border border-gray-300 shadow-sm rounded-lg"
+                        className="border-gray-300 shadow-sm rounded-lg"
                     >
                         <CardHeader className="px-4 pt-4 pb-2 flex flex-col gap-2">
                             <div className="flex justify-between items-center">
