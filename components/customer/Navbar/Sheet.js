@@ -4,13 +4,17 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { AlignJustify, ShoppingCart, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { usePathname } from 'next/navigation';
 
 export default function NavbarSheet({ isLoggedIn, scrolled }) {
+    const pathname = usePathname(); // Mendapatkan URL saat ini
+    const isRootPath = pathname === "/"; // Menentukan apakah halaman root
+
     return (
         <Sheet>
             <SheetTrigger asChild>
                 <AlignJustify
-                    className={`block md:hidden cursor-pointer ${scrolled ? "text-gray-950" : "text-white"
+                    className={`block md:hidden cursor-pointer ${isRootPath && !scrolled ? "text-white" : "text-gray-950"
                         }`}
                 />
             </SheetTrigger>
@@ -31,10 +35,10 @@ export default function NavbarSheet({ isLoggedIn, scrolled }) {
                     ) : (
                         <>
                             <Button className="bg-rose-600 text-white w-full rounded-md hover:bg-rose-700">
-                                <Link href="/masuk">Masuk</Link>
+                                <Link href="/login">Masuk</Link>
                             </Button>
                             <Button className="bg-rose-600 text-white w-full rounded-md hover:bg-rose-700">
-                                <Link href="/daftar">Daftar</Link>
+                                <Link href="/signup">Daftar</Link>
                             </Button>
                         </>
                     )}

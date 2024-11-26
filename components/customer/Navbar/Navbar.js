@@ -79,11 +79,11 @@ export default function Navbar({ isRootPath }) {
                         className={`hidden md:block outline outline-1 outline-rose-600 rounded-md hover:outline hover:bg-transparent hover:outline-2 hover:outline-rose-500 ${isRootPath && !scrolled ? "bg-transparent text-white" : "bg-white text-gray-950"
                             }`}
                     >
-                        <Link href="/masuk">Masuk</Link>
+                        <Link href="/login">Masuk</Link>
                     </Button>
 
                     <Button className="bg-rose-600 text-white rounded-md hover:bg-rose-700">
-                        <Link href="/daftar">Daftar</Link>
+                        <Link href="/signup">Daftar</Link>
                     </Button>
                     {/* Sheet Trigger */}
                     <NavbarSheet isLoggedIn={isLoggedIn} scrolled={scrolled} />
