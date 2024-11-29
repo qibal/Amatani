@@ -9,13 +9,13 @@ async function getPathname() {
 }
 
 export default async function RootLayout({ children }) {
-    const pathname = await getPathname();
-    const isRootPath = pathname === "/";
+    // const pathname = await getPathname();
+    // const isRootPath = pathname === "/";
 
     return (
         <>
             <Suspense fallback={<p className="text-center py-4">Loading...</p>}>
-                <Navbar isRootPath={isRootPath} />
+                <Navbar />
                 <main>{children}</main>
             </Suspense>
         </>

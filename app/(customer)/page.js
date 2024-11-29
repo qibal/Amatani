@@ -1,12 +1,16 @@
+'use client'
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import HomeBuah from "@/components/customer/HomeBuah";
 import HomeKPangan from "@/components/customer/HomeKPangan";
 import HomeTestimoni from "@/components/customer/HomeTestimoni";
 import Footer from "@/components/customer/Footer";
+import supabase from '@/lib/supabase';
+import { useEffect } from "react";
 
 // Komponen Statistik Reusable
 const Statistics = ({ stats }) => {
+
     return (
         <section className="bg-white">
             <div className="container mx-auto px-4">
@@ -59,6 +63,16 @@ const FeatureGrid = ({ features }) => (
 );
 
 export default function CustomerPage() {
+    useEffect(() => {
+        async function getuser(params) {
+            const { data: { user } } = await supabase.auth.getUser()
+
+            console.log("sesi", user);
+            console.log("metadata", user.user_metadata);
+        }
+        getuser()
+    }, [])
+
     const stats = [
         { number: "18,000+", description: "Serving Culinary Businesses" },
         { number: "1,000+", description: "Petani, Peternak, Nelayan" },

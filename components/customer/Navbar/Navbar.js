@@ -7,21 +7,33 @@ import NavbarSheet from "@/components/customer/Navbar/Sheet";
 import { Button } from "@/components/ui/button";
 import CategoryMenu from "./CategoryMenu";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
-
-export default function Navbar({ isRootPath }) {
+import { usePathname } from 'next/navigation'
+export default function Navbar() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [scrolled, setScrolled] = useState(false);
+    const [isRootPath, setIsRootPath] = useState(false);
+    const pathname = usePathname()
+
+
+
 
     useEffect(() => {
-        if (!isRootPath) return; // Kalau bukan halaman '/', nggak usah dengerin scroll
-
-        const handleScroll = () => {
-            setScrolled(window.scrollY > window.innerHeight * 0.1);
+        const cekPathnameNavbar = () => {
+            if (pathname === "/") {
+                setIsRootPath(true);
+                const handleScroll = () => {
+                    setScrolled(window.scrollY > window.innerHeight * 0.1);
+                };
+                window.addEventListener("scroll", handleScroll);
+                window.scrollTo(0, 0);
+                return () => window.removeEventListener("scroll", handleScroll);
+            } else {
+                setIsRootPath(false);
+            }
         };
+        cekPathnameNavbar();
+    }, [pathname]);
 
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, [isRootPath]);
 
     // Class untuk teks di navbar
     const textClass = isRootPath && !scrolled ? "text-white" : "text-gray-950";
