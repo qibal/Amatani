@@ -5,27 +5,28 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { AlertCircle, ChevronDown, Filter, Search, X } from "lucide-react"; // Ikon untuk fallback
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react'
+import supabase from '@/lib/supabase';
 
 export default function Product() {
     // Data Dummy
-
     const [productsData, setProductsdata] = useState([]);
+
     useEffect(() => {
-        async function fetchProduk() {
-            let res = await fetch('https://xmlmcdfzbwjljhaebzna.supabase.co/rest/v1/products_2', {
-                method: "GET",
-                headers: {
-                    Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhtbG1jZGZ6YndqbGpoYWViem5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI4MzExOTEsImV4cCI6MjA0ODQwNzE5MX0.xpWPOds_NZcssbR_XkhepiNmP0FzccKC80xu9quiu0I",
-                    apikey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhtbG1jZGZ6YndqbGpoYWViem5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI4MzExOTEsImV4cCI6MjA0ODQwNzE5MX0.xpWPOds_NZcssbR_XkhepiNmP0FzccKC80xu9quiu0I"
-                }
-            })
-            let data = await res.json()
-            setProductsdata(data)
-            console.log(data)
+        async function fetchProducts() {
+            let { data: productsData, error } = await supabase
+                .from('products_2')
+                .select('*');
+
+            if (error) {
+                console.error("Kesalahan dalam Prodes:", error);
+            } else {
+                setProductsdata(productsData);
+                console.log(productsData);
+            }
         }
-        fetchProduk()
-    }, [])
+        fetchProducts();
+    }, []);
 
     return (
         <div className="mt-4 px-4 container mx-auto">
