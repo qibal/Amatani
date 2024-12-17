@@ -1,3 +1,11 @@
+## Tech Stack
+
+- Next.js 15 + React 18
+- Tailwind CSS + Shadcn (Rechart, Radix UI,React Hook Form, etc.)
+- Supabase
+- React Dropzone
+- Zod
+
 ## Requirement
 
 - Node.js 18.18+

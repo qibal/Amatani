@@ -29,19 +29,19 @@ const formSchema = z.object({
         }),
     stock: z.number().min(1, { message: "Stock produk harus lebih dari 0" }),
     deskripsiProduk: z.string().min(1, { message: "Deskripsi produk tidak boleh kosong" }),
-    hargaMin: z.number().min(1, { message: "Harga min tidak boleh kurang dari 1" }),
-    hargaMax: z.number().min(1, { message: "Harga max tidak boleh kurang dari 1" }),
+    stockMin: z.number().min(1, { message: "Jumlah min tidak boleh kurang dari 1" }),
+    stockMax: z.number().min(1, { message: "Harga max tidak boleh kurang dari 1" }),
     harga: z.number().min(1, { message: "Harga produk tidak boleh kurang dari 1" }),
-    hargaMaxGreaterThanMin: z
-        .boolean()
-        .refine((value, ctx) => {
-            const hargaMin = ctx.parent.hargaMin;
-            const hargaMax = ctx.parent.hargaMax;
-            if (hargaMax <= hargaMin) {
-                return false;
-            }
-            return true;
-        }, { message: "Harga max harus lebih besar dari harga min" }),
+    // hargaMaxGreaterThanMin: z
+    //     .boolean()
+    //     .refine((value, ctx) => {
+    //         const hargaMin = ctx.parent.hargaMin;
+    //         const hargaMax = ctx.parent.hargaMax;
+    //         if (hargaMax <= hargaMin) {
+    //             return false;
+    //         }
+    //         return true;
+    //     }, { message: "Harga max harus lebih besar dari harga min" }),
 });
 
 export default function AddProductPage() {
@@ -52,8 +52,8 @@ export default function AddProductPage() {
             kategoriProduk: "",
             stock: 0,
             deskripsiProduk: "",
-            hargaMin: 0,
-            hargaMax: 0,
+            stockMin: 0,
+            stockMax: 0,
             harga: 0,
         },
     });
@@ -67,7 +67,7 @@ export default function AddProductPage() {
     const router = useRouter();
 
     // Fungsi untuk navigasi setelah pengiriman data
-    function EditData(data) {
+    function SimpanData(data) {
         console.log('Form Data:', data); // Tampilkan data form yang valid
         router.push('/dashboard');
     }
@@ -103,7 +103,7 @@ export default function AddProductPage() {
                                 <Button variant="outline">Cancel</Button>
                                 <Button
                                     variant="default"
-                                    onClick={form.handleSubmit(EditData)} // Panggil handleSubmit yang mengarah ke EditData
+                                    onClick={form.handleSubmit(SimpanData)} // Panggil handleSubmit yang mengarah ke SimpanData
                                     className="bg-rose-600 hover:bg-rose-500"
                                 >
                                     Simpan
@@ -112,7 +112,7 @@ export default function AddProductPage() {
                         </div>
                         <div className="p-6 container mx-auto space-y-6">
                             <Form {...form}>
-                                <form onSubmit={form.handleSubmit(EditData)} className="space-y-8">
+                                <form onSubmit={form.handleSubmit(SimpanData)} className="space-y-8">
                                     {/* Nama Produk */}
                                     <FormField
                                         control={form.control}
@@ -123,9 +123,9 @@ export default function AddProductPage() {
                                                 <FormControl>
                                                     <Input placeholder="Pisang muli" {...field} />
                                                 </FormControl>
-                                                <FormDescription>
+                                                {/* <FormDescription>
                                                     Masukkan nama produk yang akan dijual.
-                                                </FormDescription>
+                                                </FormDescription> */}
                                                 <FormMessage />
                                             </FormItem>
                                         )}
@@ -151,9 +151,9 @@ export default function AddProductPage() {
                                                         </SelectContent>
                                                     </Select>
                                                 </FormControl>
-                                                <FormDescription>
+                                                {/* <FormDescription>
                                                     Pilih kategori yang sesuai untuk produk Anda.
-                                                </FormDescription>
+                                                </FormDescription> */}
                                                 <FormMessage />
                                             </FormItem>
                                         )}
@@ -167,11 +167,24 @@ export default function AddProductPage() {
                                             <FormItem>
                                                 <FormLabel>Stock</FormLabel>
                                                 <FormControl>
-                                                    <Input type="number" placeholder="100" {...field} />
+                                                    <Input
+
+                                                        placeholder="100"
+                                                        className="flex-1"
+                                                        {...field}
+                                                        onChange={(e) => {
+                                                            const value = e.target.value;
+                                                            if (!isNaN(value)) {
+                                                                field.onChange(Number(value));
+                                                            } else {
+                                                                field.onChange(0);
+                                                            }
+                                                        }}
+                                                    />
                                                 </FormControl>
-                                                <FormDescription>
+                                                {/* <FormDescription>
                                                     Masukkan jumlah stok yang tersedia untuk produk ini.
-                                                </FormDescription>
+                                                </FormDescription> */}
                                                 <FormMessage />
                                             </FormItem>
                                         )}
@@ -185,11 +198,19 @@ export default function AddProductPage() {
                                             <FormItem>
                                                 <FormLabel>Deskripsi Produk</FormLabel>
                                                 <FormControl>
-                                                    <Textarea placeholder="Masukkan Deskripsi Produk" {...field} />
+                                                    <Textarea
+                                                        placeholder="Masukkan Deskripsi Produk"
+                                                        {...field}
+                                                        onInput={(e) => {
+                                                            e.target.style.height = 'auto';
+                                                            e.target.style.height = `${e.target.scrollHeight}px`;
+                                                        }}
+                                                        style={{ overflow: 'hidden' }}
+                                                    />
                                                 </FormControl>
-                                                <FormDescription>
+                                                {/* <FormDescription>
                                                     Deskripsikan produk Anda secara singkat, seperti fitur, manfaat, atau bahan utama.
-                                                </FormDescription>
+                                                </FormDescription> */}
                                                 <FormMessage />
                                             </FormItem>
                                         )}
@@ -197,51 +218,77 @@ export default function AddProductPage() {
 
                                     {/* Gambar */}
                                     <div className="space-y-2">
-                                        <FormLabel>Gambar</FormLabel>
+                                        <FormLabel>Gambar Produk</FormLabel>
                                         <MultiImageUploader image={setimage} />
-                                        <FormDescription>
+                                        {/* <FormDescription>
                                             Unggah gambar produk untuk memberikan gambaran visual kepada pembeli.
-                                        </FormDescription>
+                                        </FormDescription> */}
                                     </div>
 
                                     {/* Harga */}
                                     <div className="space-y-2">
-                                        <Label>Harga</Label>
+                                        <Label>Harga Grosir</Label>
                                         <div className="flex gap-2">
                                             {/* Harga Min */}
                                             <FormField
                                                 control={form.control}
-                                                name="hargaMin"
+                                                name="stockMin"
                                                 render={({ field }) => (
                                                     <FormItem>
                                                         <FormControl>
-                                                            <Input placeholder="Min Jumlah" className="flex-1" {...field} />
+                                                            <Input
+
+                                                                placeholder="Min Jumlah"
+                                                                className="flex-1"
+                                                                {...field}
+                                                                onChange={(e) => {
+                                                                    const value = e.target.value;
+                                                                    if (!isNaN(value)) {
+                                                                        field.onChange(Number(value));
+                                                                    } else {
+                                                                        field.onChange(0);
+                                                                    }
+                                                                }}
+                                                            />
                                                         </FormControl>
                                                         <FormDescription>
-                                                            Harga minimum
+                                                            Minimal barang
                                                         </FormDescription>
                                                         <FormMessage />
                                                     </FormItem>
                                                 )}
                                             />
-                                            <span className="flex items-center justify-center text-gray-500">=</span>
+                                            {/* <span className="flex items-center justify-center text-gray-500">=</span> */}
                                             {/* Harga Max */}
                                             <FormField
                                                 control={form.control}
-                                                name="hargaMax"
+                                                name="stockMax"
                                                 render={({ field }) => (
                                                     <FormItem>
                                                         <FormControl>
-                                                            <Input placeholder="Max Jumlah" className="flex-1" {...field} />
+                                                            <Input
+
+                                                                placeholder="Max Jumlah"
+                                                                className="flex-1"
+                                                                {...field}
+                                                                onChange={(e) => {
+                                                                    const value = e.target.value;
+                                                                    if (!isNaN(value)) {
+                                                                        field.onChange(Number(value));
+                                                                    } else {
+                                                                        field.onChange(0);
+                                                                    }
+                                                                }}
+                                                            />
                                                         </FormControl>
                                                         <FormDescription>
-                                                            Harga maksimum
+                                                            Maksimal barang
                                                         </FormDescription>
                                                         <FormMessage />
                                                     </FormItem>
                                                 )}
                                             />
-                                            <span className="flex items-center justify-center text-gray-500">=</span>
+                                            {/* <span className="flex items-center justify-center text-gray-500">=</span> */}
                                             {/* Harga Produk */}
                                             <FormField
                                                 control={form.control}
@@ -249,10 +296,23 @@ export default function AddProductPage() {
                                                 render={({ field }) => (
                                                     <FormItem>
                                                         <FormControl>
-                                                            <Input placeholder="Harga" className="flex-1" {...field} />
+                                                            <Input
+
+                                                                placeholder="Harga"
+                                                                className="flex-1"
+                                                                {...field}
+                                                                onChange={(e) => {
+                                                                    const value = e.target.value;
+                                                                    if (!isNaN(value)) {
+                                                                        field.onChange(Number(value));
+                                                                    } else {
+                                                                        field.onChange(0);
+                                                                    }
+                                                                }}
+                                                            />
                                                         </FormControl>
                                                         <FormDescription>
-                                                            Harga produk Anda.
+                                                            Harga produk
                                                         </FormDescription>
                                                         <FormMessage />
                                                     </FormItem>
