@@ -9,6 +9,8 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { useForm } from "react-hook-form"; // Pastikan ini diimpor
+import { Form, FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from "@/components/ui/form";
 
 // Komponen Reusable untuk Rentang Harga
 const PriceRange = ({ label, price }) => (
@@ -70,17 +72,21 @@ const ProductCard = ({ product }) => (
 // Komponen Dialog Manage Categories
 const ManageCategoriesDialog = () => {
     const [categories, setCategories] = useState(["Buah Buahan", "Sayuran"]);
-    const [categoryName, setCategoryName] = useState("");
     const [error, setError] = useState("");
 
+    const form = useForm({
+        defaultValues: {
+            categoryName: "",
+        },
+    });
     // Tambah Kategori
-    const handleAddCategory = () => {
-        if (!categoryName.trim()) {
+    const onSubmit = (data) => {
+        if (!data.categoryName.trim()) {
             setError("Must Enter Value");
             return;
         }
-        setCategories([...categories, categoryName.trim()]);
-        setCategoryName("");
+        setCategories([...categories, data.categoryName.trim()]);
+        form.reset();
         setError("");
     };
 
@@ -106,23 +112,38 @@ const ManageCategoriesDialog = () => {
                         </DialogDescription>
                     </DialogHeader>
 
-                    {/* Tambah Kategori */}
-                    <div className="space-y-2">
-                        <h3 className="font-medium text-sm">Create Categories</h3>
-                        <div className="flex items-center gap-2">
-                            <Input
-                                type="text"
-                                placeholder="Enter category name"
-                                value={categoryName}
-                                onChange={(e) => setCategoryName(e.target.value)}
-                            />
-                            <Button onClick={handleAddCategory} className="bg-red-600 hover:bg-rose-500">
-                                <Plus className="w-4 h-4 mr-2" />
-                                Add
-                            </Button>
-                        </div>
-                        {error && <p className="text-xs text-red-500">{error}</p>}
-                    </div>
+                    <Form {...form}>
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+                            <div className="flex items-center space-x-2"> 
+                                <FormField
+                                    control={form.control}
+                                    name="categoryName"
+                                    render={({ field }) => (
+                                        <FormItem className="flex-1">
+                                            <FormLabel className="">Category Name</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    type="text"
+                                                    placeholder="Enter category name"
+                                                    {...field}
+                                                    className="h-10"
+                                                />
+                                            </FormControl>
+                                            <FormDescription>
+                                                Enter the name of the category you want to create.
+                                            </FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <Button type="submit" className="bg-red-600 hover:bg-rose-500 h-10">
+                                    <Plus className="w-4 h-4 mr-2" />
+                                    Add
+                                </Button>
+                            </div>
+                        </form>
+                    </Form>
+
 
                     {/* Daftar Kategori */}
                     <div className="mt-4 space-y-2">
