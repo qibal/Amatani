@@ -4,11 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { CreditCard, ShoppingCart, TrendingUp, User, Search, MoreHorizontal, Printer, SortDesc, X } from "lucide-react";
+import { CreditCard, ShoppingCart, TrendingUp, User, Search, MoreHorizontal, Printer, SortDesc, X, Ellipsis } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { useEffect, useState } from "react";
+import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 
 
@@ -280,10 +281,19 @@ export default function OrdersPage() {
                         <Button variant="outline" size="sm">Selesai</Button>
                     </div>
                     <div className="flex items-center gap-2">
-                        <div className="flex items-center border rounded-full px-3">
-                            <Search className="w-4 h-4 text-gray-500" />
-                            <Input type="text" placeholder="Value" className="border-none focus:ring-0 text-sm w-32 md:w-48" />
-                            <X className="w-4 h-4 text-gray-500 cursor-pointer" />
+                        <div className="relative flex items-center w-full lg:w-[300px]">
+                            <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 transform text-muted-foreground pointer-events-none" />
+                            <Input
+                                type="text"
+                                placeholder="Search..."
+                                className="w-full pl-8 pr-8 rounded-full"
+                            />
+                            <Button
+                                size="icon"
+                                className="bg-transparent hover:bg-transparent hover:text-gray-800 shadow-none absolute right-1 top-1/2 -translate-y-1/2 transform"
+                            >
+                                <X className="h-4 w-4 text-gray-950" />
+                            </Button>
                         </div>
                         <Button variant="outline" size="sm">
                             Sort by
@@ -304,55 +314,56 @@ export default function OrdersPage() {
                 </div>
             </div>
             {/* table */}
-            <table className="min-w-full border-collapse">
-                <thead>
-                    <tr>
-                        <th className="border p-2">Order ID</th>
-                        <th className="border p-2">User Email</th>
-                        <th className="border p-2">Order Status</th>
-                        <th className="border p-2">Total Amount</th>
-                        <th className="border p-2">Order Date & Time</th>
-                        <th className="border p-2">Payment Status</th>
-                        <th className="border p-2">Details</th>
-                        <th className="border p-2">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {orders.map((order) => (
-                        <tr key={order.order_id} className="border-t">
-                            <td className="p-2">{order.order_id}</td>
-                            <td className="p-2">{getUserEmail(order.user_id)}</td>
-                            <td className={`p-2 ${getOrderStatusColor(order.order_status)}`}>{order.order_status}</td>
-                            <td className="p-2">{formatCurrency(order.total_amount)}</td>
-                            <td className="p-2">{formatDate(order.order_date)}</td>
-                            <td className={`p-2 ${getPaymentStatusColor(order.payment.payment_status)}`}>
-                                {order.payment.payment_status} ({order.payment.payment_method})
-                            </td>
-                            <td className="p-2">
-                                <button
-                                    type="button"
-                                    onClick={() => handleViewDetails(order)}
-                                    className="text-blue-500 underline"
-                                >
-                                    View Details
-                                </button>
-                            </td>
-                            <td className="p-2">
-                                {order.payment.payment_status === "completed" && (
-                                    <button
-                                        type="button"
-                                        onClick={() => handlePrintReceipt(order)}
-                                        className="text-green-500 flex items-center space-x-1"
-                                    >
+            <div className="p-4 space-y-4 max-w-6xl mx-auto">
+                <Table className="min-w-full border-collapse">
+                    <TableCaption>A list of your recent orders.</TableCaption>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead className="border p-2 text-center">Order ID</TableHead>
+                            <TableHead className="border p-2 text-center">User Email</TableHead>
+                            <TableHead className="border p-2 text-center">Order Status</TableHead>
+                            <TableHead className="border p-2 text-center">Total Amount</TableHead>
+                            <TableHead className="border p-2 text-center">Order Date & Time</TableHead>
+                            <TableHead className="border p-2 text-center">Payment Status</TableHead>
+                            <TableHead className="border p-2 text-center">Actions</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {orders.map((order) => (
+                            <TableRow key={order.order_id} className="border-t">
+                                <TableCell className="p-2">{order.order_id}</TableCell>
+                                <TableCell className="p-2">{getUserEmail(order.user_id)}</TableCell>
+                                <TableCell className={`p-2 ${getOrderStatusColor(order.order_status)}`}>
+                                    {order.order_status}
+                                </TableCell>
+                                <TableCell className="p-2">{formatCurrency(order.total_amount)}</TableCell>
+                                <TableCell className="p-2">{formatDate(order.order_date)}</TableCell>
+                                <TableCell className={`p-2 ${getPaymentStatusColor(order.payment.payment_status)}`}>
+                                    {order.payment.payment_status} ({order.payment.payment_method})
+                                </TableCell>
+                                <TableCell className="p-2 flex space-x-2 items-center justify-center">
+                                    <Button variant="outline" size="icon" onClick={() => handleViewDetails(order)} className="">
                                         <Printer className="w-4 h-4" />
-                                        <span>Print Receipt</span>
-                                    </button>
-                                )}
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+                                    </Button>
+                                    {order.payment.payment_status === "completed" && (
+                                        <Button variant="outline" size="icon" onClick={() => handlePrintReceipt(order)} className="">
+                                            <Ellipsis className="w-4 h-4" />
+                                        </Button>
+                                    )}
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                    <TableFooter>
+                        <TableRow>
+                            <TableCell colSpan={3}>Total</TableCell>
+                            <TableCell className="text-left">
+                                {formatCurrency(orders.reduce((total, order) => total + order.total_amount, 0))}
+                            </TableCell>
+                        </TableRow>
+                    </TableFooter>
+                </Table>
+            </div>
         </div>
     );
 }

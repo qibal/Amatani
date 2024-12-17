@@ -204,11 +204,21 @@ export default function ProductPage() {
                     <ManageCategoriesDialog />
 
                     <div className="flex flex-wrap gap-4 items-center w-full sm:w-auto">
-                        <div className="flex items-center w-full sm:w-72 border border-gray-300 rounded-full px-4">
-                            <Search className="w-4 h-4 text-gray-500 flex-shrink-0 mr-2" />
-                            <Input type="text" placeholder="Value" className="w-full text-sm sm:text-base border-none outline-none focus:ring-0" />
-                            <X className="w-4 h-4 text-gray-500 flex-shrink-0 ml-2 cursor-pointer" />
+                        <div className="relative flex items-center w-full lg:w-[300px]">
+                            <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 transform text-muted-foreground pointer-events-none" />
+                            <Input
+                                type="text"
+                                placeholder="Search..."
+                                className="w-full pl-8 pr-8 rounded-full"
+                            />
+                            <Button
+                                size="icon"
+                                className="bg-transparent hover:bg-transparent hover:text-gray-800 shadow-none absolute right-1 top-1/2 -translate-y-1/2 transform"
+                            >
+                                <X className="h-4 w-4 text-gray-950" />
+                            </Button>
                         </div>
+
                         <Link href="/dashboard/products/add" passHref>
                             <Button variant="outline" className="w-full sm:w-auto">
                                 <Plus className="w-5 h-5 mr-2" />

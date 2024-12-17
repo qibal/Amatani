@@ -63,7 +63,7 @@ export function AppSidebar({
         <SidebarMenu>
           <SidebarMenuItem>
             <Avatar>
-              <AvatarImage src="/FE/img02.png" />
+              <AvatarImage src="\FE\IconAmatani.svg" />
               <AvatarFallback>KP</AvatarFallback>
             </Avatar>
           </SidebarMenuItem>

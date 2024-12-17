@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import CategoryMenu from "./CategoryMenu";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { usePathname } from 'next/navigation'
+import Image from "next/image";
+
 export default function Navbar() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [scrolled, setScrolled] = useState(false);
@@ -51,15 +53,15 @@ export default function Navbar() {
             <div className="container mx-auto flex items-center justify-between py-4">
                 {/* Logo */}
                 <div className="flex items-center space-x-4">
-                    <div
-                        className="w-8 h-8 rounded-md"
-                        style={{
-                            backgroundColor: isRootPath && !scrolled ? "white" : "#db2439",
-                            transition: "background-color 300ms",
-                        }}
+                    <Image
+                        src="/FE/IconAmatani.svg"
+                        alt="Logo AMATANI"
+                        width={42}
+                        height={42}
+                        className=""
                     />
                     <span className={`font-bold text-lg ${textClass}`}>
-                        KitaPanen
+                        AMATANI
                     </span>
                 </div>
 
@@ -106,14 +108,15 @@ export default function Navbar() {
             <div className="hidden md:flex container mx-auto items-center justify-between py-4 text-sm">
                 <CategoryMenu isRootPath={isRootPath && !scrolled} />
                 <div className="flex items-center space-x-6">
-                    {["Tentang Kami", "Pusat Bantuan", "Bekerja Sama"].map((item, index) => (
-                        <button
-                            key={index}
-                            className={`hover:underline ${textClass}`}
-                        >
-                            {item}
-                        </button>
-                    ))}
+                    <Link className={`hover:underline ${textClass}`} href="/tentang-kami">
+                        Tentang Kami
+                    </Link>
+                    <Link className={`hover:underline ${textClass}`} href="/pusat-bantuan">
+                        Pusat Bantuan
+                    </Link>
+                    <Link className={`hover:underline ${textClass}`} href="/bekerja-sama">
+                        Bekerja Sama
+                    </Link>
                 </div>
             </div>
         </header>
