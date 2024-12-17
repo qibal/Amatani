@@ -10,8 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { useEffect, useState } from "react";
 import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-
-
+import { Badge } from "@/components/ui/badge";
 
 // Data Dummy
 const ordersData = [
@@ -198,36 +197,57 @@ export default function OrdersPage() {
             icon: <User />,
         },
     ];
-    const getOrderStatusColor = (status) => {
-        switch (status) {
-            case "pending":
-                return "text-yellow-500";
-            case "processed":
-                return "text-blue-500";
-            case "shipped":
-                return "text-purple-500";
-            case "delivered":
-                return "text-green-500";
-            case "cancelled":
-                return "text-red-500";
-            default:
-                return "text-gray-500";
-        }
+
+    const OrderStatusBadge = ({ status }) => {
+        const getBadgeColor = (status) => {
+            switch (status) {
+                case "pending":
+                    return "bg-yellow-100 text-yellow-600 hover:bg-yellow-200";
+                case "processed":
+                    return "bg-blue-100 text-blue-600 hover:bg-blue-200";
+                case "shipped":
+                    return "bg-purple-100 text-purple-600 hover:bg-purple-200";
+                case "delivered":
+                    return "bg-emerald-100 text-green-600 hover:bg-emerald-200";
+                case "cancelled":
+                    return "bg-rose-100 text-red-600 hover:bg-rose-200";
+                default:
+                    return "bg-gray-100 text-gray-600 hover:bg-gray-200";
+            }
+        };
+
+        const badgeColor = getBadgeColor(status);
+
+        return (
+            <Badge className={`inline-flex items-center px-2 py-1 rounded-full text-sm font-medium ${badgeColor}`}>
+                {status}
+            </Badge>
+        );
     };
 
-    // Function to get color class for payment status
-    const getPaymentStatusColor = (status) => {
-        switch (status) {
-            case "pending":
-                return "text-yellow-500";
-            case "completed":
-                return "text-green-500";
-            case "failed":
-                return "text-red-500";
-            default:
-                return "text-gray-500";
-        }
+    const PaymentStatusBadge = ({ status, method }) => {
+        const getBadgeColor = (status) => {
+            switch (status) {
+                case "completed":
+                    return "bg-emerald-100 text-green-600 hover:bg-emerald-200";
+                case "pending":
+                    return "bg-yellow-100 text-yellow-600 hover:bg-yellow-200";
+                case "failed":
+                    return "bg-rose-100 text-red-600 hover:bg-rose-200";
+                default:
+                    return "bg-gray-100 text-gray-600 hover:bg-gray-200";
+            }
+        };
+
+        const badgeColor = getBadgeColor(status);
+
+        return (
+            <Badge className={`inline-flex items-center px-2 py-1 rounded-full text-sm font-medium ${badgeColor}`}>
+                {status} ({method})
+            </Badge>
+        );
     };
+
 
     return (
         <div>
@@ -333,13 +353,18 @@ export default function OrdersPage() {
                             <TableRow key={order.order_id} className="border-t">
                                 <TableCell className="p-2">{order.order_id}</TableCell>
                                 <TableCell className="p-2">{getUserEmail(order.user_id)}</TableCell>
-                                <TableCell className={`p-2 ${getOrderStatusColor(order.order_status)}`}>
-                                    {order.order_status}
+                                <TableCell className="p-2">
+                                    <OrderStatusBadge
+                                        status={order.order_status}
+                                    />
                                 </TableCell>
                                 <TableCell className="p-2">{formatCurrency(order.total_amount)}</TableCell>
                                 <TableCell className="p-2">{formatDate(order.order_date)}</TableCell>
-                                <TableCell className={`p-2 ${getPaymentStatusColor(order.payment.payment_status)}`}>
-                                    {order.payment.payment_status} ({order.payment.payment_method})
+                                <TableCell className="p-2">
+                                    <PaymentStatusBadge
+                                        status={order.payment.payment_status}
+                                        method={order.payment.payment_method}
+                                    />
                                 </TableCell>
                                 <TableCell className="p-2 flex space-x-2 items-center justify-center">
                                     <Button variant="outline" size="icon" onClick={() => handleViewDetails(order)} className="">
