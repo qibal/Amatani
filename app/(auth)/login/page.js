@@ -1,8 +1,10 @@
 
+import { login, signup } from '@/app/api/customer/Auth';
 import OauthLoginButton from '@/components/auth/masuk/OauthLogin';
 import { Button } from '@/components/ui/button';
 
 import { Input } from '@/components/ui/input';
+import Image from 'next/image';
 
 export default function SignUpPage() {
 
@@ -35,6 +37,14 @@ export default function SignUpPage() {
                         <Input placeholder="Email" className="w-full" />
                         <Button className="w-full bg-rose-600 text-white hover:bg-rose-700">Masuk</Button>
                     </form>
+                    <form>
+                        <label htmlFor="email">Email:</label>
+                        <input id="email" name="email" type="email" required /><br />
+                        <label htmlFor="password">Password:</label>
+                        <input id="password" name="password" type="password" required />
+                        <button formAction={login}>Log in</button>
+                        <button formAction={signup}>Sign up</button>
+                    </form>
 
                     <p className="text-sm text-gray-600 mt-4">
                         Dengan mendaftar, saya menyetujui{' '}
@@ -47,7 +57,8 @@ export default function SignUpPage() {
 
             {/* Right side with image */}
             <div className="hidden md:flex w-1/2 bg-gray-100 items-center justify-center">
-                <img src="/FE/img01.jpg" alt="Background Image" className="w-full h-full object-cover" />
+                {/* <img src="/FE/img01.jpg" alt="Background Image" className="w-full h-full object-cover" /> */}
+                <Image src="/FE/img01.jpg" width={400} height={400} alt="Background Image" className="w-full h-full object-cover" />
             </div>
         </div>
     );

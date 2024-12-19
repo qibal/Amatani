@@ -1,12 +1,14 @@
-'use client'
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import HomeBuah from "@/components/customer/HomeBuah";
 import HomeKPangan from "@/components/customer/HomeKPangan";
 import HomeTestimoni from "@/components/customer/HomeTestimoni";
 import Footer from "@/components/customer/Footer";
-import supabase from '@/lib/supabase';
-import { useEffect } from "react";
+
+
+import { createClient } from "@/lib/supabase/server";
+import { jwtDecode } from "jwt-decode";
 
 // Komponen Statistik Reusable
 const Statistics = ({ stats }) => {
@@ -62,16 +64,22 @@ const FeatureGrid = ({ features }) => (
     </section>
 );
 
-export default function CustomerPage() {
-    useEffect(() => {
-        async function getuser(params) {
-            const { data: { user } } = await supabase.auth.getUser()
+export default async function CustomerPage() {
 
-            console.log("sesi", user);
-            console.log("metadata", user.user_metadata);
-        }
-        getuser()
-    }, [])
+    async function getuser(params) {
+
+        const supabase = await createClient()
+        const { data } = await supabase.auth.getSession()
+        console.log("data", data);
+        console.log("data", data.session.access_token);
+        const token = data.session.access_token;
+        const user = jwtDecode(token);
+        console.log("user", user);
+
+
+    }
+    getuser()
+
 
     const stats = [
         { number: "18,000+", description: "Serving Culinary Businesses" },

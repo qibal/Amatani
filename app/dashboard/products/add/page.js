@@ -267,7 +267,7 @@ export default function AddProductPage() {
                                                     <FormItem>
                                                         <FormControl>
                                                             <Input
-
+                                                                type="number"
                                                                 placeholder="Max Jumlah"
                                                                 className="flex-1"
                                                                 {...field}
