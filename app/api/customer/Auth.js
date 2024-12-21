@@ -17,12 +17,12 @@ export async function signInWithGoogle() {
             },
         });
 
-        console.log(data);
+        // console.log(data);
         return data.url
 
 
     } catch (e) {
-        console.log("error", e);
+        // console.log("error", e);
     }
 }
 
