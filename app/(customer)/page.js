@@ -66,19 +66,19 @@ const FeatureGrid = ({ features }) => (
 
 export default async function CustomerPage() {
 
-    async function getuser(params) {
+    // async function getuser(params) {
 
-        const supabase = await createClient()
-        const { data } = await supabase.auth.getSession()
-        console.log("data", data);
-        console.log("data", data.session.access_token);
-        const token = data.session.access_token;
-        const user = jwtDecode(token);
-        console.log("user", user);
+    //     const supabase = await createClient()
+    //     const { data } = await supabase.auth.getSession()
+    //     console.log("data", data);
+    //     console.log("data", data.session.access_token);
+    //     const token = data.session.access_token;
+    //     const user = jwtDecode(token);
+    //     console.log("user", user);
 
 
-    }
-    getuser()
+    // }
+    // getuser()
 
 
     const stats = [
