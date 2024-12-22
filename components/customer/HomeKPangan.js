@@ -15,7 +15,7 @@ const categories = [
 
 export default function HomeKPangan() {
     return (
-        <section className="px-4 py-8 bg-white">
+        <section className="px-8 py-8 bg-white">
             <div className="container mx-auto">
                 {/* Judul */}
                 <h2 className="text-xl font-semibold mb-4 text-gray-800">

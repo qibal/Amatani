@@ -1,23 +1,20 @@
 "use client"
+
 import React, { useEffect, useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
+import supabase from '@/lib/supabase';
 
-export default function faq() {
+export default function Faq() {
 
-    const [faqData, setfaqdata] = useState([]); //usestate tidk null - array, nu koneng bebas ngaranna
+    const [faqData, setfaqdata] = useState([]);
 
     useEffect(() => {
         async function fetchPosts() {
-            let res = await fetch('https://xmlmcdfzbwjljhaebzna.supabase.co/rest/v1/faq', {
-                method: "GET",
-                headers: {
-                    Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhtbG1jZGZ6YndqbGpoYWViem5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI4MzExOTEsImV4cCI6MjA0ODQwNzE5MX0.xpWPOds_NZcssbR_XkhepiNmP0FzccKC80xu9quiu0I",
-                    apikey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhtbG1jZGZ6YndqbGpoYWViem5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI4MzExOTEsImV4cCI6MjA0ODQwNzE5MX0.xpWPOds_NZcssbR_XkhepiNmP0FzccKC80xu9quiu0I"
-                }
-            })
-            let data = await res.json()
-            setfaqdata(data)
-            console.log(data)
+            let { data: faq, error } = await supabase
+                .from('faq')
+                .select('*')
+            setfaqdata(faq)
+            console.log(faq)
         }
         fetchPosts()
     }, [])

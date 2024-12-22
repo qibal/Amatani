@@ -8,10 +8,6 @@ import Image from 'next/image';
 
 export default function SignUpPage() {
 
-
-
-
-
     return (
         <div className="h-screen w-full flex flex-col md:flex-row">
             <div className="w-full md:w-1/2 bg-white p-8 flex flex-col justify-center items-center min-h-screen">
@@ -58,7 +54,7 @@ export default function SignUpPage() {
             {/* Right side with image */}
             <div className="hidden md:flex w-1/2 bg-gray-100 items-center justify-center">
                 {/* <img src="/FE/img01.jpg" alt="Background Image" className="w-full h-full object-cover" /> */}
-                <Image src="/FE/img01.jpg" width={400} height={400} alt="Background Image" className="w-full h-full object-cover" />
+                <Image src="/FE/img01.jpg" width={800} height={800} alt="Background Image" className="w-full h-full object-cover" />
             </div>
         </div>
     );

@@ -1,5 +1,6 @@
 import React from "react";
 import { Instagram, Facebook, Youtube, Linkedin } from "lucide-react";
+import Image from "next/image";
 
 export default function Footer() {
     const paymentIcons = [
@@ -41,7 +42,9 @@ export default function Footer() {
                 {/* Payment Icons */}
                 <div className="flex flex-wrap justify-center items-center gap-4 mb-8">
                     {paymentIcons.map((icon, index) => (
-                        <img
+                        <Image
+                            width={200}
+                            height={200}
                             key={index}
                             src={icon.src}
                             alt={icon.alt}

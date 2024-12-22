@@ -11,6 +11,7 @@ import { Separator } from "@/components/ui/separator";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { useForm } from "react-hook-form"; // Pastikan ini diimpor
 import { Form, FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from "@/components/ui/form";
+import Image from "next/image";
 
 // Komponen Reusable untuk Rentang Harga
 const PriceRange = ({ label, price }) => (
@@ -38,7 +39,9 @@ const ProductCard = ({ product }) => (
     <div className="flex items-center p-4 sm:p-6 border rounded-lg border-gray-300 gap-6">
         {/* Gambar Produk */}
         <div className="w-24 h-24 bg-gray-200 rounded-lg">
-            <img src={product.image} alt={product.name} className="object-cover w-full h-full rounded-lg" />
+            <Image
+                width={200}
+                height={200} src={product.image} alt={product.name} className="object-cover w-full h-full rounded-lg" />
         </div>
 
         {/* Informasi Produk */}
@@ -114,7 +117,7 @@ const ManageCategoriesDialog = () => {
 
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-                            <div className="flex items-center space-x-2"> 
+                            <div className="flex items-center space-x-2">
                                 <FormField
                                     control={form.control}
                                     name="categoryName"

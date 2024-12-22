@@ -6,6 +6,7 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { AlertCircle } from "lucide-react"; // Ikon untuk fallback
+import Image from "next/image";
 
 export default function HomeBuah() {
     const [products, setProducts] = useState([]);
@@ -24,7 +25,7 @@ export default function HomeBuah() {
     }, []);
 
     return (
-        <section className="py-8 px-4 bg-white">
+        <section className="py-8 px-8 bg-white">
             <div className="container mx-auto">
                 {/* Judul */}
                 <h2 className="text-2xl font-semibold mb-6 text-gray-800">Buah Buahan</h2>
@@ -59,7 +60,7 @@ function ProductCard({ imageSrc, name, category, priceRange }) {
             <CardHeader className="p-0">
                 {/* Komponen Aspect Ratio dari ShadCN */}
                 <AspectRatio ratio={1}>
-                    <img
+                    <Image
                         src={imageSrc}
                         alt={name}
                         className="object-cover w-full h-full"

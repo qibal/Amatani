@@ -23,8 +23,8 @@ export default function ProductDetail() {
     ];
 
     return (
-        <div className="container mx-auto px-4 py-6">
-            <div className="grid gap-8 lg:grid-cols-3">
+        <div className="container mx-auto px-8 py-6">
+            <div className="grid gap-4 lg:grid-cols-3 ">
                 {/* Image Gallery and Main Image */}
                 <div className="lg:col-span-2 space-y-4">
                     <div className="lg:hidden">
@@ -37,19 +37,17 @@ export default function ProductDetail() {
                         </div>
                     </div>
 
-                    <div className="flex flex-col lg:flex-row gap-4">
+                    <div className="flex flex-col lg:flex-row gap-4 ">
                         {/* Main Image */}
-                        <div className="relative order-1 flex-grow">
-                            <AspectRatio ratio={1}>
-                                <Image
-                                    src={images[0].src}
-                                    alt={images[0].alt}
-                                    className="object-cover rounded-lg "
-                                    fill
-                                    priority
-                                />
-                            </AspectRatio>
-                        </div>
+                        <AspectRatio ratio={2 / 1}>
+                            <Image
+                                src={images[0].src}
+                                alt={images[0].alt}
+                                className="object-cover w-full h-full"
+                                width={800}
+                                height={800}
+                            />
+                        </AspectRatio>
 
                         {/* Image Thumbnails */}
                         <div className="flex lg:flex-col gap-2 order-2 lg:order-1">
@@ -64,7 +62,7 @@ export default function ProductDetail() {
                                     <Image
                                         src={image.src}
                                         alt={image.alt}
-                                        className="object-cover"
+                                        className="object-cover w-full h-full"
                                         fill
                                     />
                                 </button>
@@ -166,7 +164,7 @@ export default function ProductDetail() {
 
 function ProductInfoCard() {
     return (
-        <Card className="p-4">
+        <Card className="p-4 ">
             <div className="space-y-4">
                 <div className="grid grid-cols-3 gap-4 text-center">
                     <div>

@@ -83,7 +83,6 @@ export function AppSidebar({
                     <span>Home</span>
                   </a>
                 </SidebarMenuButton>
-
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
@@ -109,7 +108,7 @@ export function AppSidebar({
             {/* Home */}
             <SidebarMenu>
               <SidebarMenuItem >
-                <SidebarMenuButton asChild>
+                <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/orders')}>
                   <a href="/dashboard/orders">
                     <ShoppingCart />
                     <span>Pesanan</span>
@@ -117,14 +116,14 @@ export function AppSidebar({
                 </SidebarMenuButton>
                 <SidebarMenuBadge>24</SidebarMenuBadge>
               </SidebarMenuItem>
-            </SidebarMenu>
+            </SidebarMenu>  
           </SidebarGroupContent>
           <SidebarGroupContent>
             {/* Home */}
             <SidebarMenu>
               <SidebarMenuItem >
-                <SidebarMenuButton asChild>
-                  <a href="#">
+                <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/penilaian')}>
+                  <a href="/dashboard/penilaian">
                     <Star />
                     <span>Penilaian</span>
                   </a>
@@ -141,7 +140,7 @@ export function AppSidebar({
             {/* Home */}
             <SidebarMenu>
               <SidebarMenuItem >
-                <SidebarMenuButton asChild>
+                <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/wallet')}>
                   <a href="/dashboard/wallet">
                     <WalletMinimal />
                     <span>Dompet</span>
@@ -159,8 +158,8 @@ export function AppSidebar({
             {/* Home */}
             <SidebarMenu>
               <SidebarMenuItem >
-                <SidebarMenuButton asChild>
-                  <a href="dashboard/customers">
+                <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/customers')}>
+                  <a href="/dashboard/customers">
                     <UsersRound />
                     <span>Customers</span>
                   </a>
@@ -171,7 +170,7 @@ export function AppSidebar({
             {/* Home */}
             <SidebarMenu>
               <SidebarMenuItem >
-                <SidebarMenuButton asChild>
+                <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/faq')}>
                   <a href="/dashboard/faq">
                     <FileQuestion />
                     <span>FAQ</span>
@@ -189,7 +188,7 @@ export function AppSidebar({
             {/* Home */}
             <SidebarMenu>
               <SidebarMenuItem >
-                <SidebarMenuButton asChild>
+                <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/report')}>
                   <a href="/dashboard/report">
                     <ChartColumnIncreasing />
                     <span>Reports</span>

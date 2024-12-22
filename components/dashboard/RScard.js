@@ -1,6 +1,7 @@
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import Image from "next/image"
 
 const transactions = [
     {
@@ -50,7 +51,9 @@ export default function RecentSalesCard() {
                     {transactions.map((transaction, index) => (
                         <li key={index} className="flex items-center justify-between">
                             <div className="flex items-center space-x-4">
-                                <img
+                                <Image
+                                    width={200}
+                                    height={200}
                                     src={transaction.avatar}
                                     alt={transaction.name}
                                     className="w-10 h-10 rounded-full"

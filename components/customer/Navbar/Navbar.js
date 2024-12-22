@@ -48,10 +48,11 @@ export default function Navbar() {
 
     return (
         <header
-            className={`navbar w-full z-50 transition-all duration-300 px-4 ${isRootPath ? "fixed" : "relative"} ${navbarClass}`}
+            className={`navbar w-full z-50 transition-all duration-300 px-8 ${isRootPath ? "fixed" : "relative"} ${navbarClass}`}
         >
             <div className="container mx-auto flex items-center justify-between py-4">
                 {/* Logo */}
+                <Link href="/">
                 <div className="flex items-center space-x-4">
                     <Image
                         src="/FE/IconAmatani.svg"
@@ -64,6 +65,7 @@ export default function Navbar() {
                         AMATANI
                     </span>
                 </div>
+                </Link>
 
                 {/* Icon dan Button */}
                 <div className="flex items-center space-x-4">
@@ -86,7 +88,7 @@ export default function Navbar() {
                     </HoverCard>
 
                     {/* Shopping Cart */}
-                    <ShoppingCart className={`w-5 h-5 cursor-pointer ${textClass}`} />
+                    <Link href="/products"><ShoppingCart className={`w-5 h-5 cursor-pointer ${textClass}`}/></Link>
 
                     {/* Login and Register Buttons */}
                     <Button
@@ -105,7 +107,7 @@ export default function Navbar() {
             </div>
 
             {/* Tingkatan 2 */}
-            <div className="hidden md:flex container mx-auto items-center justify-between py-4 text-sm">
+            <div className="hidden md:flex container mx-auto items-center justify-between pb-4 text-sm">
                 <CategoryMenu isRootPath={isRootPath && !scrolled} />
                 <div className="flex items-center space-x-6">
                     <Link className={`hover:underline ${textClass}`} href="/tentang-kami">
