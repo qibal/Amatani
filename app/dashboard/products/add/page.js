@@ -9,7 +9,6 @@ import { Upload } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import MultiImageUploader from "@/components/dashboard/product/InputDropZone/MultiImageUploader";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -17,61 +16,63 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { ProductImageUpload } from "@/components/dashboard/product/ProductImageUpload";
 
 // Zod schema validation
 const formSchema = z.object({
-    namaProduk: z.string().min(1, { message: "Nama produk tidak boleh kosong" }),
-    kategoriProduk: z
-        .string()
-        .min(1, { message: "Kategori produk harus dipilih" })
-        .refine((val) => ["buah", "sayur", "minuman"].includes(val), {
-            message: "Kategori produk yang dipilih tidak valid",
-        }),
-    stock: z.number().min(1, { message: "Stock produk harus lebih dari 0" }),
-    deskripsiProduk: z.string().min(1, { message: "Deskripsi produk tidak boleh kosong" }),
-    stockMin: z.number().min(1, { message: "Jumlah min tidak boleh kurang dari 1" }),
-    stockMax: z.number().min(1, { message: "Harga max tidak boleh kurang dari 1" }),
-    harga: z.number().min(1, { message: "Harga produk tidak boleh kurang dari 1" }),
-    // hargaMaxGreaterThanMin: z
-    //     .boolean()
-    //     .refine((value, ctx) => {
-    //         const hargaMin = ctx.parent.hargaMin;
-    //         const hargaMax = ctx.parent.hargaMax;
-    //         if (hargaMax <= hargaMin) {
-    //             return false;
-    //         }
-    //         return true;
-    //     }, { message: "Harga max harus lebih besar dari harga min" }),
+    products_name: z.string().min(1, { message: "Tidak boleh kosong" }),
+    categories_name: z.string().min(1, { message: "Kategori produk harus dipilih" }),
+    stock: z.number().min(1, { message: "Harus lebih dari 0" }),
+    produts_description: z.string().min(1, { message: "Tidak boleh kosong" }),
+    price_type: z.enum(["fixed", "wholesale"]),
+    price: z.number().optional(),
+    wholesalePrices: z.array(z.object({
+        min_quantity: z.number().min(1, { message: "Harus lebih dari 0" }),
+        max_quantity: z.number().min(1, { message: "Harus lebih dari 0" }),
+        price: z.number().min(1, { message: "harus lebih dari 0" })
+    })).optional(),
+    images: z.array(z.any()).min(1, { message: "At least one product image is required" }),
 });
 
 export default function AddProductPage() {
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            namaProduk: "",
-            kategoriProduk: "",
+            products_name: "",
+            categories_name: "",
             stock: 0,
-            deskripsiProduk: "",
-            stockMin: 0,
-            stockMax: 0,
-            harga: 0,
+            produts_description: "",
+            price_type: "wholesale",
+            price: 0,
+            wholesalePrices: [{ min_quantity: 0, max_quantity: 0, price: 0 }],
+            images: [],
         },
     });
-    const onSubmit = (data) => {
-        // Data yang dikirimkan saat submit
-        console.log("Data Form Submitted:", data);
-        // Anda dapat menambahkan logika untuk menyimpan data atau mengarahkan pengguna ke halaman lain
-    };
+
+
+
+    const price_type = form.watch("price_type");
+    console.log('type harga mas', price_type);
+
+    const [v_image, setv_image] = useState(false);
 
     const [images, setimage] = useState([]);
     const router = useRouter();
 
-    // Fungsi untuk navigasi setelah pengiriman data
-    function SimpanData(data) {
-        console.log('Form Data:', data); // Tampilkan data form yang valid
-        router.push('/dashboard');
-    }
 
+
+
+
+
+
+    // Fungsi untuk navigasi setelah pengiriman data
+    const onSubmit = (data) => {
+        alert('data berhasil di submit')
+        // Data yang dikirimkan saat submit
+        console.log("Data Form Submitted:", data);
+        // Anda dapat menambahkan logika untuk menyimpan data atau mengarahkan pengguna ke halaman lain
+    };
     return (
         <div>
             <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
@@ -92,31 +93,34 @@ export default function AddProductPage() {
                 </div>
             </header>
 
-            <div className="p-6 container mx-auto space-y-6">
-                <div className="lg:flex justify-between sm:gap-x-4 xl:gap-x-20">
+            <div className="  mx-auto px-12 py-6">
+                <div className="lg:flex justify-between  sm:gap-x-12 xl:gap-x-20">
                     {/* Kolom Form */}
-                    <div className="space-y-6 lg:w-4/6">
-                        {/* Header */}
-                        <div className="flex justify-between items-center -b pb-4">
-                            <h1 className="text-xl font-semibold">Tambah produk</h1>
-                            <div className="flex gap-3">
-                                <Button variant="outline">Cancel</Button>
-                                <Button
-                                    variant="default"
-                                    onClick={form.handleSubmit(SimpanData)} // Panggil handleSubmit yang mengarah ke SimpanData
-                                    className="bg-rose-600 hover:bg-rose-500"
-                                >
-                                    Simpan
-                                </Button>
-                            </div>
-                        </div>
-                        <div className="p-6 container mx-auto space-y-6">
-                            <Form {...form}>
-                                <form onSubmit={form.handleSubmit(SimpanData)} className="space-y-8">
+                    <Form {...form}>
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="lg:w-4/6">
+                            <div className="   border">
+                                {/* Header */}
+                                <div className="flex  justify-between items-center -b pb-4">
+                                    <h1 className="text-xl font-semibold">Tambah produk</h1>
+                                    <div className="flex gap-3">
+                                        <Button variant="outline">Cancel</Button>
+                                        <Button
+                                            variant="default"
+                                            type="submit"
+
+                                            className="bg-rose-600 hover:bg-rose-500"
+                                        >
+                                            Simpan
+                                        </Button>
+                                    </div>
+                                </div>
+                                {/* form */}
+                                <div className=" container mx-auto space-y-6">
+
                                     {/* Nama Produk */}
                                     <FormField
                                         control={form.control}
-                                        name="namaProduk"
+                                        name="products_name"
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel>Nama Produk</FormLabel>
@@ -134,7 +138,7 @@ export default function AddProductPage() {
                                     {/* Kategori Produk */}
                                     <FormField
                                         control={form.control}
-                                        name="kategoriProduk"
+                                        name="categories_name"
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel>Kategori Produk</FormLabel>
@@ -193,7 +197,7 @@ export default function AddProductPage() {
                                     {/* Deskripsi Produk */}
                                     <FormField
                                         control={form.control}
-                                        name="deskripsiProduk"
+                                        name="produts_description"
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel>Deskripsi Produk</FormLabel>
@@ -218,120 +222,192 @@ export default function AddProductPage() {
 
                                     {/* Gambar */}
                                     <div className="space-y-2">
-                                        <FormLabel>Gambar Produk</FormLabel>
-                                        <MultiImageUploader image={setimage} />
-                                        {/* <FormDescription>
-                                            Unggah gambar produk untuk memberikan gambaran visual kepada pembeli.
-                                        </FormDescription> */}
+                                        <FormField
+                                            control={form.control}
+                                            name="images"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormControl>
+                                                        <ProductImageUpload
+                                                            onChange={field.onChange}
+                                                            value={field.value}
+                                                            error={form.formState.errors.images?.message}
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
                                     </div>
-
-                                    {/* Harga */}
+                                    {/* radio piliha harga */}
                                     <div className="space-y-2">
-                                        <Label>Harga Grosir</Label>
-                                        <div className="flex gap-2">
-                                            {/* Harga Min */}
-                                            <FormField
-                                                control={form.control}
-                                                name="stockMin"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormControl>
-                                                            <Input
-
-                                                                placeholder="Min Jumlah"
-                                                                className="flex-1"
-                                                                {...field}
-                                                                onChange={(e) => {
-                                                                    const value = e.target.value;
-                                                                    if (!isNaN(value)) {
-                                                                        field.onChange(Number(value));
-                                                                    } else {
-                                                                        field.onChange(0);
-                                                                    }
-                                                                }}
-                                                            />
-                                                        </FormControl>
-                                                        <FormDescription>
-                                                            Minimal barang
-                                                        </FormDescription>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                            {/* <span className="flex items-center justify-center text-gray-500">=</span> */}
-                                            {/* Harga Max */}
-                                            <FormField
-                                                control={form.control}
-                                                name="stockMax"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormControl>
-                                                            <Input
-                                                                type="number"
-                                                                placeholder="Max Jumlah"
-                                                                className="flex-1"
-                                                                {...field}
-                                                                onChange={(e) => {
-                                                                    const value = e.target.value;
-                                                                    if (!isNaN(value)) {
-                                                                        field.onChange(Number(value));
-                                                                    } else {
-                                                                        field.onChange(0);
-                                                                    }
-                                                                }}
-                                                            />
-                                                        </FormControl>
-                                                        <FormDescription>
-                                                            Maksimal barang
-                                                        </FormDescription>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                            {/* <span className="flex items-center justify-center text-gray-500">=</span> */}
-                                            {/* Harga Produk */}
-                                            <FormField
-                                                control={form.control}
-                                                name="harga"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormControl>
-                                                            <Input
-
-                                                                placeholder="Harga"
-                                                                className="flex-1"
-                                                                {...field}
-                                                                onChange={(e) => {
-                                                                    const value = e.target.value;
-                                                                    if (!isNaN(value)) {
-                                                                        field.onChange(Number(value));
-                                                                    } else {
-                                                                        field.onChange(0);
-                                                                    }
-                                                                }}
-                                                            />
-                                                        </FormControl>
-                                                        <FormDescription>
-                                                            Harga produk
-                                                        </FormDescription>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                        </div>
-                                        <Button variant="outline" className="mt-2">
-                                            Tambah Harga
-                                        </Button>
+                                        <FormField
+                                            control={form.control}
+                                            name="price_type"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Type Harga </FormLabel>
+                                                    <FormControl>
+                                                        <RadioGroup
+                                                            {...field}
+                                                            value={field.value}
+                                                            onValueChange={field.onChange}
+                                                            className="flex space-x-4"
+                                                        >
+                                                            <div className={`flex-1 ${price_type === "wholesale" ? "border-gray-600" : "border-gray-200 text-gray-500"} border-2 rounded-md overflow-hidden`}>
+                                                                <RadioGroupItem value="wholesale" id="wholesale" className="sr-only" />
+                                                                <Label
+                                                                    htmlFor="wholesale"
+                                                                    className={`flex items-center justify-center w-full h-full py-2 px-4 cursor-pointer ${price_type === "wholesale" ? "" : "bg-white hover:bg-gray-50"
+                                                                        }`}
+                                                                >
+                                                                    Harga Grosir
+                                                                </Label>
+                                                            </div>
+                                                            <div className={`flex-1 ${price_type === "fixed" ? "border-gray-600" : "border-gray-200 text-gray-500"} border-2 rounded-md overflow-hidden`}>
+                                                                <RadioGroupItem value="fixed" id="fixed" className="sr-only" />
+                                                                <Label
+                                                                    htmlFor="fixed"
+                                                                    className={`flex items-center justify-center w-full h-full py-2 px-4 cursor-pointer ${price_type === "fixed" ? "" : "bg-white hover:bg-gray-50"
+                                                                        }`}
+                                                                >
+                                                                    Harga Tetap
+                                                                </Label>
+                                                            </div>
+                                                        </RadioGroup>
+                                                    </FormControl>
+                                                    {/* <FormDescription>
+                                                    Deskripsikan produk Anda secara singkat, seperti fitur, manfaat, atau bahan utama.
+                                                </FormDescription> */}
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
                                     </div>
-                                </form>
-                            </Form>
-                        </div>
-                    </div>
 
+
+                                    {price_type === "wholesale" && (
+                                        <div className="space-y-2">
+                                            {form.watch("wholesalePrices").map((_, index) => (
+                                                <div key={index} className="flex gap-2">
+                                                    {/* min quantity */}
+                                                    <FormField
+                                                        control={form.control}
+                                                        name={`wholesalePrices.${index}.min_quantity`}
+                                                        render={({ field }) => (
+                                                            <FormItem>
+                                                                <FormLabel>Min Quantity</FormLabel>
+                                                                <FormControl>
+                                                                    <Input
+
+                                                                        placeholder="Min Jumlah"
+                                                                        className="flex-1"
+                                                                        {...field}
+                                                                        onChange={(e) => {
+                                                                            const value = e.target.value;
+                                                                            if (!isNaN(value)) {
+                                                                                field.onChange(Number(value));
+                                                                            } else {
+                                                                                field.onChange(0);
+                                                                            }
+                                                                        }}
+                                                                    />
+                                                                </FormControl>
+                                                                <FormMessage />
+                                                            </FormItem>
+                                                        )}
+                                                    />
+
+                                                    {/* max quantity */}
+                                                    <FormField
+                                                        control={form.control}
+                                                        name={`wholesalePrices.${index}.max_quantity`}
+                                                        render={({ field }) => (
+                                                            <FormItem>
+                                                                <FormLabel>Max Quantity</FormLabel>
+                                                                <FormControl>
+                                                                    <Input
+                                                                        type="number"
+                                                                        placeholder="Max Jumlah"
+                                                                        className="flex-1"
+                                                                        {...field}
+                                                                        onChange={(e) => {
+                                                                            const value = e.target.value;
+                                                                            if (!isNaN(value)) {
+                                                                                field.onChange(Number(value));
+                                                                            } else {
+                                                                                field.onChange(0);
+                                                                            }
+                                                                        }}
+                                                                    />
+                                                                </FormControl>
+                                                                <FormMessage />
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                    {/* harga grosir */}
+                                                    <FormField
+                                                        control={form.control}
+                                                        name={`wholesalePrices.${index}.price`}
+                                                        render={({ field }) => (
+                                                            <FormItem>
+                                                                <FormLabel>Harga</FormLabel>
+                                                                <FormControl>
+                                                                    <Input
+
+                                                                        placeholder="Harga"
+                                                                        className="flex-1"
+                                                                        {...field}
+                                                                        onChange={(e) => {
+                                                                            const value = e.target.value;
+                                                                            if (!isNaN(value)) {
+                                                                                field.onChange(Number(value));
+                                                                            } else {
+                                                                                field.onChange(0);
+                                                                            }
+                                                                        }}
+                                                                    />
+                                                                </FormControl>
+                                                                <FormMessage />
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                </div>
+                                            ))}
+                                            <Button type="button" onClick={() => form.setValue("wholesalePrices", [...form.watch("wholesalePrices"), { minQuantity: 1, maxQuantity: 10, harga: 0 }])}>
+                                                Add Wholesale Price
+                                            </Button>
+                                        </div>
+                                    )}
+                                    {/* Harga tetap */}
+                                    {price_type === "fixed" && (
+                                        <FormField
+                                            control={form.control}
+                                            name="price"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Harga</FormLabel>
+                                                    <FormControl>
+                                                        <Input type="number" {...field} placeholder="Harga" />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    )}
+
+
+
+
+
+                                </div>
+                            </div>
+                        </form>
+                    </Form>
                     {/* Kolom Pratinjau Produk card */}
-                    <div className="flex flex-col grow gap-y-10">
+                    <div className="flex flex-col  grow gap-y-10 border">
                         {/* Pratinjau 1 */}
-                        <div className="space-y-6">
+                        {/* <div className="space-y-6">
                             <p className="text-xl font-semibold">Pratinjau Card produk</p>
                             <div className="w-full aspect-w-1 aspect-h-1 bg-gray-100 overflow-hidden flex justify-center items-center">
                                 <AspectRatio ratio={1 / 1}>
@@ -348,11 +424,11 @@ export default function AddProductPage() {
                                 <p className="text-base font-bold text-rose-600">Rp 210,000 - Rp 980,000</p>
                             </div>
                         </div>
-                        <SelectSeparator />
+                        <SelectSeparator /> */}
 
                         {/* Pratinjau 2 */}
                         <div className="space-y-6 grow">
-                            <p className="text-xl font-semibold">Pratinjau Android</p>
+                            <p className="text-xl font-semibold">Pratinjau Produk</p>
                             <div className="flex flex-col gap-y-4">
                                 <div className="w-full aspect-w-1 aspect-h-1 bg-gray-100 overflow-hidden flex justify-center items-center">
                                     <AspectRatio ratio={1 / 1}>
@@ -398,6 +474,6 @@ export default function AddProductPage() {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }
