@@ -125,7 +125,6 @@ function ProductItem({ product, dispatch }) {
                     <Minus className="h-4 w-4" />
                 </Button>
                 <Input
-                    type="number"
                     value={product.quantity} // Menggunakan value langsung dari state
                     onChange={(e) => {
                         const newQuantity = Math.min(

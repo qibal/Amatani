@@ -9,6 +9,7 @@ import Footer from "@/components/customer/Footer";
 
 import { createClient } from "@/lib/supabase/server";
 import { jwtDecode } from "jwt-decode";
+import Image from "next/image";
 
 // Komponen Statistik Reusable
 const Statistics = ({ stats }) => {
@@ -148,7 +149,7 @@ export default async function CustomerPage() {
                                 key={index}
                                 className={`flex items-center justify-center ${index >= 8 ? "hidden md:flex" : ""}`}
                             >
-                                <img
+                                <Image height={300} width={300}
                                     src="/FE/img02.png"
                                     alt={`Icon ${index + 1}`}
                                     className="w-16 h-16 md:w-20 md:h-20 object-contain"
@@ -175,7 +176,7 @@ export default async function CustomerPage() {
                         Fasilitas Distribusi & Packing House
                     </h2>
                     <div className="relative flex justify-center">
-                        <img src="/FE/Map.svg" alt="Map of Indonesia" className="w-full h-auto" />
+                        <Image width={300} height={300} src="/FE/Map.svg" alt="Map of Indonesia" className="w-full h-auto" />
                     </div>
                 </div>
             </section>

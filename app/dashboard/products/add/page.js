@@ -18,6 +18,7 @@ import { z } from "zod";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ProductImageUpload } from "@/components/dashboard/product/ProductImageUpload";
+import Image from "next/image";
 
 // Zod schema validation
 const formSchema = z.object({
@@ -432,7 +433,9 @@ export default function AddProductPage() {
                             <div className="flex flex-col gap-y-4">
                                 <div className="w-full aspect-w-1 aspect-h-1 bg-gray-100 overflow-hidden flex justify-center items-center">
                                     <AspectRatio ratio={1 / 1}>
-                                        <img
+                                        <Image
+                                            width={300}
+                                            height={300}
                                             src={images?.length > 0 ? images[0] : "/FE/img02.png"}
                                             alt="Pratinjau Produk"
                                             className="object-cover w-full h-full"
@@ -444,7 +447,9 @@ export default function AddProductPage() {
                                         {images.slice(1).map((image, index) => (
                                             <div key={index + 1} className="w-24 aspect-w-1 aspect-h-1 bg-gray-100 overflow-hidden flex justify-center items-center">
                                                 <AspectRatio ratio={1 / 1}>
-                                                    <img
+                                                    <Image
+                                                        width={300}
+                                                        height={300}
                                                         src={image}
                                                         alt="Pratinjau Produk"
                                                         className="object-cover w-full h-full"
@@ -456,7 +461,9 @@ export default function AddProductPage() {
                                 ) : (
                                     <div className="w-24 aspect-w-1 aspect-h-1 bg-gray-100 overflow-hidden flex justify-center items-center">
                                         <AspectRatio ratio={1 / 1}>
-                                            <img
+                                            <Image
+                                                width={300}
+                                                height={300}
                                                 src={images?.length > 0 ? images : "/FE/img02.png"}
                                                 alt="Pratinjau Produk"
                                                 className="object-cover w-full h-full"
