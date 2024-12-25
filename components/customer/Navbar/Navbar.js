@@ -2,40 +2,36 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { ShoppingCart, Globe, AlignJustify } from "lucide-react";
+import { ShoppingCart, Globe } from "lucide-react";
 import NavbarSheet from "@/components/customer/Navbar/Sheet";
 import { Button } from "@/components/ui/button";
 import CategoryMenu from "./CategoryMenu";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
-import { usePathname } from 'next/navigation'
+import { usePathname } from 'next/navigation';
 import Image from "next/image";
 
 export default function Navbar() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [scrolled, setScrolled] = useState(false);
     const [isRootPath, setIsRootPath] = useState(false);
-    const pathname = usePathname()
-
-
-
+    const pathname = usePathname();
 
     useEffect(() => {
-        const cekPathnameNavbar = () => {
-            if (pathname === "/") {
-                setIsRootPath(true);
-                const handleScroll = () => {
-                    setScrolled(window.scrollY > window.innerHeight * 0.1);
-                };
-                window.addEventListener("scroll", handleScroll);
-                window.scrollTo(0, 0);
-                return () => window.removeEventListener("scroll", handleScroll);
-            } else {
-                setIsRootPath(false);
-            }
+        const handleScroll = () => {
+            setScrolled(window.scrollY > window.innerHeight * 0.1);
         };
-        cekPathnameNavbar();
-    }, [pathname]);
 
+        // Set isRootPath based on pathname
+        setIsRootPath(pathname === "/");
+
+        // Add scroll event listener
+        window.addEventListener("scroll", handleScroll);
+        window.scrollTo(0, 0);
+
+        return () => {
+            window.removeEventListener("scroll", handleScroll);
+        };
+    }, [pathname]);
 
     // Class untuk teks di navbar
     const textClass = isRootPath && !scrolled ? "text-white" : "text-gray-950";
@@ -53,18 +49,17 @@ export default function Navbar() {
             <div className="container mx-auto flex items-center justify-between py-4">
                 {/* Logo */}
                 <Link href="/">
-                <div className="flex items-center space-x-4">
-                    <Image
-                        src="/FE/IconAmatani.svg"
-                        alt="Logo AMATANI"
-                        width={42}
-                        height={42}
-                        className=""
-                    />
-                    <span className={`font-bold text-lg ${textClass}`}>
-                        AMATANI
-                    </span>
-                </div>
+                    <div className="flex items-center space-x-4">
+                        <Image
+                            src="/FE/IconAmatani.svg"
+                            alt="Logo AMATANI"
+                            width={42}
+                            height={42}
+                        />
+                        <span className={`font-bold text-lg ${textClass}`}>
+                            AMATANI
+                        </span>
+                    </div>
                 </Link>
 
                 {/* Icon dan Button */}
@@ -88,7 +83,7 @@ export default function Navbar() {
                     </HoverCard>
 
                     {/* Shopping Cart */}
-                    <Link href="/products"><ShoppingCart className={`w-5 h-5 cursor-pointer ${textClass}`}/></Link>
+                    <Link href="/products"><ShoppingCart className={`w-5 h-5 cursor-pointer ${textClass}`} /></Link>
 
                     {/* Login and Register Buttons */}
                     <Button
@@ -106,21 +101,23 @@ export default function Navbar() {
                 </div>
             </div>
 
-            {/* Tingkatan 2 */}
-            <div className="hidden md:flex container mx-auto items-center justify-between pb-4 text-sm">
-                <CategoryMenu isRootPath={isRootPath && !scrolled} />
-                <div className="flex items-center space-x-6">
-                    <Link className={`hover:underline ${textClass}`} href="/tentang-kami">
-                        Tentang Kami
-                    </Link>
-                    <Link className={`hover:underline ${textClass}`} href="/pusat-bantuan">
-                        Pusat Bantuan
-                    </Link>
-                    <Link className={`hover:underline ${textClass}`} href="/bekerja-sama">
-                        Bekerja Sama
-                    </Link>
+            {/* Tingkatan 2 - Hanya tampil jika di root path */}
+            {isRootPath && (
+                <div className="hidden md:flex container mx-auto items-center justify-between pb-4 text-sm">
+                    <CategoryMenu isRootPath={isRootPath && !scrolled} />
+                    <div className="flex items-center space-x-6">
+                        <Link className={`hover:underline ${textClass}`} href="/tentang-kami">
+                            Tentang Kami
+                        </Link>
+                        <Link className={`hover:underline ${textClass}`} href="/pusat-bantuan">
+                            Pusat Bantuan
+                        </Link>
+                        <Link className={`hover:underline ${textClass}`} href="/bekerja-sama">
+                            Bekerja Sama
+                        </Link>
+                    </div>
                 </div>
-            </div>
+            )}
         </header>
     );
 }

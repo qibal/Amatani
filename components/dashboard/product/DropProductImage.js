@@ -6,8 +6,7 @@ import { Label } from "@/components/ui/label"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { AlertCircle } from 'lucide-react'
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Progress } from "@/components/ui/progress"
-import Image from 'next/image'
+import { Progress } from '@/components/ui/progress'
 
 const MAX_FILE_SIZE = 4 * 1024 * 1024; // 4MB
 const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
@@ -146,9 +145,7 @@ export function ProductImageUpload({ onChange, value, error }) {
         {value.map((file, index) => (
           <div key={index} className="relative">
             <AspectRatio ratio={1 / 1} className="bg-muted">
-              <Image
-                width={200}
-                height={200}
+              <img
                 src={file.preview}
                 alt={`Preview ${index + 1}`}
                 className="rounded-md object-cover w-full h-full border"
