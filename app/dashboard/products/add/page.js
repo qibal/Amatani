@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectItem, SelectTrigger, SelectContent, SelectSeparator, SelectValue } from "@/components/ui/select";
-import { Upload } from "lucide-react";
+import { Trash, Trash2, Upload } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
@@ -17,7 +17,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { ProductImageUpload } from "@/components/dashboard/product/ProductImageUpload";
+import { ProductImageUpload } from "@/components/dashboard/product/DropProductImage";
 
 // Zod schema validation
 const formSchema = z.object({
@@ -32,7 +32,7 @@ const formSchema = z.object({
         max_quantity: z.number().min(1, { message: "Harus lebih dari 0" }),
         price: z.number().min(1, { message: "harus lebih dari 0" })
     })).optional(),
-    images: z.array(z.any()).min(1, { message: "At least one product image is required" }),
+    images: z.array(z.any()).min(1, { message: "Setidaknya ada 1 gambar produk" }),
 });
 
 export default function AddProductPage() {
@@ -55,12 +55,24 @@ export default function AddProductPage() {
     const price_type = form.watch("price_type");
     console.log('type harga mas', price_type);
 
-    const [v_image, setv_image] = useState(false);
 
     const [images, setimage] = useState([]);
-    const router = useRouter();
 
 
+
+    // Fungsi untuk menambahkan item wholesalePrices
+    const addWholesalePrice = () => {
+        form.setValue("wholesalePrices", [...form.watch("wholesalePrices"), { min_quantity: 0, max_quantity: 0, price: 0 }]);
+    };
+
+    // Fungsi untuk menghapus item wholesalePrices
+    const removeWholesalePrice = (index) => {
+        const wholesalePrices = form.watch("wholesalePrices");
+        if (wholesalePrices.length > 1 && index > 0) {
+            wholesalePrices.splice(index, 1);
+            form.setValue("wholesalePrices", [...wholesalePrices]);
+        }
+    };
 
 
 
@@ -68,7 +80,7 @@ export default function AddProductPage() {
 
     // Fungsi untuk navigasi setelah pengiriman data
     const onSubmit = (data) => {
-        alert('data berhasil di submit')
+        alert('data berhasil di submit', data)
         // Data yang dikirimkan saat submit
         console.log("Data Form Submitted:", data);
         // Anda dapat menambahkan logika untuk menyimpan data atau mengarahkan pengguna ke halaman lain
@@ -234,7 +246,7 @@ export default function AddProductPage() {
                                                             error={form.formState.errors.images?.message}
                                                         />
                                                     </FormControl>
-                                                    <FormMessage />
+                                                    {/* <FormMessage className="-pt-1" /> */}
                                                 </FormItem>
                                             )}
                                         />
@@ -289,8 +301,8 @@ export default function AddProductPage() {
                                     {price_type === "wholesale" && (
                                         <div className="space-y-2">
                                             {form.watch("wholesalePrices").map((_, index) => (
-                                                <div key={index} className="flex gap-2">
-                                                    {/* min quantity */}
+                                                <div key={index} className="flex gap-2 items-end">
+                                                    {/* Min Quantity */}
                                                     <FormField
                                                         control={form.control}
                                                         name={`wholesalePrices.${index}.min_quantity`}
@@ -299,7 +311,6 @@ export default function AddProductPage() {
                                                                 <FormLabel>Min Quantity</FormLabel>
                                                                 <FormControl>
                                                                     <Input
-
                                                                         placeholder="Min Jumlah"
                                                                         className="flex-1"
                                                                         {...field}
@@ -318,7 +329,7 @@ export default function AddProductPage() {
                                                         )}
                                                     />
 
-                                                    {/* max quantity */}
+                                                    {/* Max Quantity */}
                                                     <FormField
                                                         control={form.control}
                                                         name={`wholesalePrices.${index}.max_quantity`}
@@ -345,7 +356,8 @@ export default function AddProductPage() {
                                                             </FormItem>
                                                         )}
                                                     />
-                                                    {/* harga grosir */}
+
+                                                    {/* Harga Grosir */}
                                                     <FormField
                                                         control={form.control}
                                                         name={`wholesalePrices.${index}.price`}
@@ -354,7 +366,6 @@ export default function AddProductPage() {
                                                                 <FormLabel>Harga</FormLabel>
                                                                 <FormControl>
                                                                     <Input
-
                                                                         placeholder="Harga"
                                                                         className="flex-1"
                                                                         {...field}
@@ -372,10 +383,17 @@ export default function AddProductPage() {
                                                             </FormItem>
                                                         )}
                                                     />
+
+                                                    {/* Tombol Hapus */}
+                                                    {form.watch("wholesalePrices").length > 1 && index > 0 && (
+                                                        <Button type="button" className="bg-white border px-3 hover:bg-gray-100" onClick={() => removeWholesalePrice(index)}>
+                                                            <Trash2 className="text-gray-900" />
+                                                        </Button>
+                                                    )}
                                                 </div>
                                             ))}
-                                            <Button type="button" onClick={() => form.setValue("wholesalePrices", [...form.watch("wholesalePrices"), { minQuantity: 1, maxQuantity: 10, harga: 0 }])}>
-                                                Add Wholesale Price
+                                            <Button type="button" onClick={addWholesalePrice}>
+                                                Tambah Variant Harga Grosir
                                             </Button>
                                         </div>
                                     )}

@@ -7,7 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Trash2, Minus, Plus } from "lucide-react";
 import Link from "next/link";
 
-// Initial state
+//  data dummy belum sesuai dengan table database
 const initialState = {
     products: [
         {

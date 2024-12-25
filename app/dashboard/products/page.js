@@ -77,6 +77,8 @@ const ManageCategoriesDialog = () => {
     const [categories, setCategories] = useState(["Buah Buahan", "Sayuran"]);
     const [error, setError] = useState("");
 
+
+
     const form = useForm({
         defaultValues: {
             categoryName: "",
