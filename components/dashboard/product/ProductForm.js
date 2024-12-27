@@ -12,6 +12,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ProductImageUpload } from "@/components/dashboard/product/DropProductImage";
 import Image from "next/image";
 import { Trash2 } from 'lucide-react';
+import { GetCategoriesAction } from '@/app/api/server_actions/dashboard/products/categories/CategoriesActions';
 
 // Zod schema validation
 const formSchema = z.object({
@@ -59,6 +60,20 @@ const ProductForm = ({ mode, product, onSubmit }) => {
             form.reset(formattedProduct);
         }
     }, [mode, product, form]);
+    useEffect(() => {
+        async function GetData() {
+            try {
+                const data = await fetch('http://localhost:3000/api/dashboard/products/categories');
+                const data2 = await data.json()
+                console.log(data2);
+            } catch (error) {
+                console.error("Failed to fetch categories:", error);
+            }
+        }
+
+        GetData();
+    }, []);
+
 
     const price_type = form.watch("price_type");
 

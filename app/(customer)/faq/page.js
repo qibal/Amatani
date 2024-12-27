@@ -2,22 +2,12 @@
 
 import React, { useEffect, useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
-import supabase from '@/lib/supabase';
+
 
 export default function Faq() {
 
     const [faqData, setfaqdata] = useState([]);
 
-    useEffect(() => {
-        async function fetchPosts() {
-            let { data: faq, error } = await supabase
-                .from('faq')
-                .select('*')
-            setfaqdata(faq)
-            console.log(faq)
-        }
-        fetchPosts()
-    }, [])
 
     return (
         <div className="max-w-2xl mx-auto p-4">

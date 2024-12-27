@@ -1,3 +1,5 @@
+'use server'
+
 import sql from "@/lib/postgres";
 
 
