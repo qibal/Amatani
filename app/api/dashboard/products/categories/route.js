@@ -1,4 +1,3 @@
-import { GetCategories } from "@/app/api/server_actions/dashboard/products/categories/CategoriesActions";
 
 
 // http://localhost:3000/api/dashboard/products/categories
@@ -8,10 +7,13 @@ import { GetCategories } from "@/app/api/server_actions/dashboard/products/categ
 //       "categories_name": "sayuran",
 //       "created_at": "2024-12-25T06:47:25.643Z"
 //     }
+
+import { GetCategoriesAction } from "@/app/api/server_actions/dashboard/products/categories/CategoriesActions"
+
 //   ]
 export async function GET() {
     try {
-        const data = await GetCategories()
+        const data = await GetCategoriesAction()
         if (data) {
             return new Response(JSON.stringify(data), {
                 status: 200,

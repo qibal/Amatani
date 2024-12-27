@@ -7,8 +7,7 @@ import HomeTestimoni from "@/components/customer/HomeTestimoni";
 import Footer from "@/components/customer/Footer";
 
 
-import { createClient } from "@/lib/supabase/server";
-import { jwtDecode } from "jwt-decode";
+
 import Image from "next/image";
 
 // Komponen Statistik Reusable

@@ -6,7 +6,7 @@ import { AlertCircle, ChevronDown, Filter, Search, X } from "lucide-react"; // I
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import React, { useEffect, useState } from 'react'
-import supabase from '@/lib/supabase';
+
 import Image from "next/image";
 
 export default function Product() {
@@ -14,19 +14,19 @@ export default function Product() {
     const [productsData, setProductsdata] = useState([]);
 
     useEffect(() => {
-        async function fetchProducts() {
-            let { data: productsData, error } = await supabase
-                .from('products_2')
-                .select('*');
+        // async function fetchProducts() {
+        //     let { data: productsData, error } = await supabase
+        //         .from('products_2')
+        //         .select('*');
 
-            if (error) {
-                console.error("Kesalahan dalam Prodes:", error);
-            } else {
-                setProductsdata(productsData);
-                console.log(productsData);
-            }
-        }
-        fetchProducts();
+        //     if (error) {
+        //         console.error("Kesalahan dalam Prodes:", error);
+        //     } else {
+        //         setProductsdata(productsData);
+        //         console.log(productsData);
+        //     }
+        // }
+        // fetchProducts();
     }, []);
 
     return (

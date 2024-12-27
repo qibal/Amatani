@@ -1,6 +1,6 @@
 "use client";
 
-import { GetProducts } from "@/app/api/customer/products/Aproducts";
+
 import { useEffect, useState } from "react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
@@ -12,16 +12,16 @@ export default function HomeBuah() {
     const [products, setProducts] = useState([]);
 
     useEffect(() => {
-        async function fetchProducts() {
-            try {
-                const data = await GetProducts();
-                setProducts(data || []);
-            } catch (error) {
-                console.error("Error fetching products:", error);
-            }
-        }
+        // async function fetchProducts() {
+        //     try {
+        //         const data = await GetProducts();
+        //         setProducts(data || []);
+        //     } catch (error) {
+        //         console.error("Error fetching products:", error);
+        //     }
+        // }
 
-        fetchProducts();
+        // fetchProducts();
     }, []);
 
     return (

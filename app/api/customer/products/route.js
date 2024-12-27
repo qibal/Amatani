@@ -1,13 +1,13 @@
+import { GetProductActionCustomers } from "../../server_actions/customer/products/ProductActions";
 
 
 
 
-import { GetProductAction } from "../../server_actions/dashboard/products/ProductsActions"
 
 //   ]
 export async function GET() {
     try {
-        const data = await GetProductAction();
+        const data = await GetProductActionCustomers();
         if (data) {
             return new Response(JSON.stringify(data), {
                 status: 200,

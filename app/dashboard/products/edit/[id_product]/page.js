@@ -1,17 +1,31 @@
 "use client";
 
-import ProductForm from "@/components/dashboard/product/ProductForm";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { Separator } from "@/components/ui/separator";
+import { useRouter, useParams } from "next/navigation";
+import { useEffect, useState } from "react";
+
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { useRouter } from "next/navigation";
+import { Separator } from "@/components/ui/separator";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import ProductForm from "@/components/dashboard/product/ProductForm";
 
-export default function AddProductPage() {
+export default function EditProductPage() {
     const router = useRouter();
+    const { productId } = useParams();
+    const [product, setProduct] = useState(null);
 
-    const handleAddProduct = async (productData) => {
-        // Logic to add product
-        console.log('Adding product:', productData);
+    useEffect(() => {
+        // Fetch product data by productId
+        const fetchProduct = async () => {
+            const response = await fetch(`/api/products/${productId}`);
+            const data = await response.json();
+            setProduct(data);
+        };
+        fetchProduct();
+    }, [productId]);
+
+    const handleEditProduct = async (productData) => {
+        // Logic to edit product
+        console.log('Editing product:', productData);
         // Redirect or show success message
         router.push('/dashboard/products');
     };
@@ -37,7 +51,11 @@ export default function AddProductPage() {
             </header>
             <div className="mx-auto px-12 py-6">
                 <div className="lg:flex justify-between sm:gap-x-12 xl:gap-x-20">
-                    <ProductForm mode="add" onSubmit={handleAddProduct} />
+                    {product ? (
+                        <ProductForm mode="edit" product={product} onSubmit={handleEditProduct} />
+                    ) : (
+                        <p>Loading...</p>
+                    )}
                 </div>
             </div>
         </div>

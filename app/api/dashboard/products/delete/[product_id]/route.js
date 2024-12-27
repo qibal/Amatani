@@ -1,13 +1,10 @@
-
-
-
-
-import { GetProductAction } from "../../server_actions/dashboard/products/ProductsActions"
+import { DeleteProductAction } from "@/app/api/server_actions/dashboard/products/ProductsActions";
 
 //   ]
-export async function GET() {
+export async function DELETE(req, { params }) {
+    const product_id = await params.product_id
     try {
-        const data = await GetProductAction();
+        const data = await DeleteProductAction(product_id);
         if (data) {
             return new Response(JSON.stringify(data), {
                 status: 200,

@@ -1,5 +1,5 @@
 
-import { login, signup } from '@/app/api/customer/Auth';
+import { login, signup } from '@/app/api/server_actions/customer/Auth';
 import OauthLoginButton from '@/components/auth/masuk/OauthLogin';
 import { Button } from '@/components/ui/button';
 

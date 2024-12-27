@@ -2,7 +2,7 @@
 'use client'
 
 
-import { signInWithGoogle } from "@/app/api/customer/Auth";
+import { signInWithGoogle } from "@/app/api/server_actions/customer/Auth";
 import { Button } from "@/components/ui/button";
 
 
