@@ -1,10 +1,6 @@
-
-
-
-
 import { GetProductAction } from "../../server_actions/dashboard/products/ProductsActions"
 
-//   ]
+
 export async function GET() {
     try {
         const data = await GetProductAction();

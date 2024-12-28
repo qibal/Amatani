@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -29,8 +29,7 @@ const formSchema = z.object({
     })).optional(),
     images: z.array(z.any()).min(1, { message: "Setidaknya ada 1 gambar produk" }),
 });
-
-const ProductForm = ({ mode, product, onSubmit }) => {
+export default function ProductForm({ mode, product, onSubmit }) {
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -60,20 +59,21 @@ const ProductForm = ({ mode, product, onSubmit }) => {
             form.reset(formattedProduct);
         }
     }, [mode, product, form]);
+
+    const [categories, setCategories] = useState([]);
+
     useEffect(() => {
         async function GetData() {
             try {
-                const data = await fetch('http://localhost:3000/api/dashboard/products/categories');
-                const data2 = await data.json()
-                console.log(data2);
+                const response = await fetch('http://localhost:3000/api/dashboard/products/categories');
+                const data = await response.json();
+                setCategories(data); // Simpan data kategori ke dalam state
             } catch (error) {
                 console.error("Failed to fetch categories:", error);
             }
         }
-
         GetData();
     }, []);
-
 
     const price_type = form.watch("price_type");
 
@@ -132,9 +132,11 @@ const ProductForm = ({ mode, product, onSubmit }) => {
                                                 <SelectValue placeholder="Pilih Kategori" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="buah">Buah</SelectItem>
-                                                <SelectItem value="sayur">Sayur</SelectItem>
-                                                <SelectItem value="minuman">Minuman</SelectItem>
+                                                {categories.map(category => (
+                                                    <SelectItem key={category.categories_id} value={category.categories_name}>
+                                                        {category.categories_name}
+                                                    </SelectItem>
+                                                ))}
                                             </SelectContent>
                                         </Select>
                                     </FormControl>
@@ -355,5 +357,3 @@ const ProductForm = ({ mode, product, onSubmit }) => {
         </Form>
     );
 };
-
-export default ProductForm;
