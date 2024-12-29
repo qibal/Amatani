@@ -1,17 +1,18 @@
-import { DeleteProductAction } from "@/app/api/server_actions/dashboard/products/ProductsActions";
+import { InsertProductAction } from "@/app/api/server_actions/dashboard/products/ProductsActions";
 
-//   ]
-export async function DELETE(req, { params }) {
-    // const product_id = await params.product_id
+
+export async function POST(req, { params }) {
+
+
     try {
-        const data = await DeleteProductAction(params);
+        const data = await InsertProductAction(req)
         if (data) {
             return new Response(JSON.stringify(data), {
                 status: 200,
                 headers: {
                     "Content-Type": "application/json"
                 }
-            });
+            })
         } else {
             return new Response(JSON.stringify({ message: "No data found" }), {
                 status: 404,
@@ -28,4 +29,6 @@ export async function DELETE(req, { params }) {
             }
         });
     }
+
+
 }

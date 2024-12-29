@@ -55,8 +55,8 @@ export async function middleware(request) {
     if (url.pathname.startsWith('/dashboard')) {
         console.log('masuk halamanan dashboard');
         if (user.user == null) {
-            console.log('user belum login, tidak boleh masuk, arahkan ke /login');
-            url.pathname = '/login';
+            console.log('user belum login, tidak boleh masuk, arahkan ke /');
+            url.pathname = '/';
             return NextResponse.redirect(url);
         } else if (user.user != null) {
             console.log('user sudah login');

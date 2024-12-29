@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Input } from "@/components/ui/input";
@@ -17,50 +17,84 @@ import { GetCategoriesAction } from '@/app/api/server_actions/dashboard/products
 // Zod schema validation
 const formSchema = z.object({
     products_name: z.string().min(1, { message: "Tidak boleh kosong" }),
-    categories_name: z.string().min(1, { message: "Kategori produk harus dipilih" }),
+    // categories_name: z.string().min(1, { message: "Kategori produk harus dipilih" }),
+    category: z.object({
+        categories_id: z.string().min(1, { message: "Kategori produk harus dipilih" }),
+        categories_name: z.string().min(1, { message: "Kategori produk harus dipilih" }),
+    }),
     stock: z.number().min(1, { message: "Harus lebih dari 0" }),
-    produts_description: z.string().min(1, { message: "Tidak boleh kosong" }),
+    products_description: z.string().min(1, { message: "Tidak boleh kosong" }),
     price_type: z.enum(["fixed", "wholesale"]),
-    price: z.number().optional(),
+    fixed_price: z.number().optional(),
     wholesalePrices: z.array(z.object({
         min_quantity: z.number().min(1, { message: "Harus lebih dari 0" }),
         max_quantity: z.number().min(1, { message: "Harus lebih dari 0" }),
         price: z.number().min(1, { message: "harus lebih dari 0" })
     })).optional(),
-    images: z.array(z.any()).min(1, { message: "Setidaknya ada 1 gambar produk" }),
+    product_images: z.array(z.any()).min(1, { message: "Setidaknya ada 1 gambar produk" }),
+}).superRefine((data, ctx) => {
+    if (data.price_type === 'fixed') {
+        if (data.fixed_price === undefined || data.fixed_price <= 0) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: "Harga tetap harus diisi dan lebih besar dari 0",
+                path: ["fixed_price"],
+            });
+        }
+    } else if (data.price_type === 'wholesale') {
+        if (!data.wholesalePrices || data.wholesalePrices.length === 0) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: "Harga grosir harus diisi",
+                path: ["wholesalePrices"],
+            });
+        }
+    }
 });
+
 export default function ProductForm({ mode, product, onSubmit }) {
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
             products_name: "",
-            categories_name: "",
+            // categories_name: "",
+            category: {
+                categories_id: "",
+                categories_name: "",
+            },
             stock: 0,
-            produts_description: "",
+            products_description: "",
             price_type: "wholesale",
-            price: 0,
+            fixed_price: 0,
             wholesalePrices: [{ min_quantity: 0, max_quantity: 0, price: 0 }],
-            images: [],
+            product_images: [],
         },
+    });
+
+    const price_type = useWatch({
+        control: form.control,
+        name: "price_type",
     });
 
     useEffect(() => {
         if (mode === 'edit' && product) {
             const formattedProduct = {
                 products_name: product.products_name,
-                categories_name: product.categories_name,
+                // categories_name: product.categories_name,
+                category: {
+                    categories_id: product.categories_id,
+                    categories_name: product.categories_name,
+                },
                 stock: product.stock,
-                produts_description: product.produts_description,
+                products_description: product.products_description,
                 price_type: product.price_type,
-                price: product.price_type === 'fixed' ? product.fixed_price : 0,
+                fixed_price: product.price_type === 'fixed' ? product.fixed_price : 0,
                 wholesalePrices: product.price_type === 'wholesale' ? product.wholesale_prices : [{ min_quantity: 0, max_quantity: 0, price: 0 }],
-                images: product.images,
+                product_images: product.product_images,
             };
             form.reset(formattedProduct);
         }
     }, [mode, product, form]);
-
-    const [categories, setCategories] = useState([]);
 
     useEffect(() => {
         async function GetData() {
@@ -75,7 +109,18 @@ export default function ProductForm({ mode, product, onSubmit }) {
         GetData();
     }, []);
 
-    const price_type = form.watch("price_type");
+    // reset form values and clear errors when price type changes
+    useEffect(() => {
+        if (price_type === 'fixed') {
+            form.setValue("wholesalePrices", []);
+            form.clearErrors("wholesalePrices"); // Clear errors for wholesalePrices
+        } else if (price_type === 'wholesale') {
+            form.setValue("fixed_price", 0);
+            form.clearErrors("fixed_price"); // Clear errors for fixed_price
+        }
+    }, [price_type, form]);
+
+    const [categories, setCategories] = useState([]);
 
     const addWholesalePrice = () => {
         form.setValue("wholesalePrices", [...form.watch("wholesalePrices"), { min_quantity: 0, max_quantity: 0, price: 0 }]);
@@ -122,18 +167,24 @@ export default function ProductForm({ mode, product, onSubmit }) {
                         />
                         <FormField
                             control={form.control}
-                            name="categories_name"
+                            name="category"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Kategori Produk</FormLabel>
                                     <FormControl>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <Select
+                                            onValueChange={(value) => {
+                                                const selectedCategory = categories.find(category => category.categories_id === value);
+                                                field.onChange(selectedCategory ? { categories_id: selectedCategory.categories_id, categories_name: selectedCategory.categories_name } : { categories_id: "", categories_name: "" });
+                                            }}
+                                            value={field.value.categories_id}
+                                        >
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Pilih Kategori" />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 {categories.map(category => (
-                                                    <SelectItem key={category.categories_id} value={category.categories_name}>
+                                                    <SelectItem key={category.categories_id} value={category.categories_id}>
                                                         {category.categories_name}
                                                     </SelectItem>
                                                 ))}
@@ -144,6 +195,7 @@ export default function ProductForm({ mode, product, onSubmit }) {
                                 </FormItem>
                             )}
                         />
+
                         <FormField
                             control={form.control}
                             name="stock"
@@ -171,7 +223,7 @@ export default function ProductForm({ mode, product, onSubmit }) {
                         />
                         <FormField
                             control={form.control}
-                            name="produts_description"
+                            name="products_description"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Deskripsi Produk</FormLabel>
@@ -192,14 +244,14 @@ export default function ProductForm({ mode, product, onSubmit }) {
                         />
                         <FormField
                             control={form.control}
-                            name="images"
+                            name="product_images"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormControl>
                                         <ProductImageUpload
                                             onChange={field.onChange}
                                             value={field.value}
-                                            error={form.formState.errors.images?.message}
+                                            error={form.formState.errors.product_images?.message}
                                         />
                                     </FormControl>
                                 </FormItem>
@@ -246,6 +298,9 @@ export default function ProductForm({ mode, product, onSubmit }) {
                         />
                         {price_type === "wholesale" && (
                             <div className="space-y-2">
+                                {form.watch("wholesalePrices").length === 0 && (
+                                    <p className="text-gray-400">Minimal ada 1 variant harga</p>
+                                )}
                                 {form.watch("wholesalePrices").map((_, index) => (
                                     <div key={index} className="flex gap-2 items-end">
                                         <FormField
@@ -281,7 +336,6 @@ export default function ProductForm({ mode, product, onSubmit }) {
                                                     <FormLabel>Max Quantity</FormLabel>
                                                     <FormControl>
                                                         <Input
-                                                            type="number"
                                                             placeholder="Max Jumlah"
                                                             className="flex-1"
                                                             {...field}
@@ -331,20 +385,32 @@ export default function ProductForm({ mode, product, onSubmit }) {
                                         )}
                                     </div>
                                 ))}
-                                <Button type="button" onClick={addWholesalePrice}>
-                                    Tambah Variant Harga Grosir
-                                </Button>
+                                {form.watch("wholesalePrices").length < 3 && (
+                                    <Button type="button" onClick={addWholesalePrice}>
+                                        Tambah Variant Harga Grosir
+                                    </Button>
+                                )}
                             </div>
                         )}
                         {price_type === "fixed" && (
                             <FormField
                                 control={form.control}
-                                name="price"
+                                name="fixed_price"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Harga</FormLabel>
                                         <FormControl>
-                                            <Input type="number" {...field} placeholder="Harga" />
+                                            <Input
+                                                {...field}
+                                                placeholder="Harga"
+                                                onChange={(e) => {
+                                                    const value = e.target.value;
+                                                    if (!isNaN(value)) {
+                                                        field.onChange(Number(value));
+                                                    } else {
+                                                        field.onChange(0);
+                                                    }
+                                                }} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>

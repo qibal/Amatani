@@ -13,9 +13,21 @@ export async function GetCategoriesAction(params) {
     }
 }
 
-//query untuk HAPUS  produk
+// http://localhost:3000/api/dashboard/products/categories/delete/(id_categories)
 export async function DeleteCategoriesAction(params) {
-    const result = await sql`delete from caategories where categories_id = ${params} returning *`
+    // const result = `berhasil hapus categories${params}`
+
+    const result = await sql`delete from categories where categories_id = ${params} returning *`
     // Mengembalikan hasil query
     return result;
+}
+
+
+// http://localhost:3000/api/dashboard/products/categories/insert
+// form = categories_name: sayuran
+export async function InsertCategoriesAction(params) {
+    console.log(params)
+    // const result = params
+    const result = await sql`insert into categories (categories_name) values(${params}) returning *`
+    return result
 }

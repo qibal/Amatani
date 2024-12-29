@@ -9,43 +9,63 @@ import { AlertCircle } from "lucide-react"; // Ikon untuk fallback
 import Image from "next/image";
 
 export default function HomeBuah() {
-    const [products, setProducts] = useState([]);
+    const [categories, setCategories] = useState([]);
 
     useEffect(() => {
-        // async function fetchProducts() {
-        //     try {
-        //         const data = await GetProducts();
-        //         setProducts(data || []);
-        //     } catch (error) {
-        //         console.error("Error fetching products:", error);
-        //     }
-        // }
+        async function fetchProducts() {
+            try {
+                const result = await fetch('/api/customer/home/home_buah');
+                const data = await result.json();
+                setCategories(data); // Simpan data kategori di state
+            } catch (error) {
+                console.error("Error fetching products:", error);
+            }
+        }
 
-        // fetchProducts();
+        fetchProducts();
     }, []);
 
     return (
         <section className="py-8 px-8 bg-white">
             <div className="container mx-auto">
                 {/* Judul */}
-                <h2 className="text-2xl font-semibold mb-6 text-gray-800">Buah Buahan</h2>
+                {/* <h2 className="text-2xl font-semibold mb-6 text-gray-800">Buah-Buahan</h2> */}
 
                 {/* Scrollable Area */}
                 <ScrollArea className="pb-4">
-                    <div className="flex gap-4">
-                        {products.length > 0 ? (
-                            products.map((product) => (
-                                <ProductCard
-                                    key={product.product_id}
-                                    imageSrc={product.product_images?.[0]?.image_url || "/placeholder-image.png"}
-                                    name={product.product_name || "Nama tidak tersedia"}
-                                    category="Buah-buahan"
-                                    priceRange="Rp 210,000 - Rp 980,000"
-                                />
-                            ))
-                        ) : (
-                            <NoProduct />
-                        )}
+                    <div className="flex flex-col">
+                        {categories.map((category, index) => (
+                            <div
+                                key={category.categories_id}
+                                className={index > 0 ? "gap-y-4" : "gap-y-0"} // Atur jarak berdasarkan indeks
+                            >
+                                {/* Nama Kategori */}
+                                {category.products && category.products.length > 0 && (
+                                    <h2 className="text-2xl font-semibold mb-6 text-gray-800">
+                                        {category.categories_name}
+                                    </h2>
+                                )}
+
+                                {/* Produk dalam kategori */}
+                                {category.products && category.products.length > 0 ? (
+                                    <div className="flex gap-4">
+                                        {category.products.map((product) => (
+                                            <ProductCard
+                                                key={product.product_id}
+                                                imageSrc={product.images?.[0] || "/placeholder-image.png"}
+                                                name={product.products_name || "Nama tidak tersedia"}
+                                                category={category.categories_name}
+                                                priceRange={
+                                                    product.wholesale_prices?.length > 0
+                                                        ? `Rp ${product.wholesale_prices[0].price.toLocaleString()}`
+                                                        : "Harga tidak tersedia"
+                                                }
+                                            />
+                                        ))}
+                                    </div>
+                                ) : null}
+                            </div>
+                        ))}
                     </div>
                     <ScrollBar orientation="horizontal" />
                 </ScrollArea>
@@ -61,8 +81,10 @@ function ProductCard({ imageSrc, name, category, priceRange }) {
                 {/* Komponen Aspect Ratio dari ShadCN */}
                 <AspectRatio ratio={1}>
                     <Image
-                        src={imageSrc}
+                        src={`https://xmlmcdfzbwjljhaebzna.supabase.co/storage/v1/object/public/${imageSrc}`}
                         alt={name}
+                        width={300}
+                        height={300}
                         className="object-cover w-full h-full"
                     />
                 </AspectRatio>

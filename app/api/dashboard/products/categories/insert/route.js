@@ -1,17 +1,22 @@
-import { DeleteProductAction } from "@/app/api/server_actions/dashboard/products/ProductsActions";
+import { InsertCategoriesAction } from "@/app/api/server_actions/dashboard/products/categories/CategoriesActions"
 
-//   ]
-export async function DELETE(req, { params }) {
-    // const product_id = await params.product_id
+
+
+export async function POST(req, { params }) {
+
+    const formData = await req.formData()
+    const category_name = formData.get('category_name')
+    console.log('data=', category_name);
+
     try {
-        const data = await DeleteProductAction(params);
+        const data = await InsertCategoriesAction(category_name)
         if (data) {
             return new Response(JSON.stringify(data), {
                 status: 200,
                 headers: {
                     "Content-Type": "application/json"
                 }
-            });
+            })
         } else {
             return new Response(JSON.stringify({ message: "No data found" }), {
                 status: 404,
@@ -28,4 +33,6 @@ export async function DELETE(req, { params }) {
             }
         });
     }
+
+
 }

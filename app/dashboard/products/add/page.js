@@ -5,16 +5,37 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbP
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function AddProductPage() {
     const router = useRouter();
 
-    const handleAddProduct = async (productData) => {
-        // Logic to add product
-        console.log('Adding product:', productData);
-        // Redirect or show success message
-        router.push('/dashboard/products');
+    const handleAddProduct = async (params) => {
+        console.log('Adding product:', params);
+
+        const formData = new FormData();
+        formData.append('products_name', params.products_name);
+        formData.append('products_description', params.products_description);
+        formData.append('stock', params.stock);
+        formData.append('fixed_price', params.fixed_price);
+        formData.append('price_type', params.price_type);
+        formData.append('category', JSON.stringify(params.category));
+        formData.append('wholesalePrices', JSON.stringify(params.wholesalePrices));
+
+        params.product_images.forEach((image, index) => {
+            formData.append(`product_images`, image);
+        });
+
+        const result = await fetch('/api/dashboard/products/insert', {
+            method: 'POST',
+            body: formData
+        });
+
+        const data = await result.json();
+        console.log('result =', data);
+        console.log('berhasil di upload');
     };
+
 
     return (
         <div>

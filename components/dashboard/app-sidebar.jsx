@@ -49,12 +49,15 @@ import {
 import { Calendar, Home, Inbox, Search, Settings } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { Button } from "../ui/button"
+import { Logout } from "@/app/api/server_actions/Auth"
 
 export function AppSidebar({
   ...props
 }) {
   const pathname = usePathname();
+  const router = useRouter()
 
   return (
     <Sidebar variant="inset" collapsible="icon">
@@ -116,7 +119,7 @@ export function AppSidebar({
                 </SidebarMenuButton>
                 <SidebarMenuBadge>24</SidebarMenuBadge>
               </SidebarMenuItem>
-            </SidebarMenu>  
+            </SidebarMenu>
           </SidebarGroupContent>
           <SidebarGroupContent>
             {/* Home */}
@@ -258,31 +261,12 @@ export function AppSidebar({
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuGroup>
-                  <DropdownMenuItem>
-                    <Sparkles />
-                    Upgrade to Pro
-                  </DropdownMenuItem>
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator />
-                <DropdownMenuGroup>
-                  <DropdownMenuItem>
-                    <BadgeCheck />
-                    Account
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <CreditCard />
-                    Billing
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Bell />
-                    Notifications
-                  </DropdownMenuItem>
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator />
                 <DropdownMenuItem>
-                  <LogOut />
-                  Log out
+                  {/* logout */}
+                  <Button variant='link' onClick={() => { Logout(); router.refresh(); }} className="w-full">
+                    <LogOut />
+                    Log out
+                  </Button>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

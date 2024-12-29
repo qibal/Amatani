@@ -1,10 +1,9 @@
-import { DeleteProductAction } from "@/app/api/server_actions/dashboard/products/ProductsActions";
+import { DeleteCategoriesAction } from "@/app/api/server_actions/dashboard/products/categories/CategoriesActions";
 
-//   ]
 export async function DELETE(req, { params }) {
-    // const product_id = await params.product_id
+    const categories_id = await params.categories_id
     try {
-        const data = await DeleteProductAction(params);
+        const data = await DeleteCategoriesAction(categories_id);
         if (data) {
             return new Response(JSON.stringify(data), {
                 status: 200,

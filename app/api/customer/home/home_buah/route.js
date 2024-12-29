@@ -1,10 +1,9 @@
-import { DeleteProductAction } from "@/app/api/server_actions/dashboard/products/ProductsActions";
+import { GetProductHomeActionCustomers } from "@/app/api/server_actions/customer/HomeBuahActions";
 
-//   ]
-export async function DELETE(req, { params }) {
+export async function GET(req, { params }) {
     // const product_id = await params.product_id
     try {
-        const data = await DeleteProductAction(params);
+        const data = await GetProductHomeActionCustomers();
         if (data) {
             return new Response(JSON.stringify(data), {
                 status: 200,

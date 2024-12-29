@@ -12,6 +12,7 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbP
 import { useForm } from "react-hook-form"; // Pastikan ini diimpor
 import { Form, FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from "@/components/ui/form";
 import Image from "next/image";
+import ManageCategoriesDialog from "@/components/dashboard/product/CategoryDialog";
 
 // Komponen Reusable untuk Rentang Harga
 const PriceRange = ({ label, price }) => (
@@ -22,29 +23,48 @@ const PriceRange = ({ label, price }) => (
 );
 
 // Komponen Reusable untuk Tombol Tindakan
-const ActionButtons = () => (
-    <div className="flex space-x-3">
-        <Button variant="outline" className="flex items-center justify-center px-3 py-2 sm:px-4 sm:py-2 rounded-md">
-            <Edit className="w-4 h-4 mr-2" />
-            Edit
-        </Button>
-        <Button variant="outline" className="flex items-center justify-center w-9 h-9 rounded-md">
-            <Trash className="w-5 h-5" />
-        </Button>
-    </div>
-);
+const ActionButtons = (product_id) => {
+
+    async function HandleDelete(params) {
+        // console.log(params);
+        try {
+            const response = await fetch(`/api/dashboard/products/delete/${params.product_id}`, {
+                method: 'DELETE',
+            });
+            const data = await response.json();
+            if (data) {
+                console.log('data =', data);
+                console.log("berhasil delte");
+            }
+        } catch (error) {
+            console.error("Failed to fetch products:", error);
+        }
+    }
+
+    return (
+        <div className="flex space-x-3">
+            <Button variant="outline" className="flex items-center justify-center px-3 py-2 sm:px-4 sm:py-2 rounded-md">
+                <Edit className="w-4 h-4 mr-2" />
+                Edit
+            </Button>
+            <Button onClick={() => HandleDelete(product_id)} variant="outline" className="flex items-center justify-center w-9 h-9 rounded-md">
+                <Trash className="w-5 h-5" />
+            </Button>
+        </div>
+    )
+}
 
 // Komponen Reusable untuk Card Produk
 const ProductCard = ({ product }) => {
     // Menentukan harga berdasarkan price_type
     let priceRanges;
 
-    if (product.status === 'wholesale' && product.wholesale_prices) {
+    if (product.price_type === 'wholesale' && product.wholesale_prices) {
         // Jika price_type adalah wholesale, buat rentang harga dari wholesale_prices
         priceRanges = product.wholesale_prices.map((price, index) => (
             <PriceRange key={index} label={`${price.min_quantity} - ${price.max_quantity}`} price={`Rp ${price.price}`} />
         ));
-    } else if (product.status === 'fixed') {
+    } else if (product.price_type === 'fixed') {
         // Jika price_type adalah fixed, tampilkan harga tetap
         priceRanges = (
             <PriceRange label="Harga Tetap" price={`Rp ${product.fixed_price}`} />
@@ -59,7 +79,7 @@ const ProductCard = ({ product }) => {
                     width={200}
                     height={200}
                     src={`https://xmlmcdfzbwjljhaebzna.supabase.co/storage/v1/object/public/${product.images[0]}`} // Gabungkan URL dasar dengan path gambar
-                    alt={product.name}
+                    alt={product.products_name}
                     className="object-cover w-full h-full rounded-lg"
                 />
             </div>
@@ -68,13 +88,13 @@ const ProductCard = ({ product }) => {
             <div className="flex-1 space-y-2">
                 <div className="flex flex-wrap gap-2">
                     <Badge className="text-red-400 bg-red-100 hover:bg-rose-200 hover:text-red-600">
-                        {product.status}
+                        {product.price_type}
                     </Badge>
                     <Badge className="text-red-400 bg-red-100 hover:bg-rose-200 hover:text-red-600">
-                        {product.categories_id}
+                        {product.categories_name}
                     </Badge>
                 </div>
-                <h2 className="text-sm sm:text-base font-semibold text-black">{product.name}</h2>
+                <h2 className="text-sm sm:text-base font-semibold text-black">{product.products_name}</h2>
             </div>
 
             {/* Rentang Harga */}
@@ -86,113 +106,17 @@ const ProductCard = ({ product }) => {
             <p className="text-sm sm:text-base text-black flex-shrink-0">Stock: {product.stock}</p>
 
             {/* Tombol Aksi */}
-            <ActionButtons />
+            <ActionButtons product_id={product.product_id} />
         </div>
     );
 };
 
-// Komponen Dialog Manage Categories
-const ManageCategoriesDialog = () => {
-    const [categories, setCategories] = useState(["Buah Buahan", "Sayuran"]);
-    const [error, setError] = useState("");
 
-    const form = useForm({
-        defaultValues: {
-            categoryName: "",
-        },
-    });
-
-    // Tambah Kategori
-    const onSubmit = (data) => {
-        if (!data.categoryName.trim()) {
-            setError("Must Enter Value");
-            return;
-        }
-        setCategories([...categories, data.categoryName.trim()]);
-        form.reset();
-        setError("");
-    };
-
-    // Hapus Kategori
-    const handleRemoveCategory = (index) => {
-        const updatedCategories = categories.filter((_, i) => i !== index);
-        setCategories(updatedCategories);
-    };
-
-    return (
-        <div>
-            <Dialog>
-                <DialogTrigger asChild>
-                    <Button variant="outline" className="w-full sm:w-auto">
-                        Manage Categories
-                    </Button>
-                </DialogTrigger>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Manage Your Categories</DialogTitle>
-                        <DialogDescription>
-                            Add or delete categories your products.
-                        </DialogDescription>
-                    </DialogHeader>
-
-                    <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-                            <div className="flex items-center space-x-2">
-                                <FormField
-                                    control={form.control}
-                                    name="categoryName"
-                                    render={({ field }) => (
-                                        <FormItem className="flex-1">
-                                            <FormLabel className="">Category Name</FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    type="text"
-                                                    placeholder="Enter category name"
-                                                    {...field}
-                                                    className="h-10"
-                                                />
-                                            </FormControl>
-                                            <FormDescription>
-                                                Enter the name of the category you want to create.
-                                            </FormDescription>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <Button type="submit" className="bg-red-600 hover:bg-rose-500 h-10">
-                                    <Plus className="w-4 h-4 mr-2" />
-                                    Add
-                                </Button>
-                            </div>
-                        </form>
-                    </Form>
-
-                    {/* Daftar Kategori */}
-                    <div className="mt-4 space-y-2">
-                        <h3 className="font-medium text-sm">Manage Categories</h3>
-                        {categories.map((category, index) => (
-                            <div key={index} className="flex items-center justify-between p-2 border rounded-md">
-                                <p className="text-sm">{category}</p>
-                                <Button
-                                    variant="outline"
-                                    className="w-8 h-8 flex items-center justify-center"
-                                    onClick={() => handleRemoveCategory(index)}
-                                >
-                                    <Trash className="w-4 h-4 text-red-500" />
-                                </Button>
-                            </div>
-                        ))}
-                    </div>
-                </DialogContent>
-            </Dialog>
-        </div>
-    );
-};
 
 // Halaman Utama
 export default function ProductPage() {
     const [products, setProducts] = useState([]); // State untuk menyimpan produk
-
+    console.log("🚀 ~ ProductPage ~ products:", products)
     useEffect(() => {
         const fetchProducts = async () => {
             try {
@@ -272,13 +196,15 @@ export default function ProductPage() {
                 <div className="space-y-4">
                     {products.map((product) => (
                         <ProductCard key={product.product_id} product={{
-                            id: product.product_id,
-                            name: product.products_name,
+                            product_id: product.product_id,
+                            products_name: product.products_name,
                             products_description: product.products_description,
+                            categories_id: product.categories_id,
+                            categories_name: product.categories_name,
                             stock: product.stock,
                             categories_id: product.categories_id,
                             images: product.images,
-                            status: product.price_type, // Menggunakan price_type untuk status
+                            price_type: product.price_type, // Menggunakan price_type untuk status
                             fixed_price: product.fixed_price, // Menyimpan fixed_price
                             wholesale_prices: product.wholesale_prices // Menyimpan wholesale_prices
                         }} />

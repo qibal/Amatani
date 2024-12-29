@@ -10,6 +10,7 @@ import { Progress } from '@/components/ui/progress'
 
 const MAX_FILE_SIZE = 4 * 1024 * 1024; // 4MB
 const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const MAX_FILES = 6;
 
 export function ProductImageUpload({ onChange, value, error }) {
   const fileInputRef = useRef(null)
@@ -50,7 +51,7 @@ export function ProductImageUpload({ onChange, value, error }) {
           newFiles.push(Object.assign(file, { preview }))
           setProgress(((i + 1) / validFiles.length) * 100)
         }
-        onChange([...value, ...newFiles])
+        onChange([...value, ...newFiles].slice(0, MAX_FILES))
         setIsLoading(false)
       }
 
@@ -96,8 +97,10 @@ export function ProductImageUpload({ onChange, value, error }) {
   }, [onChange, value])
 
   const handleClick = useCallback(() => {
-    fileInputRef.current?.click()
-  }, [])
+    if (value.length < MAX_FILES) {
+      fileInputRef.current?.click()
+    }
+  }, [value.length])
 
   return (
     <div className="w-full">
@@ -113,21 +116,29 @@ export function ProductImageUpload({ onChange, value, error }) {
         onDragLeave={handleDragLeave}
         onClick={handleClick}
       >
-        <Input
-          id="product-images"
-          type="file"
-          className="hidden"
-          onChange={handleChange}
-          multiple
-          accept=".jpg,.jpeg,.png,.webp"
-          ref={fileInputRef}
-        />
-        <p className="text-sm text-gray-500">
-          Drag and drop product images here, or click to select files
-        </p>
-        <p className="text-xs text-gray-400 mt-1">
-          (JPG, PNG, JPEG, WebP, max 4MB each)
-        </p>
+        {value.length < MAX_FILES ? (
+          <>
+            <Input
+              id="product-images"
+              type="file"
+              className="hidden"
+              onChange={handleChange}
+              multiple
+              accept=".jpg,.jpeg,.png,.webp"
+              ref={fileInputRef}
+            />
+            <p className="text-sm text-gray-500">
+              Drag and drop product images here, or click to select files
+            </p>
+            <p className="text-xs text-gray-400 mt-1">
+              (JPG, PNG, JPEG, WebP, max 4MB each, max 6 images)
+            </p>
+          </>
+        ) : (
+          <p className="text-sm text-gray-400">
+            Sudah mencapai batas maksimal
+          </p>
+        )}
       </div>
       {isLoading && (
         <div className="mt-4">
@@ -164,4 +175,3 @@ export function ProductImageUpload({ onChange, value, error }) {
     </div>
   )
 }
-

@@ -21,10 +21,21 @@ export async function GET() {
                     "Content-Type": "application/json"
                 }
             })
+        } else {
+            return new Response(JSON.stringify({ message: "No data found" }), {
+                status: 404,
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
         }
-        return null
     } catch (error) {
-
+        return new Response(JSON.stringify({ error: error.message }), {
+            status: 500,
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
     }
 
 }
