@@ -5,15 +5,21 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/h
 import { AlignJustify } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+
 
 export default function CategoryMenu({ isRootPath }) {
-    const categories = [
-        { name: "Sayuran 🥬", href: "/kategori/sayuran" },
-        { name: "Buah-Buahan 🍎", href: "/kategori/buah-buahan" },
-        { name: "Sembako 🛒", href: "/kategori/sembako" },
-        { name: "Unggas dan Telur 🥚", href: "/kategori/unggas-telur" },
-        { name: "Ikan dan Makanan Laut 🐟", href: "/kategori/ikan-laut" },
-    ];
+    const [Categories, SetCategories] = useState([])
+    console.log("🚀 ~ CategoryMenu ~ Categories:", Categories)
+    useEffect(() => {
+        async function GetCategories(params) {
+            const result = await fetch('/api/customer')
+            const data = await result.json()
+            SetCategories(data)
+        }
+        GetCategories()
+    }, [])
+
 
     return (
         <HoverCard openDelay={0} closeDelay={100}>
@@ -23,16 +29,20 @@ export default function CategoryMenu({ isRootPath }) {
                     <span className={`${isRootPath ? "text-white" : "text-gray-950"}`}>Kategori Produk</span>
                 </div>
             </HoverCardTrigger>
-            <HoverCardContent className="p-3 w-56 bg-white rounded-md shadow-md">
-                {categories.map((category, index) => (
-                    <Button
-                        key={index}
-                        className="w-full text-left mt-2 text-gray-950 bg-white hover:bg-rose-100 hover:outline hover:outline-2 hover:outline-rose-600"
-                        asChild
-                    >
-                        <Link href={category.href}>{category.name}</Link>
-                    </Button>
-                ))}
+            <HoverCardContent className="p-3 w-56 bg-white rounded-md shadow-md translate-x-7">
+                {Categories.length > 0 ? (
+                    Categories.map((category) => (
+                        <Button
+                            key={category.categories_id}
+                            className="w-full text-left mt-2 text-gray-950 bg-white hover:bg-rose-100 hover:outline hover:outline-2 hover:outline-rose-600"
+                            asChild
+                        >
+                            <Link href={`/products?query=${category.categories_name}`}>{category.categories_name}</Link>
+                        </Button>
+                    ))
+                ) : (
+                    <p className="text-gray-500">No categories available</p>
+                )}
             </HoverCardContent>
         </HoverCard>
     );

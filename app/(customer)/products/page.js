@@ -7,12 +7,16 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import React, { useEffect, useState } from 'react'
 
+import { useSearchParams } from 'next/navigation'
 import Image from "next/image";
 
 export default function Product() {
     // Data Dummy
     const [productsData, setProductsdata] = useState([]);
+    const searchParams = useSearchParams()
 
+    const query = searchParams.get('query')
+    console.log(query);
     useEffect(() => {
         // async function fetchProducts() {
         //     let { data: productsData, error } = await supabase

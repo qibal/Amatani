@@ -109,7 +109,7 @@ export default function Navbar() {
                         <Link className={`hover:underline ${textClass}`} href="/tentang-kami">
                             Tentang Kami
                         </Link>
-                        <Link className={`hover:underline ${textClass}`} href="/pusat-bantuan">
+                        <Link className={`hover:underline ${textClass}`} href="/faq">
                             Pusat Bantuan
                         </Link>
                         <Link className={`hover:underline ${textClass}`} href="/bekerja-sama">

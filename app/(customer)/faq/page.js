@@ -1,30 +1,29 @@
 "use client"
 
-import React, { useEffect, useState } from 'react';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import FaqAccordion from '@/components/customer/faq/Faq_accordion'
+import FaqCategories from '@/components/customer/faq/Faq_categories'
+import FaqSearch from '@/components/customer/faq/Faq_search'
+import WhatsappCards from '@/components/customer/faq/Whatssap_card'
+import { useState } from 'react'
 
-
-export default function Faq() {
-
-    const [faqData, setfaqdata] = useState([]);
-
+export default function FaqPage() {
+    const [searchTerm, setSearchTerm] = useState('')
+    const [selectedCategory, setSelectedCategory] = useState('all')
 
     return (
-        <div className="max-w-2xl mx-auto p-4">
-            <h2 className="text-2xl font-bold mb-4">Frequently Asked Questions</h2>
-            <div className="space-y-4">
-                {faqData.map((faq) => (
-                    <div key={faq.faq_id} className="border rounded-lg shadow-md">
-                        <div
-                            className="flex justify-between items-center p-4 cursor-pointer"
-                        >
-                            <p>{faq.faq_id}{faq.created_at}</p>
-                            <h3 className="text-lg font-semibold">{faq.title}</h3>
-                            <p>{faq.content}</p>
-                        </div>
-                    </div>
-                ))}
+        <div className="container mx-auto px-4 py-8">
+            <h1 className="text-3xl font-bold mb-8 text-center">Frequently Asked Questions</h1>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div className="md:col-span-1">
+                    <FaqCategories onSelectCategory={setSelectedCategory} selectedCategory={selectedCategory} />
+                </div>
+                <div className="md:col-span-3">
+                    <FaqSearch onSearch={setSearchTerm} />
+                    <WhatsappCards />
+                    <FaqAccordion searchTerm={searchTerm} selectedCategory={selectedCategory} />
+                </div>
             </div>
         </div>
-    );
+    )
 }
+

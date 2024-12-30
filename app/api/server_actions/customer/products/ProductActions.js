@@ -3,14 +3,16 @@ import sql from "@/lib/postgres";
 // http://localhost:3000/api/customer/products
 export async function GetProductActionCustomers() {
     // Query untuk mendapatkan semua data produk beserta harga tetap, harga grosir, dan gambar produk
-    const result = await sql`
+    const result = await sql.begin(async sql => {
+        const products = await sql`
         SELECT 
             p.product_id,
             p.products_name,
-            -- p.products_description,
-            -- p.stock,
+            p.products_description,
+            p.stock,
             p.categories_id,
-            -- p.created_at,
+            c.categories_name,
+            p.created_at,
             p.price_type,
             f.price AS fixed_price,
             (
@@ -26,8 +28,14 @@ export async function GetProductActionCustomers() {
         FROM 
             products p
         LEFT JOIN 
-            fixed_prices f ON p.product_id = f.product_id AND p.price_type = 'fixed';
+            fixed_prices f ON p.product_id = f.product_id AND p.price_type = 'fixed'
+        LEFT JOIN 
+            categories c ON p.categories_id = c.categories_id;
     `;
+
+        return products;
+    });
+
 
     // Mengembalikan hasil query
     return result;
