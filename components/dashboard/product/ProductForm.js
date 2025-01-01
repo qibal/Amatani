@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useTransition } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -11,7 +11,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ProductImageUpload } from "@/components/dashboard/product/DropProductImage";
 import Image from "next/image";
-import { Trash2 } from 'lucide-react';
+import { Trash2, Loader2 } from 'lucide-react';
 import { GetCategoriesAction } from '@/app/api/server_actions/dashboard/products/categories/CategoriesActions';
 
 // Zod schema validation
@@ -76,6 +76,8 @@ export default function ProductForm({ mode, product, onSubmit }) {
         name: "price_type",
     });
 
+    const [isPending, startTransition] = useTransition();
+
     useEffect(() => {
         if (mode === 'edit' && product) {
             const formattedProduct = {
@@ -134,9 +136,19 @@ export default function ProductForm({ mode, product, onSubmit }) {
         }
     };
 
+    const handleSubmit = (data) => {
+        startTransition(async () => {
+            try {
+                await onSubmit(data);
+            } catch (error) {
+                console.error('Error submitting form:', error);
+            }
+        });
+    };
+
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="lg:w-4/6">
+            <form onSubmit={form.handleSubmit(handleSubmit)} className="lg:w-4/6">
                 <div className="border">
                     <div className="flex justify-between items-center pb-4">
                         <h1 className="text-xl font-semibold">{mode === 'add' ? 'Tambah Produk' : 'Edit Produk'}</h1>
@@ -146,8 +158,16 @@ export default function ProductForm({ mode, product, onSubmit }) {
                                 variant="default"
                                 type="submit"
                                 className="bg-rose-600 hover:bg-rose-500"
+                                disabled={isPending}
                             >
-                                {mode === 'add' ? 'Tambah' : 'Simpan Perubahan'}
+                                {isPending ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        {mode === 'add' ? 'Menambahkan...' : 'Menyimpan...'}
+                                    </>
+                                ) : (
+                                    mode === 'add' ? 'Tambah' : 'Simpan Perubahan'
+                                )}
                             </Button>
                         </div>
                     </div>
@@ -423,3 +443,4 @@ export default function ProductForm({ mode, product, onSubmit }) {
         </Form>
     );
 };
+

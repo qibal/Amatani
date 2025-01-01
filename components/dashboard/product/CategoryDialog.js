@@ -6,8 +6,8 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } 
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus, Trash } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Loader2, Plus, Trash } from "lucide-react";
+import { useEffect, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -18,6 +18,9 @@ const formschema = z.object({
 // Komponen Dialog Manage Categories
 export default function ManageCategoriesDialog() {
     const [categories, setCategories] = useState([]);
+    const [isAdding, startAdding] = useTransition(); // Untuk tombol Add
+    const [isDeleting, startDeleting] = useTransition(); // Untuk tombol Delete
+    const [pendingCategoryId, setPendingCategoryId] = useState(null); // ID kategori yang sedang dihapus
 
     const form = useForm({
         resolver: zodResolver(formschema),
@@ -26,35 +29,46 @@ export default function ManageCategoriesDialog() {
         },
     });
 
-
     // Tambah Kategori
     const onSubmit = async (params) => {
-        console.log('berhasil input data', params);
+        startAdding(async () => {
+            try {
+                console.log('berhasil input data', params);
 
-        const formData = new FormData();
-        formData.append('category_name', params.categories_name);
+                const formData = new FormData();
+                formData.append('category_name', params.categories_name);
 
-        const result = await fetch('/api/dashboard/products/categories/insert', {
-            method: 'POST',
-            body: formData,
+                const result = await fetch('/api/dashboard/products/categories/insert', {
+                    method: 'POST',
+                    body: formData,
+                });
+                const data = await result.json();
+                fetchCategories();
+                form.reset();
+                console.log('berhasil input data', data);
+            } catch (error) {
+                console.error('Error adding category:', error);
+            }
         });
-        const data = await result.json();
-        fetchCategories();
-        form.reset();
-        console.log('berhasil input data', data);
     };
 
     // Hapus Kategori
-    const handleDeleteCategory = async (params) => {
-        console.log('id_categories', await params);
-        const response = await fetch(`/api/dashboard/products/categories/delete/${params}`, {
-            method: 'DELETE',
+    const handleDeleteCategory = (categoryId) => {
+        setPendingCategoryId(categoryId); // Set ID kategori yang sedang dihapus
+        startDeleting(async () => {
+            try {
+                const response = await fetch(`/api/dashboard/products/categories/delete/${categoryId}`, {
+                    method: 'DELETE',
+                });
+                const data = await response.json();
+                fetchCategories(); // Refresh daftar kategori
+                console.log('Berhasil hapus kategori:', data);
+            } catch (error) {
+                console.error('Gagal menghapus kategori:', error);
+            } finally {
+                setPendingCategoryId(null); // Reset ID kategori setelah selesai
+            }
         });
-        const data = await response.json();
-        fetchCategories();
-        console.log('berhasil hapus categories ,categories =', data);
-        // const updatedCategories = categories.filter((_, i) => i !== index);
-        // setCategories(updatedCategories);
     };
 
     const fetchCategories = async () => {
@@ -105,16 +119,18 @@ export default function ManageCategoriesDialog() {
                                                     className="h-10"
                                                 />
                                             </FormControl>
-                                            {/* <FormDescription>
-                                                Enter the name of the category you want to create.
-                                            </FormDescription> */}
                                             <FormMessage />
                                         </FormItem>
                                     )}
                                 />
-                                <Button type="submit" className="bg-red-600 hover:bg-rose-500 h-10">
-                                    <Plus className="w-4 h-4 mr-2" />
-                                    Add
+                                {/* Tombol Tambah Kategori */}
+                                <Button type="submit" className="bg-red-600 hover:bg-rose-500 h-10" disabled={isAdding}>
+                                    {isAdding ? (
+                                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                    ) : (
+                                        <Plus className="w-4 h-4 mr-2" />
+                                    )}
+                                    {isAdding ? 'Adding...' : 'Add'}
                                 </Button>
                             </div>
                         </form>
@@ -130,8 +146,13 @@ export default function ManageCategoriesDialog() {
                                     variant="outline"
                                     className="w-8 h-8 flex items-center justify-center"
                                     onClick={() => handleDeleteCategory(category.categories_id)}
+                                    disabled={isDeleting && pendingCategoryId === category.categories_id} // Gunakan isDeleting
                                 >
-                                    <Trash className="w-4 h-4 text-red-500" />
+                                    {isDeleting && pendingCategoryId === category.categories_id ? (
+                                        <Loader2 className="w-4 h-4 text-red-500 animate-spin" />
+                                    ) : (
+                                        <Trash className="w-4 h-4 text-red-500" />
+                                    )}
                                 </Button>
                             </div>
                         ))}
