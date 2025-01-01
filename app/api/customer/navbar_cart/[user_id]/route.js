@@ -1,15 +1,12 @@
-import { GetProductActionCustomers } from "../../server_actions/customer/products/ProductActions";
+import { GetCountCarttCustomers } from "@/app/api/server_actions/customer/products/detail_products/D_productActions";
 
 
-
-
-
-//   ]
+// http://localhost:3000/api/customer/navbar_cart/ea1975e8-e225-4988-9c31-e4e1d8d11693
 export async function GET(request, { params }) {
-    const { searchParams } = new URL(request.url);
-    const query = searchParams.get('query');
+    const user_id = await params.user_id
+    console.log("🚀 ~ GET ~ user_id:", await user_id)
     try {
-        const data = await GetProductActionCustomers({ query });
+        const data = await GetCountCarttCustomers({ user_id });
         if (data) {
             return new Response(JSON.stringify(data), {
                 status: 200,

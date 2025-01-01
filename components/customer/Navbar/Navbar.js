@@ -9,13 +9,15 @@ import CategoryMenu from "./CategoryMenu";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { usePathname } from 'next/navigation';
 import Image from "next/image";
+import { useCart } from "./CartContext";
 
-export default function Navbar() {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+export default function Navbar({ isAuthenticated, user_id }) {
+
     const [scrolled, setScrolled] = useState(false);
     const [isRootPath, setIsRootPath] = useState(false);
     const pathname = usePathname();
-
+    const { userId, cartCount, fetchCartCount } = useCart()
+    console.log("🚀 ~ Navbar ~ cartCount:", cartCount)
     useEffect(() => {
         const handleScroll = () => {
             setScrolled(window.scrollY > window.innerHeight * 0.1);
@@ -32,6 +34,11 @@ export default function Navbar() {
             window.removeEventListener("scroll", handleScroll);
         };
     }, [pathname]);
+    useEffect(() => {
+        if (isAuthenticated && userId) {
+            fetchCartCount(userId)
+        }
+    }, [isAuthenticated, userId, fetchCartCount])
 
     // Class untuk teks di navbar
     const textClass = isRootPath && !scrolled ? "text-white" : "text-gray-950";
@@ -82,22 +89,34 @@ export default function Navbar() {
                         </HoverCardContent>
                     </HoverCard>
 
-                    {/* Shopping Cart */}
-                    <Link href="/products"><ShoppingCart className={`w-5 h-5 cursor-pointer ${textClass}`} /></Link>
+                    {/* cart */}
+                    <Link href="/cart" className="relative">
+                        <ShoppingCart className={`w-5 h-5 ${textClass}`} />
+                        {isAuthenticated && (
+                            <span className="absolute -top-2 -right-2 bg-rose-600 text-white rounded-full w-4 h-4 text-xs flex items-center justify-center">
+                                {cartCount}
+                            </span>
+                        )}
+                    </Link>
 
-                    {/* Login and Register Buttons */}
-                    <Button
-                        className={`hidden md:block outline outline-1 outline-rose-600 rounded-md hover:outline hover:bg-transparent hover:outline-2 hover:outline-rose-500 ${isRootPath && !scrolled ? "bg-transparent text-white" : "bg-white text-gray-950"
-                            }`}
-                    >
-                        <Link href="/login">Masuk</Link>
-                    </Button>
+                    {/* Auth Buttons */}
+                    {isAuthenticated ? (
+                        <Button className="bg-rose-600 text-white rounded-md hover:bg-rose-700">
+                            <Link href="/logout">Logout</Link>
+                        </Button>
+                    ) : (
+                        <>
+                            <Button className="bg-white text-gray-950 outline-rose-600">
+                                <Link href="/login">Masuk</Link>
+                            </Button>
+                            <Button className="bg-rose-600 text-white">
+                                <Link href="/signup">Daftar</Link>
+                            </Button>
+                        </>
+                    )}
 
-                    <Button className="bg-rose-600 text-white rounded-md hover:bg-rose-700">
-                        <Link href="/signup">Daftar</Link>
-                    </Button>
                     {/* Sheet Trigger */}
-                    <NavbarSheet isLoggedIn={isLoggedIn} scrolled={scrolled} />
+                    <NavbarSheet isLoggedIn={isAuthenticated} scrolled={scrolled} />
                 </div>
             </div>
 
@@ -121,3 +140,4 @@ export default function Navbar() {
         </header>
     );
 }
+

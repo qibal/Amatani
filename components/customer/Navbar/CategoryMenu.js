@@ -31,18 +31,26 @@ export default function CategoryMenu({ isRootPath }) {
             </HoverCardTrigger>
             <HoverCardContent className="p-3 w-56 bg-white rounded-md shadow-md translate-x-7">
                 {Categories.length > 0 ? (
-                    Categories.map((category) => (
-                        <Button
-                            key={category.categories_id}
-                            className="w-full text-left mt-2 text-gray-950 bg-white hover:bg-rose-100 hover:outline hover:outline-2 hover:outline-rose-600"
-                            asChild
-                        >
-                            <Link href={`/products?query=${category.categories_name}`}>{category.categories_name}</Link>
-                        </Button>
-                    ))
+                    Categories.map((category) => {
+                        const formattedCategoryName = category.categories_name
+                            .toLowerCase()
+                            .replace(/[\s-]+/g, '-') // Replace spaces and hyphens with a single hyphen
+                            .replace(/-+/g, '-') // Replace multiple hyphens with a single hyphen
+                            .replace(/^-+|-+$/g, ''); // Remove leading and trailing hyphens
+                        return (
+                            <Button
+                                key={category.categories_id}
+                                className="w-full text-left mt-2 text-gray-950 bg-white hover:bg-rose-100 hover:outline hover:outline-2 hover:outline-rose-600"
+                                asChild
+                            >
+                                <Link href={`/products?query=${formattedCategoryName}`}>{category.categories_name}</Link>
+                            </Button>
+                        );
+                    })
                 ) : (
                     <p className="text-gray-500">No categories available</p>
                 )}
+
             </HoverCardContent>
         </HoverCard>
     );

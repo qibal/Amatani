@@ -9,29 +9,39 @@ import React, { useEffect, useState } from 'react'
 
 import { useSearchParams } from 'next/navigation'
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Product() {
     // Data Dummy
-    const [productsData, setProductsdata] = useState([]);
+    const [productsData, setProductsData] = useState([]);
+    const [categoryName, setCategoryName] = useState('');
+    console.log("🚀 ~ Product ~ productsData:", productsData)
     const searchParams = useSearchParams()
 
-    const query = searchParams.get('query')
+    const query = searchParams.get('query');
+    const formattedQuery = query ? query.replace(/-/g, ' - ') : '';
+    // Output: "example - name - with - dashes
+    console.log(formattedQuery);
     console.log(query);
     useEffect(() => {
-        // async function fetchProducts() {
-        //     let { data: productsData, error } = await supabase
-        //         .from('products_2')
-        //         .select('*');
-
-        //     if (error) {
-        //         console.error("Kesalahan dalam Prodes:", error);
-        //     } else {
-        //         setProductsdata(productsData);
-        //         console.log(productsData);
-        //     }
-        // }
-        // fetchProducts();
-    }, []);
+        async function fetchProducts() {
+            const result = await fetch(`/api/customer/products?query=${formattedQuery}`, {
+                method: "GET",
+            });
+            if (result.ok) {
+                const data = await result.json();
+                setProductsData(data);
+                if (data.length > 0) {
+                    setCategoryName(data[0].categories_name);
+                } else {
+                    setCategoryName('');
+                }
+            }
+        }
+        if (formattedQuery) {
+            fetchProducts();
+        }
+    }, [formattedQuery]);
 
     return (
         <div className="mt-4 px-4 container mx-auto">
@@ -79,7 +89,7 @@ export default function Product() {
                 <div>
                     <p className="text-sm text-gray-800">Hasil pencarian:</p>
                     <p className="text-xl font-semibold text-gray-800">
-                        Apel (20)
+                        {categoryName ? categoryName : (formattedQuery ? formattedQuery : 'Kategori tidak tersedia')} ({productsData.length})
                     </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-4 w-full lg:w-auto">
@@ -126,10 +136,13 @@ export default function Product() {
                     productsData.map((product) => (
                         <ProductCard
                             key={product.product_id}
-                            imageSrc={product.product_images || "/placeholder-image.png"}
-                            name={product.product_name || "Nama tidak tersedia"}
-                            category={product.category || "Kategori tidak tersedia"}
-                            priceRange={product.price_range || "Harga tidak tersedia"}
+                            imageSrc={product.images[0] || "/placeholder-image.png"}
+                            name={product.products_name || "Nama tidak tersedia"}
+                            category={product.categories_name || "Kategori tidak tersedia"}
+                            priceType={product.price_type}
+                            fixedPrice={product.fixed_price}
+                            wholesalePrices={product.wholesale_prices || []}
+                            product_id={product.product_id}
                         />
                     ))
                 ) : (
@@ -140,28 +153,49 @@ export default function Product() {
     );
 }
 
-function ProductCard({ imageSrc, name, category, priceRange }) {
+function ProductCard({ imageSrc, name, category, priceType, fixedPrice, wholesalePrices, product_id }) {
+    let priceRange;
+
+    if (priceType === 'wholesale' && wholesalePrices.length > 0) {
+        if (wholesalePrices.length === 1) {
+            priceRange = `Rp ${wholesalePrices[0].price}`;
+        } else {
+            const prices = wholesalePrices.map(price => price.price);
+            const minPrice = Math.min(...prices);
+            const maxPrice = Math.max(...prices);
+            priceRange = `Rp ${minPrice} - Rp ${maxPrice}`;
+        }
+    } else if (priceType === 'fixed') {
+        priceRange = `Rp ${fixedPrice}`;
+    } else {
+        priceRange = "Harga tidak tersedia";
+    }
     return (
-        <Card className="w-full border-0 shadow-none">
-            <CardHeader className="p-0">
-                <AspectRatio ratio={1 / 1}>
-                    <Image
-                        width={200}
-                        height={200}
-                        src={imageSrc}
-                        alt="nadadeafnouabfume"
-                        className="object-cover w-full h-full"
-                    />
-                </AspectRatio>
-            </CardHeader>
-            <CardContent className="space-y-2 p-4">
-                <p className="text-lg font-semibold text-gray-800">{name}</p>
-                <p className="text-sm text-gray-500">{category}</p>
-                <p className="text-base font-bold text-rose-600">{priceRange}</p>
-            </CardContent>
-        </Card>
+        // Output: "example - name_with_dashes"
+        <Link href={`/products/${product_id}`}>
+            <Card className="w-full border-0 shadow-none">
+                <CardHeader className="p-0">
+                    <AspectRatio ratio={1 / 1}>
+                        <Image
+                            width={200}
+                            height={200}
+                            src={`https://xmlmcdfzbwjljhaebzna.supabase.co/storage/v1/object/public/${imageSrc}`} // Gabungkan URL dasar dengan path gambar
+
+                            alt={name}
+                            className="object-cover w-full h-full"
+                        />
+                    </AspectRatio >
+                </CardHeader >
+                <CardContent className="space-y-2 p-4">
+                    <p className="text-lg font-semibold text-gray-800">{name}</p>
+                    <p className="text-sm text-gray-500">{category}</p>
+                    <p className="text-base font-bold text-rose-600">{priceRange}</p>
+                </CardContent>
+            </Card >
+        </Link >
     );
-}
+};
+
 
 function NoProduct() {
     return (

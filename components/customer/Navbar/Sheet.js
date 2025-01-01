@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { usePathname } from 'next/navigation';
 
-export default function NavbarSheet({ isLoggedIn, scrolled }) {
+export default function NavbarSheet({ isLoggedIn, scrolled, cartCount }) {
     const pathname = usePathname(); // Mendapatkan URL saat ini
     const isRootPath = pathname === "/"; // Menentukan apakah halaman root
 

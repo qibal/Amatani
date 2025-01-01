@@ -1,15 +1,15 @@
-import { GetProductActionCustomers } from "../../server_actions/customer/products/ProductActions";
+import { GetProductDetailActionCustomers } from "@/app/api/server_actions/customer/products/detail_products/D_productActions";
 
 
 
 
 
-//   ]
+// http://localhost:3000/api/customer/products/products_detail/33a5fcb9-7dff-45af-b7e0-d44711eb9c44
 export async function GET(request, { params }) {
-    const { searchParams } = new URL(request.url);
-    const query = searchParams.get('query');
+    console.log("🚀 ~ GET ~ params:", await params.product_id)
+
     try {
-        const data = await GetProductActionCustomers({ query });
+        const data = await GetProductDetailActionCustomers(await params.product_id);
         if (data) {
             return new Response(JSON.stringify(data), {
                 status: 200,

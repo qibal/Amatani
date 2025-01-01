@@ -87,8 +87,7 @@ export async function middleware(request) {
                 return NextResponse.redirect(url);
             } else if (user_role === 'customer') {
                 console.log('user adalah customer, masuk halaman /');
-                url.pathname = '/';
-                return NextResponse.redirect(url);
+                return NextResponse.next({ request })
             }
         }
     }
