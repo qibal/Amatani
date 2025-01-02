@@ -3,13 +3,13 @@ import { createContext, useContext, useState } from 'react'
 
 const CartContext = createContext()
 
-export function CartProvider({ children }) {
-    const [cartCount, setCartCount] = useState(0)
-    const [userId, setUserId] = useState(null)
+export function CartProvider({ children, initialCartCount = 0, initialUserId = null }) {
+    const [cartCount, setCartCount] = useState(initialCartCount)
+    const [userId, setUserId] = useState(initialUserId)
 
-    async function fetchCartCount(user_id) {
+    async function fetchCartCount(uid) {
         try {
-            const res = await fetch(`/api/customer/navbar_cart/${user_id}`)
+            const res = await fetch(`/api/customer/navbar_cart/${uid}`)
             const json = await res.json()
             if (!res.ok) throw new Error(json?.error || 'Failed to fetch cart count')
             setCartCount(json.data || 0)

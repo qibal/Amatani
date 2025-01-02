@@ -53,7 +53,7 @@ export async function GetProductAction() {
 // http://localhost:3000/api/dashboard/products/delete/c1aefa4b-7feb-4d2e-ad97-e3a396145c87
 //query untuk HAPUS  produk
 export async function DeleteProductAction(params) {
-    const productId = params.product_id;
+    const productId = await params.product_id;
 
     try {
         const result = await sql.begin(async sql => {

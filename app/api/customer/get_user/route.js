@@ -1,13 +1,9 @@
-import { GetCarttActionCustomers } from "@/app/api/server_actions/customer/cart/CartActions";
+import { GetUserCustomers } from "@/components/customer/GetUser";
 
-
-
-// http://localhost:3000/api/customer/cart/ea1975e8-e225-4988-9c31-e4e1d8d11693
-export async function GET(request, { params }) {
-    const user_id = await params.user_id
-    console.log("🚀 ~ GET ~ user_id:", await user_id)
+export async function GET() {
+    // const product_id = await params.product_id
     try {
-        const data = await GetCarttActionCustomers({ user_id });
+        const data = await GetUserCustomers();
         if (data) {
             return new Response(JSON.stringify(data), {
                 status: 200,

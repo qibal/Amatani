@@ -67,20 +67,40 @@ export async function AddToCartCustomers({ request, user }) {
             `;
         }
 
-        // Note: Changed table name from cart_items to carts_items
-        const cartItem = await sql`
-            INSERT INTO carts_items (
-                cart_id,
-                product_id,
-                quantity
-            )
-            VALUES (
-                ${cart[0].carts_id},
-                ${product_id},
-                ${quantity}
-            )
-            RETURNING *;
+        // Check if product_id already exists in carts_items
+        let cartItem = await sql`
+            SELECT * 
+            FROM carts_items 
+            WHERE cart_id = ${cart[0].carts_id} 
+            AND product_id = ${product_id}
+            LIMIT 1;
         `;
+
+        if (cartItem.length > 0) {
+            // Update quantity if product_id exists
+            cartItem = await sql`
+                UPDATE carts_items
+                SET quantity = quantity + ${quantity}
+                WHERE cart_id = ${cart[0].carts_id}
+                AND product_id = ${product_id}
+                RETURNING *;
+            `;
+        } else {
+            // Insert new product_id and quantity if not exists
+            cartItem = await sql`
+                INSERT INTO carts_items (
+                    cart_id,
+                    product_id,
+                    quantity
+                )
+                VALUES (
+                    ${cart[0].carts_id},
+                    ${product_id},
+                    ${quantity}
+                )
+                RETURNING *;
+            `;
+        }
 
         console.log("🚀 ~ AddToCartCustomers ~ Success:", {
             user_id: user.id,

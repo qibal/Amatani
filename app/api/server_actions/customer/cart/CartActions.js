@@ -18,7 +18,38 @@ export async function GetCarttActionCustomers({ user_id }) {
                             'item_created_at', ci.created_at,
                             'products_name', p.products_name,
                             'stock', p.stock,
-                            'price_type', p.price_type
+                            'price_type', p.price_type,
+                            'fixed_price',
+                                (
+                                    SELECT fp.price
+                                    FROM fixed_prices fp
+                                    WHERE fp.product_id = p.product_id
+                                    LIMIT 1
+                                ),
+                            'wholesale_prices',
+                                (
+                                    SELECT JSON_AGG(
+                                        JSON_BUILD_OBJECT(
+                                            'wholesale_prices_id', wp.wholesale_prices_id,
+                                            'min_quantity', wp.min_quantity,
+                                            'max_quantity', wp.max_quantity,
+                                            'price', wp.price
+                                        )
+                                    )
+                                    FROM wholesale_prices wp
+                                    WHERE wp.product_id = p.product_id
+                                ),
+                            'product_images',
+                                (
+                                    SELECT JSON_AGG(
+                                        JSON_BUILD_OBJECT(
+                                            'images_id', pi.images_id,
+                                            'image_path', pi.image_path
+                                        )
+                                    )
+                                    FROM product_images pi
+                                    WHERE pi.product_id = p.product_id
+                                )
                         )
                     ) FILTER (WHERE ci.cart_items_id IS NOT NULL),
                     '[]'
@@ -31,24 +62,14 @@ export async function GetCarttActionCustomers({ user_id }) {
             LIMIT 1;
         `;
 
-        // Jika tidak ada cart, kembalikan data kosong
         if (result.count === 0) {
-            return {
-                success: true,
-                data: null
-            };
+            return { success: true, data: null };
         }
 
-        return {
-            success: true,
-            data: result[0]
-        };
+        return { success: true, data: result[0] };
     } catch (error) {
         console.error("Error GetCarttActionCustomers:", error);
-        return {
-            success: false,
-            error: error.message
-        };
+        return { success: false, error: error.message };
     }
 }
 

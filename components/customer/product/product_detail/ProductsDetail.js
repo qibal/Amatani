@@ -282,14 +282,29 @@ function ProductInfoCard({ productsData }) {
         <Card className="p-4">
             <div className="space-y-4">
                 <div className="grid grid-cols-3  gap-4 text-center ">
-                    {wholesalePrices.map((price, index) => (
-                        <div key={index}>
+                    {productsData.price_type === 'fixed' ? (
+                        <div className="text-center">
                             <div className="text-sm text-muted-foreground">
-                                {price.min_quantity} - {price.max_quantity} kg
+                                Harga
                             </div>
-                            <div className="font-semibold">Rp {price.price}</div>
+                            <div className="font-semibold">
+                                Rp {productsData.fixed_price}
+                            </div>
                         </div>
-                    ))}
+                    ) : (
+                        <div className="grid grid-cols-3 gap-4 text-center">
+                            {wholesalePrices.map((price, index) => (
+                                <div key={index}>
+                                    <div className="text-sm text-muted-foreground">
+                                        {price.min_quantity} - {price.max_quantity} kg
+                                    </div>
+                                    <div className="font-semibold">
+                                        Rp {price.price}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
 
                 <Form {...form}>
