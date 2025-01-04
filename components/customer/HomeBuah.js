@@ -14,7 +14,12 @@ export default function HomeBuah() {
     useEffect(() => {
         async function fetchProducts() {
             try {
-                const result = await fetch('/api/customer/home/home_buah');
+                const result = await fetch('/api/customer/home/home_buah',
+                    {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    }
+                )
                 const data = await result.json();
                 setCategories(data); // Simpan data kategori di state
             } catch (error) {

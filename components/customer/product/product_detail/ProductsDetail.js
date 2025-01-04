@@ -24,6 +24,7 @@ import { createClient } from "@/lib/supabase/server"
 
 import { useRouter } from 'next/navigation'
 import { useCart } from "../../Navbar/CartContext"
+import CarouselWithThumbnails from "./CarouselImages"
 
 
 
@@ -73,9 +74,10 @@ export default function ProductDetailComponent({ product_id }) {
                             <Star className="w-5 h-5 fill-muted text-muted-foreground" />
                         </div>
                     </div>
-
-                    <div className="flex flex-col lg:flex-row gap-4 ">
-                        {/* Main Image */}
+                    {/* Images */}
+                    <CarouselWithThumbnails images={images} />
+                    {/* <div className="flex flex-col lg:flex-row gap-4 ">
+                        Main Image
                         <AspectRatio ratio={1 / 1}>
                             <Image
                                 src={`https://xmlmcdfzbwjljhaebzna.supabase.co/storage/v1/object/public/${images[0].src}`} // Gabungkan URL dasar dengan path gambar}
@@ -86,7 +88,7 @@ export default function ProductDetailComponent({ product_id }) {
                             />
                         </AspectRatio>
 
-                        {/* Image Thumbnails */}
+                        Image Thumbnails
                         <div className="flex lg:flex-col gap-2 order-2 lg:order-1">
                             {images.map((image, index) => (
                                 <button
@@ -108,7 +110,7 @@ export default function ProductDetailComponent({ product_id }) {
                                 </button>
                             ))}
                         </div>
-                    </div>
+                    </div> */}
 
                     {/* Product Info Card for Mobile */}
                     <div className="lg:hidden mt-4">

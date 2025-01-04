@@ -60,7 +60,7 @@ export function AppSidebar({
   const router = useRouter()
 
   return (
-    <Sidebar variant="inset" collapsible="icon">
+    <Sidebar collapsible="icon">
       {/* header */}
       <SidebarHeader>
         <SidebarMenu>

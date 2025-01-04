@@ -129,6 +129,24 @@ export async function middleware(request) {
             }
         }
     }
+    if (url.pathname.startsWith('/cart')) {
+        console.log('masuk halamanan /orders');
+        if (user.user == null) {
+            console.log('user belum login, tidak boleh masuk, arahkan ke /login');
+            url.pathname = '/login';
+            return NextResponse.redirect(url);
+        } else if (user.user != null) {
+            console.log('user sudah login');
+            if (user_role === 'admin') {
+                console.log('user adalan admin,tidak boleh masuk, pindahkan ke /dashboard');
+                url.pathname = '/dashboard';
+                return NextResponse.redirect(url);
+            } else if (user_role === 'customer') {
+                console.log('user adalah customer, boleh masuk, arahkan ke /profile');
+                return NextResponse.next({ request })
+            }
+        }
+    }
 
 
 }
@@ -141,6 +159,7 @@ export const config = {
         '/profile/:path*',
         '/orders/:path*',
         //guest and customer
-        '/'
+        '/',
+        '/cart'
     ],
 }

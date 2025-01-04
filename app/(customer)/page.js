@@ -9,6 +9,7 @@ import Footer from "@/components/customer/Footer";
 
 
 import Image from "next/image";
+import CompanyLogosCarousel from "@/components/customer/CarouselCompanyLogos";
 
 // Komponen Statistik Reusable
 const Statistics = ({ stats }) => {
@@ -64,6 +65,7 @@ const FeatureGrid = ({ features }) => (
     </section>
 );
 
+
 export default async function CustomerPage() {
 
     // async function getuser(params) {
@@ -94,6 +96,7 @@ export default async function CustomerPage() {
         { name: "Giling", imageSrc: "/FE/img01.jpg" },
         { name: "Bersihkan", imageSrc: "/FE/img01.jpg" },
     ];
+
 
     return (
         <div>
@@ -130,34 +133,7 @@ export default async function CustomerPage() {
             <Statistics stats={stats} />
 
             {/* Business Highlight Section */}
-            <section className="py-5 bg-white">
-                <div className="container  py-12 mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                    <div className="text-center lg:text-left">
-                        <h2 className="text-3xl md:text-4xl font-bold text-gray-800 leading-tight">
-                            Mulai Dari Kedai Kopi Hingga Restoran
-                        </h2>
-                        <p className="mt-4 text-gray-600 text-base md:text-lg leading-relaxed">
-                            Produk Hasil Panen Kami Telah Dipercaya Oleh Para Pengusaha Bisnis Kuliner Untuk
-                            Menyediakan Bahan Baku Segar Dan Berkualitas, Mendukung Cita Rasa Terbaik Dalam
-                            Setiap Hidangan.
-                        </p>
-                    </div>
-                    <div className="grid grid-cols-4 gap-4">
-                        {Array.from({ length: 12 }).map((_, index) => (
-                            <div
-                                key={index}
-                                className={`flex items-center justify-center ${index >= 8 ? "hidden md:flex" : ""}`}
-                            >
-                                <Image height={300} width={300}
-                                    src="/FE/img02.png"
-                                    alt={`Icon ${index + 1}`}
-                                    className="w-16 h-16 md:w-20 md:h-20 object-contain"
-                                />
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
+            <CompanyLogosCarousel />
 
             {/* Home Buah dan Home KPangan */}
             <main>
