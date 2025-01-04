@@ -5,7 +5,7 @@ import { GetProductActionCustomers } from "../../server_actions/customer/product
 
 
 //   ]
-export async function GET(request, { params }) {
+export async function GET(request,) {
     const { searchParams } = new URL(request.url);
     const query = searchParams.get('query');
     try {

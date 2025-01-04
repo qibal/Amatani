@@ -12,7 +12,7 @@ export default function CategoryMenu({ isRootPath }) {
     const [Categories, SetCategories] = useState([])
     console.log("🚀 ~ CategoryMenu ~ Categories:", Categories)
     useEffect(() => {
-        async function GetCategories(params) {
+        async function GetCategories() {
             const result = await fetch('/api/customer')
             const data = await result.json()
             SetCategories(data)

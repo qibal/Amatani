@@ -20,7 +20,7 @@ export default function AddProductPage() {
         formData.append('category', JSON.stringify(params.category));
         formData.append('wholesalePrices', JSON.stringify(params.wholesalePrices));
 
-        params.product_images.forEach((image, index) => {
+        params.product_images.forEach((image) => {
             formData.append(`product_images`, image);
         });
 

@@ -11,7 +11,7 @@ export async function signInWithGoogle() {
         console.log("masuk");
         const supabase = await createClient();
 
-        const { data, error } = await supabase.auth.signInWithOAuth({
+        const { data } = await supabase.auth.signInWithOAuth({
             provider: "google",
             options: {
                 redirectTo: 'http://localhost:3000/auth/callback',
@@ -65,8 +65,8 @@ export async function signup(formData) {
     redirect('/')
 }
 
-export async function Logout(params) {
+export async function Logout() {
     const supabase = await createClient();
-    const { error } = await supabase.auth.signOut()
+    const { } = await supabase.auth.signOut()
 
 }

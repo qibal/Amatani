@@ -32,7 +32,7 @@ export default function ManageCategoryFaqDialog() {
     });
 
     // Tambah Kategori
-    const onSubmit = async (params) => {
+    const onSubmit = (params) => {
         startAdding(async () => {
             try {
                 const formData = new FormData();
@@ -42,7 +42,7 @@ export default function ManageCategoryFaqDialog() {
                     method: 'POST',
                     body: formData,
                 });
-                
+
                 if (!result.ok) {
                     throw new Error('Failed to add category');
                 }

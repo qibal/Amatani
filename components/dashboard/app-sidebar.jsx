@@ -1,61 +1,48 @@
 'use client'
 
 import {
-  AudioWaveform,
-  BadgeCheck,
-  Bell,
-  BookOpen,
-  Bot,
+
   ChartColumnIncreasing,
-  ChevronDown,
+
   ChevronsUpDown,
-  Command,
-  CreditCard,
+
   FileQuestion,
-  Frame,
-  GalleryVerticalEnd,
+
+
   LogOut,
-  Map,
+
   Package2,
-  PieChart,
-  Settings2,
+
   ShoppingCart,
-  Sparkles,
-  SquareTerminal,
+
   Star,
   UsersRound,
   WalletMinimal,
 } from "lucide-react"
 
-import { NavMain } from "@/components/dashboard/nav-main"
-import { NavProjects } from "@/components/dashboard/nav-projects"
-import { NavUser } from "@/components/dashboard/nav-user"
-import { TeamSwitcher } from "@/components/dashboard/team-switcher"
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
+
   SidebarHeader,
   SidebarMenu,
   SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarRail,
+
   SidebarSeparator,
 } from "@/components/ui/sidebar"
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu"
+import { Home } from "lucide-react"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 import { usePathname, useRouter } from "next/navigation";
 import { Button } from "../ui/button"
 import { Logout } from "@/app/api/server_actions/Auth"
 
-export function AppSidebar({
-  ...props
-}) {
+export function AppSidebar() {
   const pathname = usePathname();
   const router = useRouter()
 

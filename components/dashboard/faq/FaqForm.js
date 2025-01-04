@@ -17,7 +17,7 @@ const formSchema = z.object({
     category_id: z.string().min(1, { message: "Kategori FAQ harus dipilih" }),
 });
 
-export default function FAQForm({ mode, faq, onSubmit }) {
+export default function FAQForm({ mode, faq }) {
     const [categories, setCategories] = useState([]);
     const [isPending, startTransition] = useTransition();
 
@@ -60,19 +60,19 @@ export default function FAQForm({ mode, faq, onSubmit }) {
                 formData.append('title', data.title);
                 formData.append('content', data.content);
                 formData.append('category_id', data.category_id);
-    
+
                 const response = await fetch('/api/dashboard/faq/insert', {
                     method: 'POST',
                     body: formData,
                 });
-    
+
                 if (!response.ok) {
                     throw new Error('Failed to insert FAQ');
                 }
-    
+
                 const result = await response.json();
                 console.log('FAQ inserted successfully:', result);
-                
+
                 if (mode === 'add') {
                     form.reset();
                 }

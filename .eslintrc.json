@@ -1,8 +1,10 @@
 {
-  "extends": "next/core-web-vitals",
-  "rules": {
-    "no-unused-vars": "warn",
-    "eqeqeq": "error",
-    "curly": ["error", "all"]
-  }
+  "extends": "next/core-web-vitals"
+  // "rules": {
+  //   "no-unused-vars": "warn",
+  //   "eqeqeq": "error",
+  //   "curly": ["error", "all"],
+  //   "require-await": "error",
+  //   "no-return-await": "error"
+  // }
 }

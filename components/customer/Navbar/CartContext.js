@@ -9,12 +9,14 @@ export function CartProvider({ children, initialCartCount = 0, initialUserId = n
 
     async function fetchCartCount(uid) {
         try {
-            const res = await fetch(`/api/customer/navbar_cart/${uid}`)
-            const json = await res.json()
-            if (!res.ok) throw new Error(json?.error || 'Failed to fetch cart count')
-            setCartCount(json.data || 0)
+            const res = await fetch(`/api/customer/navbar_cart/${uid}`);
+            const json = await res.json();
+            if (!res.ok) {
+                throw new Error(json?.error || 'Failed to fetch cart count');
+            }
+            setCartCount(json.data || 0);
         } catch (error) {
-            console.error('Error fetchCartCount:', error)
+            console.error('Error fetchCartCount:', error);
         }
     }
 

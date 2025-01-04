@@ -66,7 +66,7 @@ const FeatureGrid = ({ features }) => (
 );
 
 
-export default async function CustomerPage() {
+export default function CustomerPage() {
 
     // async function getuser(params) {
 

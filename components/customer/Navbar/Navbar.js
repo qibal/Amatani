@@ -10,8 +10,9 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/h
 import { usePathname } from 'next/navigation';
 import Image from "next/image";
 import { useCart } from "./CartContext";
+import { Logout } from "@/app/api/server_actions/Auth"
 
-export default function Navbar({ isAuthenticated, user_id }) {
+export default function Navbar({ isAuthenticated }) {
 
     const [scrolled, setScrolled] = useState(false);
     const [isRootPath, setIsRootPath] = useState(false);
@@ -101,8 +102,8 @@ export default function Navbar({ isAuthenticated, user_id }) {
 
                     {/* Auth Buttons */}
                     {isAuthenticated ? (
-                        <Button className="bg-rose-600 text-white rounded-md hover:bg-rose-700">
-                            <Link href="/logout">Logout</Link>
+                        <Button onClick={() => { Logout() }} className="bg-rose-600 text-white rounded-md hover:bg-rose-700">
+                            Logout
                         </Button>
                     ) : (
                         <>

@@ -1,6 +1,6 @@
 'use client'
 
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { Carousel, CarouselContent, CarouselItem, } from "@/components/ui/carousel";
 import { Card, CardContent } from "@/components/ui/card";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { useEffect, useState } from "react";
@@ -21,14 +21,17 @@ export default function CompanyLogosCarousel() {
     const [api, setApi] = useState(null)
 
     useEffect(() => {
-        if (!api) return
-
+        if (!api) {
+            return;
+        }
         const interval = setInterval(() => {
-            api.scrollNext()
-        }, 2500) // Change slide every 3 seconds
+            api.scrollNext();
+        }, 2500); // Change slide every 2.5 seconds
 
-        return () => clearInterval(interval)
-    }, [api])
+        return () => {
+            clearInterval(interval);
+        };
+    }, [api]);
 
     return (
         <section className="py-5 bg-white">

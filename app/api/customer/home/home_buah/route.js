@@ -1,6 +1,6 @@
 import { GetProductHomeActionCustomers } from "@/app/api/server_actions/customer/HomeBuahActions";
 
-export async function GET(req, { params }) {
+export async function GET() {
     try {
         const data = await GetProductHomeActionCustomers();
         if (data) {

@@ -1,7 +1,7 @@
 import { InsertProductAction } from "@/app/api/server_actions/dashboard/products/ProductsActions";
 
 
-export async function POST(req, { params }) {
+export async function POST(req,) {
 
 
     try {

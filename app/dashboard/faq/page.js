@@ -52,7 +52,7 @@ export default function FaqPage() {
         fetchFaqs();
     }, []);
 
-    const handleDeleteFaq = async (faqId) => {
+    const handleDeleteFaq = (faqId) => {
         setPendingDeleteId(faqId);
         startTransition(async () => {
             try {

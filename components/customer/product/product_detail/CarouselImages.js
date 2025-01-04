@@ -24,26 +24,32 @@ export default function CarouselWithThumbnails() {
     ]
     const onThumbClick = useCallback(
         (index) => {
-            if (!mainEmbla || !thumbEmbla) return
-            mainEmbla.scrollTo(index)
+            if (!mainEmbla || !thumbEmbla) {
+                return;
+            }
+            mainEmbla.scrollTo(index);
         },
         [mainEmbla, thumbEmbla]
-    )
+    );
 
     const onSelect = useCallback(() => {
-        if (!mainEmbla || !thumbEmbla) return
-        setSelectedIndex(mainEmbla.selectedScrollSnap())
-        thumbEmbla.scrollTo(mainEmbla.selectedScrollSnap())
-    }, [mainEmbla, thumbEmbla])
+        if (!mainEmbla || !thumbEmbla) {
+            return;
+        }
+        setSelectedIndex(mainEmbla.selectedScrollSnap());
+        thumbEmbla.scrollTo(mainEmbla.selectedScrollSnap());
+    }, [mainEmbla, thumbEmbla]);
 
     useEffect(() => {
-        if (!mainEmbla) return
-        onSelect()
-        mainEmbla.on('select', onSelect)
-        return () => {
-            mainEmbla.off('select', onSelect)
+        if (!mainEmbla) {
+            return;
         }
-    }, [mainEmbla, onSelect])
+        onSelect();
+        mainEmbla.on('select', onSelect);
+        return () => {
+            mainEmbla.off('select', onSelect);
+        };
+    }, [mainEmbla, onSelect]);
 
     return (
         <div className="flex gap-4">

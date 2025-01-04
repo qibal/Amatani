@@ -23,7 +23,7 @@ export default function EditProductPage() {
         fetchProduct();
     }, [productId]);
 
-    const handleEditProduct = async (productData) => {
+    const handleEditProduct = (productData) => {
         // Logic to edit product
         console.log('Editing product:', productData);
         // Redirect or show success message

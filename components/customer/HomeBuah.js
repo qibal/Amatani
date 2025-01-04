@@ -98,13 +98,13 @@ function ProductCard({ imageSrc, name, category, priceRange }) {
     );
 }
 
-function NoProduct() {
-    return (
-        <Card className="flex items-center justify-center flex-shrink-0 w-80 h-80 bg-gray-100">
-            <div className="flex flex-col items-center text-center space-y-2">
-                <AlertCircle className="w-8 h-8 text-gray-500" />
-                <p className="text-gray-500">Tidak ada produk!</p>
-            </div>
-        </Card>
-    );
-}
+// function NoProduct() {
+//     return (
+//         <Card className="flex items-center justify-center flex-shrink-0 w-80 h-80 bg-gray-100">
+//             <div className="flex flex-col items-center text-center space-y-2">
+//                 <AlertCircle className="w-8 h-8 text-gray-500" />
+//                 <p className="text-gray-500">Tidak ada produk!</p>
+//             </div>
+//         </Card>
+//     );
+// }

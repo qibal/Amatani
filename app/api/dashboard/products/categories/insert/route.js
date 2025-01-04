@@ -1,8 +1,7 @@
 import { InsertCategoriesAction } from "@/app/api/server_actions/dashboard/products/categories/CategoriesActions"
 
 
-
-export async function POST(req, { params }) {
+export async function POST(req,) {
 
     const formData = await req.formData()
     const category_name = formData.get('category_name')
