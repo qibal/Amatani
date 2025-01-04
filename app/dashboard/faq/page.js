@@ -1,35 +1,79 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
+import { useState, useEffect, useTransition } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Edit, Trash, Plus, SortDesc, Search, X, Loader2, AlertCircle } from 'lucide-react';
+import Link from "next/link";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import ManageCategoryFaqDialog from "@/components/dashboard/faq/CategoryFaqDialog";
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from "@/components/ui/accordion";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {
+    Alert,
+    AlertDescription,
+    AlertTitle,
+} from "@/components/ui/alert";
 
+export default function FaqPage() {
+    const [faqItems, setFaqItems] = useState([]);
+    const [isPending, startTransition] = useTransition();
+    const [pendingDeleteId, setPendingDeleteId] = useState(null);
+    const [showDeleteAlert, setShowDeleteAlert] = useState(false);
 
-const Page = () => {
-    const dummyData = [
-        {
-            id: "ORD_10506099",
-            email: "user1@gmail.com",
-            statusOrder: "Selesai",
-            total: "Rp 150.000",
-            orderDate: "Senin, 18 Nov 2024, 22:30",
-            paymentStatus: "Berhasil (BNI)",
-        },
-        {
-            id: "ORD_10506100",
-            email: "user2@gmail.com",
-            statusOrder: "Dikirim",
-            total: "Rp 200.000",
-            orderDate: "Selasa, 19 Nov 2024, 14:20",
-            paymentStatus: "Berhasil (BCA)",
-        },
-        // Add more dummy data as needed
-    ];
+    const fetchFaqs = async () => {
+        try {
+            const response = await fetch('/api/dashboard/faq');
+            const data = await response.json();
+            setFaqItems(data);
+        } catch (error) {
+            console.error('Error fetching FAQs:', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchFaqs();
+    }, []);
+
+    const handleDeleteFaq = async (faqId) => {
+        setPendingDeleteId(faqId);
+        startTransition(async () => {
+            try {
+                const response = await fetch(`/api/dashboard/faq/delete/${faqId}`, {
+                    method: 'DELETE',
+                });
+                if (!response.ok) {
+                    throw new Error('Failed to delete FAQ');
+                }
+                await response.json();
+                setFaqItems(prevFaqs => prevFaqs.filter(faq => faq.faq_id !== faqId));
+                console.log('Successfully deleted FAQ:', faqId);
+                setShowDeleteAlert(true);
+                setTimeout(() => setShowDeleteAlert(false), 5000); // Hide alert after 5 seconds
+            } catch (error) {
+                console.error('Failed to delete FAQ:', error);
+            } finally {
+                setPendingDeleteId(null);
+            }
+        });
+    };
 
     return (
         <div>
@@ -52,96 +96,109 @@ const Page = () => {
                     </Breadcrumb>
                 </div>
             </header>
-            <div className="flex flex-col gap-6 p-6 rounded-lg">
-                <p className="text-xl font-semibold text-black">Semua Order</p>
-
-                <div className="flex justify-between gap-4">
-                    <Card className="w-60">
-                        <CardHeader>
-                            <div className="flex justify-between items-center">
-                                <p className="text-sm text-[#020617]">Total Revenue</p>
-                                {/* Icon */}
-                            </div>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="text-2xl font-bold text-[#020617]">+12,234</p>
-                            <p className="text-xs text-slate-500">+19% dari bulan lalu</p>
-                        </CardContent>
-                    </Card>
-
-                    {/* Repeat other cards similarly */}
-                    <Card className="w-60">
-                        <CardHeader>
-                            <div className="flex justify-between items-center">
-                                <p className="text-sm text-[#020617]">Barang di Keranjang</p>
-                                {/* Icon */}
-                            </div>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="text-2xl font-bold text-[#020617]">+5,678</p>
-                            <p className="text-xs text-slate-500">+15% dari bulan lalu</p>
-                        </CardContent>
-                    </Card>
-
-                    {/* Add more cards as needed */}
+            <div className="p-4 sm:p-6 space-y-6">
+                {showDeleteAlert && (
+                    <Alert variant="destructive">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertTitle>Success</AlertTitle>
+                        <AlertDescription>
+                            The FAQ has been successfully deleted.
+                        </AlertDescription>
+                    </Alert>
+                )}
+                <div className="space-y-2">
+                    <h1 className="text-lg sm:text-xl font-semibold">All FAQs</h1>
+                    <p className="text-xs text-gray-500">Total of {faqItems.length} FAQs</p>
                 </div>
-
-                {/* Filter Buttons */}
-                <div className="flex justify-between items-center">
-                    <div className="flex space-x-2">
-                        <Button variant="outline">Belum Bayar</Button>
-                        <Button variant="outline">Dibayar</Button>
-                        <Button variant="outline">Perlu Dikirim</Button>
-                        <Button variant="outline">Dikirim</Button>
-                        <Button variant="outline">Dibatalkan</Button>
-                        <Button variant="outline">Selesai</Button>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                        <Input placeholder="Search..." />
-                        <Button variant="outline">Sort by</Button>
-                        <Button variant="outline">More</Button>
+                <div className="flex flex-wrap gap-4 items-center justify-between">
+                    <ManageCategoryFaqDialog />
+                    <div className="flex flex-wrap gap-4 items-center w-full sm:w-auto">
+                        <div className="relative flex items-center w-full lg:w-[300px]">
+                            <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 transform text-muted-foreground pointer-events-none" />
+                            <Input
+                                type="text"
+                                placeholder="Search..."
+                                className="w-full pl-8 pr-8 rounded-full"
+                            />
+                            <Button
+                                size="icon"
+                                className="bg-transparent hover:bg-transparent hover:text-gray-800 shadow-none absolute right-1 top-1/2 -translate-y-1/2 transform"
+                            >
+                                <X className="h-4 w-4 text-gray-950" />
+                            </Button>
+                        </div>
+                        <Link href="/dashboard/faq/add" passHref>
+                            <Button variant="outline" className="w-full sm:w-auto">
+                                <Plus className="w-5 h-5 mr-2" />
+                                Add FAQ
+                            </Button>
+                        </Link>
+                        <Button variant="outline" className="w-full sm:w-auto">
+                            Sort by
+                            <SortDesc className="w-5 h-5 ml-2" />
+                        </Button>
                     </div>
                 </div>
-
-                {/* Orders Table */}
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>ID</TableHead>
-                            <TableHead>Email</TableHead>
-                            <TableHead>Status Order</TableHead>
-                            <TableHead>Total</TableHead>
-                            <TableHead>Order Date</TableHead>
-                            <TableHead>Payment Status</TableHead>
-                            <TableHead>Actions</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {dummyData.map((order) => (
-                            <TableRow key={order.id}>
-                                <TableCell>{order.id}</TableCell>
-                                <TableCell>{order.email}</TableCell>
-                                <TableCell>
-                                    <Badge variant="success">{order.statusOrder}</Badge>
-                                </TableCell>
-                                <TableCell>{order.total}</TableCell>
-                                <TableCell>{order.orderDate}</TableCell>
-                                <TableCell>
-                                    <Badge variant="success">{order.paymentStatus}</Badge>
-                                </TableCell>
-                                <TableCell>
-                                    <div className="flex space-x-2">
-                                        <Button variant="outline">View</Button>
-                                        <Button variant="outline">More</Button>
+                <div className="space-y-4">
+                    {isPending ? (
+                        <div className="flex justify-center items-center h-32">
+                            <Loader2 className="h-8 w-8 animate-spin" />
+                        </div>
+                    ) : (
+                        <Accordion type="single" collapsible className="w-full">
+                            {faqItems.map((faq) => (
+                                <AccordionItem key={faq.faq_id} value={`item-${faq.faq_id}`} className="border-b">
+                                    <div className="flex items-center justify-between">
+                                        <AccordionTrigger className="flex-grow text-left">
+                                            {faq.title}
+                                        </AccordionTrigger>
+                                        <div className="flex space-x-3">
+                                            <Button variant="outline" className="flex items-center justify-center px-3 py-2 sm:px-4 sm:py-2 rounded-md">
+                                                <Edit className="w-4 h-4 mr-2" />
+                                                Edit
+                                            </Button>
+                                            <AlertDialog>
+                                                <AlertDialogTrigger asChild>
+                                                    <Button
+                                                        variant="outline"
+                                                        className="flex items-center justify-center w-9 h-9 rounded-md relative"
+                                                        disabled={pendingDeleteId === faq.faq_id}
+                                                    >
+                                                        {pendingDeleteId === faq.faq_id ? (
+                                                            <Loader2 className="w-4 h-4 animate-spin" />
+                                                        ) : (
+                                                            <Trash className="w-5 h-5" />
+                                                        )}
+                                                    </Button>
+                                                </AlertDialogTrigger>
+                                                <AlertDialogContent>
+                                                    <AlertDialogHeader>
+                                                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                                        <AlertDialogDescription>
+                                                            This action cannot be undone. This will permanently delete the FAQ
+                                                            from our servers.
+                                                        </AlertDialogDescription>
+                                                    </AlertDialogHeader>
+                                                    <AlertDialogFooter>
+                                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                        <AlertDialogAction onClick={() => handleDeleteFaq(faq.faq_id)}>
+                                                            Delete
+                                                        </AlertDialogAction>
+                                                    </AlertDialogFooter>
+                                                </AlertDialogContent>
+                                            </AlertDialog>
+                                        </div>
                                     </div>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+                                    <AccordionContent>
+                                        <p>{faq.content}</p>
+                                    </AccordionContent>
+                                </AccordionItem>
+                            ))}
+                        </Accordion>
+                    )}
+                </div>
             </div>
         </div>
     );
-};
+}
 
-export default Page;

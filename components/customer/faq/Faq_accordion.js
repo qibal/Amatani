@@ -15,7 +15,7 @@ export default function FaqAccordion({ searchTerm, selectedCategory }) {
     useEffect(() => {
         const fetchFaqs = async () => {
             try {
-                const response = await fetch("/api/customer/faq");
+                const response = await fetch("/api/dashboard/faq");
                 const data = await response.json();
 
                 // Filter berdasarkan kategori

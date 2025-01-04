@@ -10,7 +10,7 @@ export default function FaqCategories({ onSelectCategory, selectedCategory }) {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await fetch("/api/customer/faq");
+                const response = await fetch("/api/dashboard/faq");
                 const data = await response.json();
 
                 // Ambil kategori unik

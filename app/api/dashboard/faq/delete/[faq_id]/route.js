@@ -1,11 +1,10 @@
-import { GetFaqAction } from "@/app/api/server_actions/customer/faq/FaqActions";
+import { DeleteFaqAction } from "@/app/api/server_actions/dashboard/faq/FaqActions";
 
-// Endpoint: http://localhost:3000/api/customer/faq
-export async function GET() {
+export async function DELETE(req, { params }) {
+    const faq_id = await params.faq_id
     try {
-        const data = await GetFaqAction();
-
-        if (data && data.length > 0) {
+        const data = await DeleteFaqAction(faq_id);
+        if (data) {
             return new Response(JSON.stringify(data), {
                 status: 200,
                 headers: {
@@ -13,7 +12,7 @@ export async function GET() {
                 }
             });
         } else {
-            return new Response(JSON.stringify({ message: "No FAQs found" }), {
+            return new Response(JSON.stringify({ message: "No data found" }), {
                 status: 404,
                 headers: {
                     "Content-Type": "application/json"

@@ -1,19 +1,18 @@
-import { GetFaqAction } from "@/app/api/server_actions/dashboard/faq/FaqActions";
+import { GetCategoriesFaqAction } from "@/app/api/server_actions/dashboard/faq/categories/CategoriesFaqActions";
 
-// Endpoint: http://localhost:3000/api/customer/faq
+
 export async function GET() {
     try {
-        const data = await GetFaqAction();
-
-        if (data && data.length > 0) {
+        const data = await GetCategoriesFaqAction()
+        if (data) {
             return new Response(JSON.stringify(data), {
                 status: 200,
                 headers: {
                     "Content-Type": "application/json"
                 }
-            });
+            })
         } else {
-            return new Response(JSON.stringify({ message: "No FAQs found" }), {
+            return new Response(JSON.stringify({ message: "No data found" }), {
                 status: 404,
                 headers: {
                     "Content-Type": "application/json"
@@ -28,4 +27,5 @@ export async function GET() {
             }
         });
     }
+
 }
