@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import { CalendarIcon, PhoneIcon, MapPinIcon } from "lucide-react";
+import { CalendarIcon, PhoneIcon, } from "lucide-react";
 
 export default function ShippingForm() {
     return (

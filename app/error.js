@@ -1,28 +1,20 @@
+'use client'
+import { Button } from '@/components/ui/button'
+import Link from 'next/link'
 
-
-'use client' // Error boundaries must be Client Components
-
-import Image from 'next/image'
-import { useEffect } from 'react'
-
-export default function Error({ error, reset }) {
-    useEffect(() => {
-        // Log the error to an error reporting service
-        console.error(error)
-    }, [error])
-
+export default function NotFound() {
     return (
-        <div>
-            <h2>Aduhh Error</h2>
-            <Image src={'/public/FE/error.gif'} width={200} height={100} alt="error" />
-            <button
-                onClick={
-                    // Attempt to recover by trying to re-render the segment
-                    () => reset()
-                }
-            >
-                Try again
-            </button>
+        <div className="flex items-center justify-center h-screen">
+            <div className="text-center">
+                <h2 className="text-4xl font-bold mb-4">Aduhh error, Gimana dong...</h2>
+                <video autoPlay loop muted width="200" height="100" className="mx-auto mb-4">
+                    <source src="/FE/error.mp4" type="video/mp4" />
+                    Your browser does not support the video tag.
+                </video>
+                <Button asChild className="bg-rose-600 text-white hover:bg-rose-700">
+                    <Link href="/">Balik</Link>
+                </Button>
+            </div>
         </div>
     )
 }

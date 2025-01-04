@@ -2,7 +2,7 @@ import { DeleteProductAction } from "@/app/api/server_actions/dashboard/products
 
 //   ]
 export async function DELETE(req, { params }) {
-    // const product_id = await params.product_id
+
     try {
         const data = await DeleteProductAction(params);
         if (data) {

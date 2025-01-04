@@ -53,7 +53,7 @@ export async function GetProductAction() {
 // http://localhost:3000/api/dashboard/products/delete/c1aefa4b-7feb-4d2e-ad97-e3a396145c87
 //query untuk HAPUS  produk
 export async function DeleteProductAction(params) {
-    const productId = await params.product_id;
+    const productId = params.product_id;
 
     try {
         const result = await sql.begin(async sql => {
@@ -84,7 +84,7 @@ export async function DeleteProductAction(params) {
             const imagePaths = product_images.map(img => img.image_path.split('/').pop());
             console.log("🚀 ~ result ~  imagePaths:", imagePaths);
 
-            const { data, error } = await supabase.storage.from('product_images').remove(imagePaths);
+            const { error } = await supabase.storage.from('product_images').remove(imagePaths);
             if (error) {
                 console.error('Error removing images:', error.message);
                 console.error('Error details:', error);
@@ -120,7 +120,6 @@ export async function InsertProductAction(req) {
     const price_type = formData.get('price_type');
     const category = JSON.parse(formData.get('category'));
     const categories_id = category.categories_id;
-    const categories_name = category.categories_name;
     const product_images = formData.getAll('product_images'); // Use getAll to get all images
     const wholesalePrices = JSON.parse(formData.get('wholesalePrices'));
 
@@ -190,7 +189,7 @@ export async function InsertProductAction(req) {
             // Upload images to Supabase storage and insert into product_images table
             for (const image of product_images) {
                 const fileName = `product_${nextImageNumber++}.${image.name.split('.').pop()}`;
-                const { data, error } = await supabase.storage.from('product_images').upload(fileName, image);
+                const { error } = await supabase.storage.from('product_images').upload(fileName, image);
 
                 if (error) {
                     throw new Error(`Failed to upload image: ${error.message}`);

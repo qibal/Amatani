@@ -6,10 +6,12 @@ import { GetProductDetailActionCustomers } from "@/app/api/server_actions/custom
 
 // http://localhost:3000/api/customer/products/products_detail/33a5fcb9-7dff-45af-b7e0-d44711eb9c44
 export async function GET(request, { params }) {
-    console.log("🚀 ~ GET ~ params:", await params.product_id)
+    const { product_id } = await params; // pastikan ini didefinisikan dengan await untuk dynamic route
+
+    console.log("🚀 ~ GET ~ params:", product_id);
 
     try {
-        const data = await GetProductDetailActionCustomers(await params.product_id);
+        const data = await GetProductDetailActionCustomers(product_id);
         if (data) {
             return new Response(JSON.stringify(data), {
                 status: 200,

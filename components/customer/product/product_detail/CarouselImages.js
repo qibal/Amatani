@@ -15,12 +15,12 @@ export default function CarouselWithThumbnails() {
         dragFree: true,
     })
     const images = [
-        { src: '/image1.jpg', alt: 'Image 1' },
-        { src: '/image2.jpg', alt: 'Image 2' },
-        { src: '/image3.jpg', alt: 'Image 3' },
-        { src: '/image4.jpg', alt: 'Image 4' },
-        { src: '/image5.jpg', alt: 'Image 5' },
-        { src: '/image6.jpg', alt: 'Image 6' },
+        { src: '/buah-buahan/img01.png', alt: 'Image 1' },
+        { src: '/buah-buahan/img01.png', alt: 'Image 2' },
+        { src: '/buah-buahan/img01.png', alt: 'Image 3' },
+        { src: '/buah-buahan/img01.png', alt: 'Image 4' },
+        { src: '/buah-buahan/img01.png', alt: 'Image 5' },
+        { src: '/buah-buahan/img01.png', alt: 'Image 6' },
     ]
     const onThumbClick = useCallback(
         (index) => {

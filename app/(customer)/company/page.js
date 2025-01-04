@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import Image from "next/image";
 
 export default function AboutPage() {
     return (
@@ -42,7 +43,9 @@ export default function AboutPage() {
                         ].map((member, idx) => (
                             <Card key={idx} className="hover:shadow-xl transition-shadow">
                                 <CardHeader className="p-0">
-                                    <img
+                                    <Image
+                                        width={200}
+                                        height={200}
                                         src={member.image}
                                         alt={member.name}
                                         className="w-full h-48 object-cover rounded-t"

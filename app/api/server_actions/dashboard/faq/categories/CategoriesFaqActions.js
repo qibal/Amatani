@@ -3,7 +3,7 @@
 import sql from "@/lib/postgres";
 
 // http://localhost:3000/api/dashboard/faq/categories
-export async function GetCategoriesFaqAction(params) {
+export async function GetCategoriesFaqAction() {
     const categories = await sql`SELECT * FROM faq_category;`;
 
     if (categories) {

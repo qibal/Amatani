@@ -10,9 +10,7 @@ import { Select, SelectItem, SelectTrigger, SelectContent, SelectValue } from "@
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ProductImageUpload } from "@/components/dashboard/product/DropProductImage";
-import Image from "next/image";
 import { Trash2, Loader2 } from 'lucide-react';
-import { GetCategoriesAction } from '@/app/api/server_actions/dashboard/products/categories/CategoriesActions';
 
 // Zod schema validation
 const formSchema = z.object({

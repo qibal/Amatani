@@ -5,7 +5,7 @@ import sql from "@/lib/postgres";
 
 
 // http://localhost:3000/api/dashboard/products/categories
-export async function GetCategoriesAction(params) {
+export async function GetCategoriesAction() {
     const categories = await sql`SELECT * FROM categories;`;
 
     if (categories) {

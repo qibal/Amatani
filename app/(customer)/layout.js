@@ -1,6 +1,5 @@
 import Navbar from "@/components/customer/Navbar/Navbar";
 import { Suspense } from "react";
-import { headers } from "next/headers";
 
 import { CartProvider } from "@/components/customer/Navbar/CartContext";
 import { GetUserCustomers } from "@/components/customer/GetUser";

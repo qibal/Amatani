@@ -1,7 +1,6 @@
 import { GetUserCustomers } from "@/components/customer/GetUser";
 
 export async function GET() {
-    // const product_id = await params.product_id
     try {
         const data = await GetUserCustomers();
         if (data) {

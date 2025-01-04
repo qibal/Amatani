@@ -4,11 +4,9 @@ import ProductForm from "@/components/dashboard/product/ProductForm";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 
 export default function AddProductPage() {
-    const router = useRouter();
+
 
     const handleAddProduct = async (params) => {
         console.log('Adding product:', params);

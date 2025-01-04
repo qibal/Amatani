@@ -1,15 +1,11 @@
 "use client";
 
 import FaqForm from "@/components/dashboard/faq/FaqForm";
-import ProductForm from "@/components/dashboard/product/ProductForm";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 
 export default function AddFaqPage() {
-    const router = useRouter();
 
     const handleAddProduct = async (params) => {
         console.log('Adding product:', params);
@@ -23,7 +19,7 @@ export default function AddFaqPage() {
         formData.append('category', JSON.stringify(params.category));
         formData.append('wholesalePrices', JSON.stringify(params.wholesalePrices));
 
-        params.product_images.forEach((image, index) => {
+        params.product_images.forEach((image) => {
             formData.append(`product_images`, image);
         });
 

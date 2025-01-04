@@ -1,6 +1,5 @@
 'use client'
-import Image from "next/image"
-import { AspectRatio } from "@/components/ui/aspect-ratio"
+
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import {
@@ -10,7 +9,6 @@ import {
     AccordionTrigger,
 } from "@/components/ui/accordion"
 import { Minus, Plus, Star, Truck } from 'lucide-react'
-import { cn } from "@/lib/utils"
 import { useEffect, useState } from "react"
 
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form"
@@ -20,7 +18,6 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 
 import { useTransition } from 'react'
-import { createClient } from "@/lib/supabase/server"
 
 import { useRouter } from 'next/navigation'
 import { useCart } from "../../Navbar/CartContext"
@@ -38,9 +35,7 @@ export default function ProductDetailComponent({ product_id }) {
     useEffect(() => {
         async function fetchProducts(product_id) {
             console.log("🚀 ~ fetchProducts ~ product_id:", product_id)
-            const result = await fetch(`/api/customer/products/products_detail/${product_id}`, {
-                method: "GET",
-            });
+            const result = await fetch(`/api/customer/products/products_detail/${product_id}`);
             if (result.ok) {
                 const data = await result.json();
                 setProductsData(data[0]); // Assuming data is an array and we need the first item

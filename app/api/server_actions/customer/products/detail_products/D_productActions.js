@@ -1,11 +1,11 @@
 'use server'
-import { cookies } from 'next/headers';
+
 import sql from "@/lib/postgres";
-import { createClient } from "@/lib/supabase/server";
+
 // http://localhost:3000/api/customer/products/products_detail/33a5fcb9-7dff-45af-b7e0-d44711eb9c44
 export async function GetProductDetailActionCustomers(params) {
-    console.log(await params);
-    const data = await params
+    console.log(params);
+    const data = params
 
     // Query untuk mendapatkan data produk berdasarkan kategori yang sesuai dengan query
     const result = await sql`
