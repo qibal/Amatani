@@ -1,6 +1,7 @@
 'use client'
 
-import { AlertDialogHeader } from "@/components/ui/alert-dialog";
+import { Toaster, toast } from "sonner";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -10,17 +11,17 @@ import { Loader2, Plus, Trash } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const formschema = z.object({
     categories_name: z.string().min(1, { message: 'Jangan lupa di isi' })
-})
+});
 
-// Komponen Dialog Manage Categories
 export default function ManageCategoriesDialog() {
     const [categories, setCategories] = useState([]);
-    const [isAdding, startAdding] = useTransition(); // Untuk tombol Add
-    const [isDeleting, startDeleting] = useTransition(); // Untuk tombol Delete
-    const [pendingCategoryId, setPendingCategoryId] = useState(null); // ID kategori yang sedang dihapus
+    const [isAdding, startAdding] = useTransition(); 
+    const [isDeleting, startDeleting] = useTransition(); 
+    const [pendingCategoryId, setPendingCategoryId] = useState(null); 
 
     const form = useForm({
         resolver: zodResolver(formschema),
@@ -29,57 +30,60 @@ export default function ManageCategoriesDialog() {
         },
     });
 
-    // Tambah Kategori
+    const fetchCategories = async () => {
+        try {
+            const response = await fetch('/api/dashboard/products/categories');
+            const data = await response.json();
+            setCategories(data);
+        } catch (error) {
+            console.error("Failed to fetch categories:", error);
+        }
+    };
+
     const onSubmit = (params) => {
         startAdding(async () => {
             try {
-                console.log('berhasil input data', params);
-
                 const formData = new FormData();
                 formData.append('category_name', params.categories_name);
-
+    
                 const result = await fetch('/api/dashboard/products/categories/insert', {
                     method: 'POST',
                     body: formData,
                 });
-                const data = await result.json();
+    
+                if (!result.ok) throw new Error('Failed to add category');
+                await result.json();
+    
                 fetchCategories();
                 form.reset();
-                console.log('berhasil input data', data);
+                toast.success("Category added successfully!", { duration: 5000 });
             } catch (error) {
                 console.error('Error adding category:', error);
+                toast.error("Failed to add category.", { duration: 5000 });
             }
         });
     };
 
-    // Hapus Kategori
-    const handleDeleteCategory = (categoryId) => {
-        setPendingCategoryId(categoryId); // Set ID kategori yang sedang dihapus
+    const handleDeleteCategory = (categoryId, categoryName) => {
+        setPendingCategoryId(categoryId); 
         startDeleting(async () => {
             try {
                 const response = await fetch(`/api/dashboard/products/categories/delete/${categoryId}`, {
                     method: 'DELETE',
                 });
-                const data = await response.json();
-                fetchCategories(); // Refresh daftar kategori
-                console.log('Berhasil hapus kategori:', data);
+    
+                if (!response.ok) throw new Error('Failed to delete category');
+                await response.json();
+    
+                fetchCategories(); 
+                toast.success(`Category "${categoryName}" deleted successfully.`, { duration: 5000 });
             } catch (error) {
-                console.error('Gagal menghapus kategori:', error);
+                console.error('Failed to delete category:', error);
+                toast.error("Failed to delete category.", { duration: 5000 });
             } finally {
-                setPendingCategoryId(null); // Reset ID kategori setelah selesai
+                setPendingCategoryId(null); 
             }
         });
-    };
-
-    const fetchCategories = async () => {
-        try {
-            const response = await fetch('/api/dashboard/products/categories');
-            const data = await response.json();
-            console.log('categories =', data);
-            setCategories(data); // Simpan data produk ke dalam state
-        } catch (error) {
-            console.error("Failed to fetch products:", error);
-        }
     };
 
     useEffect(() => {
@@ -88,6 +92,7 @@ export default function ManageCategoriesDialog() {
 
     return (
         <div>
+            <Toaster position="top-right" />
             <Dialog>
                 <DialogTrigger asChild>
                     <Button variant="outline" className="w-full sm:w-auto">
@@ -97,9 +102,7 @@ export default function ManageCategoriesDialog() {
                 <DialogContent>
                     <AlertDialogHeader>
                         <DialogTitle>Manage Your Categories</DialogTitle>
-                        <DialogDescription>
-                            Add or delete categories your products.
-                        </DialogDescription>
+                        <DialogDescription>Add or delete categories for your products.</DialogDescription>
                     </AlertDialogHeader>
 
                     <Form {...form}>
@@ -110,7 +113,7 @@ export default function ManageCategoriesDialog() {
                                     name="categories_name"
                                     render={({ field }) => (
                                         <FormItem className="flex-1">
-                                            <FormLabel className="">Category Name</FormLabel>
+                                            <FormLabel>Category Name</FormLabel>
                                             <FormControl>
                                                 <Input
                                                     type="text"
@@ -123,7 +126,6 @@ export default function ManageCategoriesDialog() {
                                         </FormItem>
                                     )}
                                 />
-                                {/* Tombol Tambah Kategori */}
                                 <Button type="submit" className="bg-red-600 hover:bg-rose-500 h-10" disabled={isAdding}>
                                     {isAdding ? (
                                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -136,29 +138,52 @@ export default function ManageCategoriesDialog() {
                         </form>
                     </Form>
 
-                    {/* Daftar Kategori */}
-                    <div className="mt-4 space-y-2">
-                        <h3 className="font-medium text-sm">Manage Categories ({categories.length})</h3>
-                        {categories.map((category) => (
-                            <div key={category.categories_id} className="flex items-center justify-between p-2 border rounded-md">
-                                <p className="text-sm">{category.categories_name}</p>
-                                <Button
-                                    variant="outline"
-                                    className="w-8 h-8 flex items-center justify-center"
-                                    onClick={() => handleDeleteCategory(category.categories_id)}
-                                    disabled={isDeleting && pendingCategoryId === category.categories_id} // Gunakan isDeleting
+                    <h3 className="font-medium text-sm mt-4">Manage Categories ({categories.length})</h3>
+                    <ScrollArea className="max-h-72 border rounded-md p-2 mt-2">
+                        <div className="space-y-2">
+                            {categories.map((category) => (
+                                <div
+                                    key={category.categories_id}
+                                    className="flex items-center justify-between p-2 border rounded-md"
                                 >
-                                    {isDeleting && pendingCategoryId === category.categories_id ? (
-                                        <Loader2 className="w-4 h-4 text-red-500 animate-spin" />
-                                    ) : (
-                                        <Trash className="w-4 h-4 text-red-500" />
-                                    )}
-                                </Button>
-                            </div>
-                        ))}
-                    </div>
+                                    <p className="text-sm">{category.categories_name}</p>
+                                    <AlertDialog>
+                                        <AlertDialogTrigger asChild>
+                                            <Button
+                                                variant="outline"
+                                                className="w-8 h-8 flex items-center justify-center"
+                                                disabled={isDeleting && pendingCategoryId === category.categories_id}
+                                            >
+                                                {isDeleting && pendingCategoryId === category.categories_id ? (
+                                                    <Loader2 className="w-4 h-4 text-red-500 animate-spin" />
+                                                ) : (
+                                                    <Trash className="w-4 h-4 text-red-500" />
+                                                )}
+                                            </Button>
+                                        </AlertDialogTrigger>
+                                        <AlertDialogContent>
+                                            <AlertDialogHeader>
+                                                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                                <AlertDialogDescription>
+                                                    This action cannot be undone. It will permanently delete the category.
+                                                </AlertDialogDescription>
+                                            </AlertDialogHeader>
+                                            <AlertDialogFooter>
+                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                <AlertDialogAction
+                                                    onClick={() => handleDeleteCategory(category.categories_id, category.categories_name)}
+                                                >
+                                                    Delete
+                                                </AlertDialogAction>
+                                            </AlertDialogFooter>
+                                        </AlertDialogContent>
+                                    </AlertDialog>
+                                </div>
+                            ))}
+                        </div>
+                    </ScrollArea>
                 </DialogContent>
             </Dialog>
         </div>
     );
-};
+}

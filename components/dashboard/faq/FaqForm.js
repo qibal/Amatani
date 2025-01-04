@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectItem, SelectTrigger, SelectContent, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Loader2 } from 'lucide-react';
+import { Toaster, toast } from "sonner";
 
 const formSchema = z.object({
     title: z.string().min(1, { message: "Tidak boleh kosong" }),
@@ -60,121 +61,135 @@ export default function FAQForm({ mode, faq }) {
                 formData.append('title', data.title);
                 formData.append('content', data.content);
                 formData.append('category_id', data.category_id);
-
+    
                 const response = await fetch('/api/dashboard/faq/insert', {
                     method: 'POST',
                     body: formData,
                 });
-
+    
                 if (!response.ok) {
                     throw new Error('Failed to insert FAQ');
                 }
-
+    
                 const result = await response.json();
                 console.log('FAQ inserted successfully:', result);
-
+    
+                // Tampilkan toast jika berhasil
+                toast("FAQ berhasil ditambahkan!", {
+                    description: `FAQ "${data.title}" telah berhasil disimpan.`,
+                    duration: 5000, // dalam milidetik
+                });
+    
                 if (mode === 'add') {
                     form.reset();
                 }
-                // Tambahkan feedback ke pengguna di sini (misalnya, toast notification)
             } catch (error) {
                 console.error('Error submitting form:', error);
-                // Tambahkan feedback error ke pengguna di sini
+    
+                // Tampilkan toast jika gagal
+                toast("Gagal menyimpan FAQ", {
+                    description: "Terjadi kesalahan saat menyimpan FAQ.",
+                    duration: 5000,
+                });
             }
         });
     };
+    
 
     return (
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleSubmit)} className="lg:w-4/6">
-                <div className="border">
-                    <div className="flex justify-between items-center pb-4">
-                        <h1 className="text-xl font-semibold">{mode === 'add' ? 'Tambah FAQ' : 'Edit FAQ'}</h1>
-                        <div className="flex gap-3">
-                            <Button variant="outline" type="button" onClick={() => form.reset()}>Cancel</Button>
-                            <Button
-                                variant="default"
-                                type="submit"
-                                className="bg-rose-600 hover:bg-rose-500"
-                                disabled={isPending}
-                            >
-                                {isPending ? (
-                                    <>
-                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                        {mode === 'add' ? 'Menambahkan...' : 'Menyimpan...'}
-                                    </>
-                                ) : (
-                                    mode === 'add' ? 'Tambah' : 'Simpan Perubahan'
-                                )}
-                            </Button>
+        <div className="lg:w-4/6">
+            <Toaster position="top-right" />
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(handleSubmit)} className="lg:w-4/6">
+                        <div className="border">
+                            <div className="flex justify-between items-center pb-4">
+                                <h1 className="text-xl font-semibold">{mode === 'add' ? 'Tambah FAQ' : 'Edit FAQ'}</h1>
+                                <div className="flex gap-3">
+                                    <Button variant="outline" type="button" onClick={() => form.reset()}>Cancel</Button>
+                                    <Button
+                                        variant="default"
+                                        type="submit"
+                                        className="bg-rose-600 hover:bg-rose-500"
+                                        disabled={isPending}
+                                    >
+                                        {isPending ? (
+                                            <>
+                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                {mode === 'add' ? 'Menambahkan...' : 'Menyimpan...'}
+                                            </>
+                                        ) : (
+                                            mode === 'add' ? 'Tambah' : 'Simpan Perubahan'
+                                        )}
+                                    </Button>
+                                </div>
+                            </div>
+                            <div className="container mx-auto space-y-6">
+                                <FormField
+                                    control={form.control}
+                                    name="title"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Judul FAQ</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="Masukkan judul FAQ" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="content"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Konten FAQ</FormLabel>
+                                            <FormControl>
+                                                <Textarea
+                                                    placeholder="Masukkan konten FAQ"
+                                                    {...field}
+                                                    onInput={(e) => {
+                                                        e.target.style.height = 'auto';
+                                                        e.target.style.height = `${e.target.scrollHeight}px`;
+                                                    }}
+                                                    style={{ overflow: 'hidden' }}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="category_id"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Kategori FAQ</FormLabel>
+                                            <FormControl>
+                                                <Select
+                                                    onValueChange={field.onChange}
+                                                    value={field.value}
+                                                >
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Pilih Kategori" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        {categories.map(category => (
+                                                            <SelectItem key={category.category_id} value={category.category_id.toString()}>
+                                                                {category.name}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
                         </div>
-                    </div>
-                    <div className="container mx-auto space-y-6">
-                        <FormField
-                            control={form.control}
-                            name="title"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Judul FAQ</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Masukkan judul FAQ" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="content"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Konten FAQ</FormLabel>
-                                    <FormControl>
-                                        <Textarea
-                                            placeholder="Masukkan konten FAQ"
-                                            {...field}
-                                            onInput={(e) => {
-                                                e.target.style.height = 'auto';
-                                                e.target.style.height = `${e.target.scrollHeight}px`;
-                                            }}
-                                            style={{ overflow: 'hidden' }}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="category_id"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Kategori FAQ</FormLabel>
-                                    <FormControl>
-                                        <Select
-                                            onValueChange={field.onChange}
-                                            value={field.value}
-                                        >
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Pilih Kategori" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                {categories.map(category => (
-                                                    <SelectItem key={category.category_id} value={category.category_id.toString()}>
-                                                        {category.name}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                    </div>
-                </div>
-            </form>
-        </Form>
+                    </form>
+                </Form>
+        </div>
     );
 }
 

@@ -3,7 +3,7 @@
 import { useState, useEffect, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Edit, Trash, Plus, SortDesc, Search, X, Loader2, AlertCircle } from 'lucide-react';
+import { Edit, Trash, Plus, SortDesc, Search, X, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
@@ -15,28 +15,13 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import {
-    Alert,
-    AlertDescription,
-    AlertTitle,
-} from "@/components/ui/alert";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { toast } from "sonner";
 
 export default function FaqPage() {
     const [faqItems, setFaqItems] = useState([]);
     const [isPending, startTransition] = useTransition();
     const [pendingDeleteId, setPendingDeleteId] = useState(null);
-    const [showDeleteAlert, setShowDeleteAlert] = useState(false);
 
     const fetchFaqs = async () => {
         try {
@@ -64,10 +49,9 @@ export default function FaqPage() {
                 }
                 await response.json();
                 setFaqItems(prevFaqs => prevFaqs.filter(faq => faq.faq_id !== faqId));
-                console.log('Successfully deleted FAQ:', faqId);
-                setShowDeleteAlert(true);
-                setTimeout(() => setShowDeleteAlert(false), 5000); // Hide alert after 5 seconds
+                toast.success('The FAQ has been successfully deleted.');
             } catch (error) {
+                toast.error('Failed to delete FAQ. Please try again.');
                 console.error('Failed to delete FAQ:', error);
             } finally {
                 setPendingDeleteId(null);
@@ -97,15 +81,6 @@ export default function FaqPage() {
                 </div>
             </header>
             <div className="p-4 sm:p-6 space-y-6">
-                {showDeleteAlert && (
-                    <Alert variant="destructive">
-                        <AlertCircle className="h-4 w-4" />
-                        <AlertTitle>Success</AlertTitle>
-                        <AlertDescription>
-                            The FAQ has been successfully deleted.
-                        </AlertDescription>
-                    </Alert>
-                )}
                 <div className="space-y-2">
                     <h1 className="text-lg sm:text-xl font-semibold">All FAQs</h1>
                     <p className="text-xs text-gray-500">Total of {faqItems.length} FAQs</p>
@@ -201,4 +176,3 @@ export default function FaqPage() {
         </div>
     );
 }
-

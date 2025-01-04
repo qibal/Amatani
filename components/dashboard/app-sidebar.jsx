@@ -188,6 +188,20 @@ export function AppSidebar() {
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
+          <SidebarGroupContent>
+            {/* Home */}
+            <SidebarMenu>
+              <SidebarMenuItem >
+                <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/orders')}>
+                  <a href="/dashboard/shop_decoration">
+                    <ShoppingCart />
+                    <span>Dekorasi Toko</span>
+                  </a>
+                </SidebarMenuButton>
+                <SidebarMenuBadge></SidebarMenuBadge>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
       {/* footer */}
