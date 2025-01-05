@@ -8,12 +8,13 @@ import { AlertCircle } from 'lucide-react'
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Progress } from '@/components/ui/progress'
 import Image from 'next/image'
-
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog'
+import { supabase } from "@/lib/supabase/client";
 const MAX_FILE_SIZE = 4 * 1024 * 1024; // 4MB
 const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const MAX_FILES = 6;
 
-export function ProductImageUpload({ onChange, value, error }) {
+export function ProductImageUpload({ onChange, value, error, mode }) {
   const fileInputRef = useRef(null)
   const [localError, setLocalError] = useState(null)
   const [isDragging, setIsDragging] = useState(false)
@@ -92,16 +93,38 @@ export function ProductImageUpload({ onChange, value, error }) {
     }
   }, [handleFiles])
 
-  const removeFile = useCallback((fileToRemove) => {
-    onChange(value.filter(file => file !== fileToRemove))
-    URL.revokeObjectURL(fileToRemove.preview)
-  }, [onChange, value])
-
   const handleClick = useCallback(() => {
     if (value.length < MAX_FILES) {
       fileInputRef.current?.click()
     }
   }, [value.length])
+
+  const removeFile = useCallback(async (fileToRemove) => {
+    if (typeof fileToRemove === 'string') {
+      // Extract the file name from the URL
+      const fileName = fileToRemove.split('/').pop();
+      const { error: storageError } = await supabase.storage.from('product_images').remove([fileName]);
+      if (storageError) {
+        setLocalError(`Failed to remove image from storage: ${storageError.message}`);
+        return;
+      }
+
+      const { error: dbError } = await supabase
+        .from('product_images')
+        .delete()
+        .eq('image_path', fileName);
+
+      if (dbError) {
+        setLocalError(`Failed to remove image path from database: ${dbError.message}`);
+        return;
+      }
+
+      console.log('Image removed successfully from storage and database');
+    } else {
+      URL.revokeObjectURL(fileToRemove.preview);
+    }
+    onChange(value.filter(file => file !== fileToRemove));
+  }, [onChange, value]);
 
   return (
     <div className="w-full">
@@ -117,7 +140,7 @@ export function ProductImageUpload({ onChange, value, error }) {
         onDragLeave={handleDragLeave}
         onClick={handleClick}
       >
-        {value.length < MAX_FILES ? (
+        {value && value.length < MAX_FILES ? (
           <>
             <Input
               id="product-images"
@@ -154,26 +177,55 @@ export function ProductImageUpload({ onChange, value, error }) {
         </Alert>
       )}
       <div className="mt-4 grid grid-cols-6 gap-4">
-        {value.map((file, index) => (
-          <div key={index} className="relative">
-            <AspectRatio ratio={1 / 1} className="bg-muted">
-              <Image
-                width={200}
-                height={200}
-                src={file.preview}
-                alt={`Preview ${index + 1}`}
-                className="rounded-md object-cover w-full h-full border"
-              />
-            </AspectRatio>
-            <button
-              onClick={() => removeFile(file)}
-              className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 m-1"
-              type="button"
-            >
-              &times;
-            </button>
-          </div>
-        ))}
+        {
+          value.map((file, index) => (
+            <div key={index} className="relative">
+              <AspectRatio ratio={1 / 1} className="bg-muted">
+                <Image
+                  width={150}
+                  height={150}
+                  src={typeof file === 'string'
+                    ? `https://xmlmcdfzbwjljhaebzna.supabase.co/storage/v1/object/public/${file}`
+                    : file.preview}
+                  alt={`Preview ${index + 1}`}
+                  className="rounded-md object-cover w-full h-full border"
+                />
+              </AspectRatio>
+              {typeof file === 'string' ? (
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <button
+                      className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 m-1"
+                      type="button"
+                    >
+                      &times;
+                    </button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action cannot be undone. This will permanently delete the image from storage.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => removeFile(file)}>Delete</AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              ) : (
+                <button
+                  onClick={() => removeFile(file)}
+                  className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 m-1"
+                  type="button"
+                >
+                  &times;
+                </button>
+              )}
+            </div>
+          ))
+        }
       </div>
     </div>
   )

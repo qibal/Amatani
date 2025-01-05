@@ -1,10 +1,9 @@
-import { DeleteCategoriesAction } from "@/app/api/server_actions/dashboard/products/categories/CategoriesActions";
+import { UpdateProductAction } from "@/app/api/server_actions/dashboard/products/ProductsActions";
 
-export async function DELETE(req, props) {
-    const params = await props.params;
-    const categories_id = await params.categories_id
+// http://localhost:3000/api/dashboard/products/edit
+export async function POST(req,) {
     try {
-        const data = await DeleteCategoriesAction(categories_id);
+        const data = await UpdateProductAction(req);
         if (data) {
             return new Response(JSON.stringify(data), {
                 status: 200,

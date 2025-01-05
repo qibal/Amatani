@@ -1,6 +1,7 @@
 import { DeleteCategoriesFaqAction } from "@/app/api/server_actions/dashboard/faq/categories/CategoriesFaqActions";
 
-export async function DELETE(req, { params }) {
+export async function DELETE(req, props) {
+    const params = await props.params;
     const category_id = await params.category_id
     try {
         const data = await DeleteCategoriesFaqAction(category_id);

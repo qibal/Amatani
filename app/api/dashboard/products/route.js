@@ -1,9 +1,15 @@
-import { GetProductAction } from "../../server_actions/dashboard/products/ProductsActions"
+import { GetProductAction } from "../../server_actions/dashboard/products/ProductsActions";
 
-
-export async function GET() {
+export async function GET(req) {
     try {
-        const data = await GetProductAction();
+        const url = new URL(req.url);
+        const searchQuery = url.searchParams.get('search');
+        const sort = url.searchParams.get('sort');
+        const limit = parseInt(url.searchParams.get('limit')) || 10;
+        const offset = parseInt(url.searchParams.get('offset')) || 0;
+
+        const data = await GetProductAction({ searchQuery, sort, limit, offset });
+
         if (data) {
             return new Response(JSON.stringify(data), {
                 status: 200,

@@ -3,7 +3,8 @@ import { GetCarttActionCustomers } from "@/app/api/server_actions/customer/cart/
 
 
 // http://localhost:3000/api/customer/cart/ea1975e8-e225-4988-9c31-e4e1d8d11693
-export async function GET(request, { params }) {
+export async function GET(request, props) {
+    const params = await props.params;
     const user_id = await params.user_id
     console.log("🚀 ~ GET ~ user_id:", await user_id)
     try {
