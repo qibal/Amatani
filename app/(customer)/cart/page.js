@@ -167,7 +167,7 @@ export default function CartPage() {
                     ))}
                 </div>
                 <div className="w-full md:w-1/3">
-                    <Card>
+                    <Card className="sticky top-0">
                         <CardHeader>
                             <CardTitle>Order Summary</CardTitle>
                         </CardHeader>

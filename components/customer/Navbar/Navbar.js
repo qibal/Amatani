@@ -26,6 +26,10 @@ export default function Navbar({ isAuthenticated }) {
 
         // Set isRootPath based on pathname
         setIsRootPath(pathname === "/");
+        // Handle second-level navbar visibility
+        if (pathname === '/products') {
+            setIsRootPath(false);
+        }
 
         // Add scroll event listener
         window.addEventListener("scroll", handleScroll);
@@ -122,22 +126,22 @@ export default function Navbar({ isAuthenticated }) {
             </div>
 
             {/* Tingkatan 2 - Hanya tampil jika di root path */}
-            {isRootPath && (
-                <div className="hidden md:flex container mx-auto items-center justify-between pb-4 text-sm">
-                    <CategoryMenu isRootPath={isRootPath && !scrolled} />
-                    <div className="flex items-center space-x-6">
-                        <Link className={`hover:underline ${textClass}`} href="/tentang-kami">
-                            Tentang Kami
-                        </Link>
-                        <Link className={`hover:underline ${textClass}`} href="/faq">
-                            Pusat Bantuan
-                        </Link>
-                        <Link className={`hover:underline ${textClass}`} href="/bekerja-sama">
-                            Bekerja Sama
-                        </Link>
+            {(isRootPath || (pathname !== '/' && pathname !== '/products')) && (
+                    <div className="hidden md:flex container mx-auto items-center justify-between pb-4 text-sm">
+                        <CategoryMenu isRootPath={isRootPath && !scrolled} />
+                        <div className="flex items-center space-x-6">
+                            <Link className={`hover:underline ${textClass}`} href="/tentang-kami">
+                                Tentang Kami
+                            </Link>
+                            <Link className={`hover:underline ${textClass}`} href="/faq">
+                                Pusat Bantuan
+                            </Link>
+                            <Link className={`hover:underline ${textClass}`} href="/bekerja-sama">
+                                Bekerja Sama
+                            </Link>
+                        </div>
                     </div>
-                </div>
-            )}
+                )}
         </header>
     );
 }

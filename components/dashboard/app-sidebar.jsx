@@ -192,7 +192,7 @@ export function AppSidebar() {
             {/* Home */}
             <SidebarMenu>
               <SidebarMenuItem >
-                <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/orders')}>
+                <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/shop_decoration')}>
                   <a href="/dashboard/shop_decoration">
                     <ShoppingCart />
                     <span>Dekorasi Toko</span>

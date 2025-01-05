@@ -22,6 +22,7 @@ import { useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { useCart } from "../../Navbar/CartContext"
 import CarouselWithThumbnails from "./CarouselImages"
+import { Separator } from "@/components/ui/separator"
 
 
 
@@ -276,43 +277,63 @@ function ProductInfoCard({ productsData }) {
         : []
 
     return (
-        <Card className="p-4">
-            <div className="space-y-4">
-                <div className="grid grid-cols-3  gap-4 text-center ">
-                    {productsData.price_type === 'fixed' ? (
-                        <div className="text-center">
-                            <div className="text-sm text-muted-foreground">
-                                Harga
+        <div className="w-full max-w-lg mx-auto p-4">
+            {/* Search Section */}
+            <div className="flex justify-start items-center w-full h-90 gap-2 mb-6">
+                <Input
+                    type="text"
+                    placeholder="Cari produk"
+                    className="rounded-full bg-gray-50"
+                // value={search}
+                // onChange={(e) => setSearch(e.target.value)}
+                />
+                <Button
+                    variant="secondary"
+                    className="h-9 px-4 rounded-full bg-rose-100 hover:bg-rose-200 text-rose-600"
+                    onClick={() => console.log('Searching for:', search)}
+                >
+                    Cari
+                </Button>
+            </div>
+            <div className="flex flex-col justify-start items-center w-full gap-10 bg-white rounded-lg">
+                {/* Price Tiers */}
+                <div className="flex flex-col justify-start items-center w-full gap-6">
+                    <div className="grid grid-cols-3 gap-4 text-center w-full">
+                        {productsData.price_type === 'fixed' ? (
+                            <div className="col-span-3 text-center">
+                                <div className="text-sm text-muted-foreground">
+                                    Harga
+                                </div>
+                                <div className="font-semibold">
+                                    Rp {productsData.fixed_price}
+                                </div>
                             </div>
-                            <div className="font-semibold">
-                                Rp {productsData.fixed_price}
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="grid grid-cols-3 gap-4 text-center">
-                            {wholesalePrices.map((price, index) => (
+                        ) : (
+                            wholesalePrices.map((price, index) => (
                                 <div key={index}>
                                     <div className="text-sm text-muted-foreground">
-                                        {price.min_quantity} - {price.max_quantity} kg
+                                        {price.min_quantity} - {price.max_quantity === Infinity ? '∞' : price.max_quantity} kg
                                     </div>
                                     <div className="font-semibold">
                                         Rp {price.price}
                                     </div>
                                 </div>
-                            ))}
-                        </div>
-                    )}
+                            ))
+                        )}
+                    </div>
+                    <Separator className="w-full" />
                 </div>
 
+                {/* Quantity Selector and Action Buttons */}
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                        <div className="flex items-center gap-2">
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 w-full">
+                        <div className="flex items-center gap-2 pb-5">
                             <Button
                                 type="button"
                                 variant="outline"
                                 size="icon"
                                 onClick={handleMinus}
-                                className="w-14 h-10"
+                                className="w-14 h-10 "
                             >
                                 <Minus className="h-4 w-4" />
                             </Button>
@@ -345,10 +366,10 @@ function ProductInfoCard({ productsData }) {
                             </Button>
                         </div>
 
-                        <div className="flex flex-col gap-2">
+                        <div className="flex flex-col gap-4">
                             <Button
                                 type="submit"
-                                className="w-full h-10 bg-red-500 hover:bg-red-600"
+                                className="w-full h-12 text-base bg-red-500 hover:bg-red-600 rounded-full"
                                 disabled={isPending}
                             >
                                 {isPending ? "Adding..." : "Tambah Ke Keranjang"}
@@ -356,7 +377,7 @@ function ProductInfoCard({ productsData }) {
                             <Button
                                 type="button"
                                 variant="outline"
-                                className="w-full h-10"
+                                className="w-full h-12 text-base rounded-full"
                             >
                                 Tambah Ke Favorit
                             </Button>
@@ -364,15 +385,12 @@ function ProductInfoCard({ productsData }) {
                     </form>
                 </Form>
 
-                <div className="text-sm text-muted-foreground text-center">
-                    Lakukan Pembayaran di Keranjang
-                </div>
-
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Truck className="h-4 w-4" />
-                    <span>Dikirim dari gudang Tangerang</span>
+                {/* Shipping Info */}
+                <div className="flex justify-start items-center w-full gap-3 text-gray-500">
+                    <Truck className="w-4 h-4" />
+                    <p className="text-sm">Dikirim dari gudang Tanggerang</p>
                 </div>
             </div>
-        </Card>
+        </div>
     )
 }
