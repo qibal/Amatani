@@ -17,6 +17,8 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { ArrowUpAZ, ArrowDownAZ, ArrowDownWideNarrow, ArrowUpWideNarrow } from 'lucide-react'
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Toaster, toast } from "sonner";
 
 // Komponen Reusable untuk Rentang Harga
 const PriceRange = ({ label, price }) => (
@@ -34,8 +36,10 @@ const ActionButtons = ({ product_id, onDelete }) => {
         startTransition(async () => {
             try {
                 await onDelete(product_id);
+                toast.success("Product deleted successfully");
             } catch (error) {
                 console.error("Gagal menghapus produk:", error);
+                toast.error("Failed to delete product");
             }
         });
     };
@@ -48,18 +52,34 @@ const ActionButtons = ({ product_id, onDelete }) => {
                     Edit
                 </Link>
             </Button>
-            <Button
-                onClick={handleDelete}
-                variant="outline"
-                className="flex items-center justify-center w-9 h-9 rounded-md relative"
-                disabled={isPending}
-            >
-                {isPending ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                    <Trash className="w-5 h-5" />
-                )}
-            </Button>
+            <AlertDialog>
+                <AlertDialogTrigger asChild>
+                    <Button
+                        variant="outline"
+                        className="flex items-center justify-center w-9 h-9 rounded-md relative"
+                    >
+                        <Trash className="w-5 h-5" />
+                    </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete the product.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDelete} disabled={isPending}>
+                            {isPending ? (
+                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            ) : (
+                                "Delete"
+                            )}
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     );
 };
@@ -142,6 +162,7 @@ export default function ProductPage() {
             setHasMore(data.length === limit);
         } catch (error) {
             console.error("Failed to fetch products:", error);
+            toast.error("Failed to fetch products");
         }
     }, []);
 
@@ -169,8 +190,10 @@ export default function ProductPage() {
             }
             await response.json();
             setProducts(prevProducts => prevProducts.filter(product => product.product_id !== productId));
+            toast.success("Product deleted successfully");
         } catch (error) {
             console.error("Error deleting product:", error);
+            toast.error("Failed to delete product");
             throw error;
         }
     }, []);
@@ -203,6 +226,7 @@ export default function ProductPage() {
 
     return (
         <div>
+            <Toaster position="top-right" />
             <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
                 <div className="flex items-center gap-2 px-4">
                     <SidebarTrigger className="-ml-1" />
@@ -332,3 +356,4 @@ export default function ProductPage() {
         </div>
     );
 }
+

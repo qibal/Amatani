@@ -369,7 +369,7 @@ function ProductInfoCard({ productsData }) {
                         <div className="flex flex-col gap-4">
                             <Button
                                 type="submit"
-                                className="w-full h-12 text-base bg-red-500 hover:bg-red-600 rounded-full"
+                                className="w-full h-12 text-base bg-rose-600 hover:bg-rose-700 rounded-full"
                                 disabled={isPending}
                             >
                                 {isPending ? "Adding..." : "Tambah Ke Keranjang"}
