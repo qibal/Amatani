@@ -1,6 +1,5 @@
 
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+
 import HomeBuah from "@/components/customer/HomeBuah";
 import HomeKPangan from "@/components/customer/HomeKPangan";
 import HomeTestimoni from "@/components/customer/HomeTestimoni";
@@ -10,6 +9,8 @@ import Footer from "@/components/customer/Footer";
 
 import Image from "next/image";
 import CompanyLogosCarousel from "@/components/customer/CarouselCompanyLogos";
+
+import SearchHomeCustomer from "@/components/customer/SearchProduct";
 
 // Komponen Statistik Reusable
 const Statistics = ({ stats }) => {
@@ -115,14 +116,7 @@ export default function CustomerPage() {
                             <span className="block">Untuk Usaha Anda</span>
                         </h1>
                         <div className="flex items-center gap-2 max-w-lg h-9 mt-14">
-                            <Input
-                                type="text"
-                                placeholder="Cari produk"
-                                className="flex-grow rounded-full bg-gray-50 text-gray-500 text-sm px-3 py-2  -gray-50"
-                            />
-                            <Button className="px-4 py-2 rounded-full bg-rose-600 text-white text-sm font-medium">
-                                Cari
-                            </Button>
+                            <SearchHomeCustomer />
                         </div>
                     </div>
                 </div>

@@ -34,7 +34,8 @@ export default function HomeBuah() {
                 {/* Scrollable Area */}
                 <ScrollArea className="pb-4">
                     <div className="flex flex-col">
-                        {categories.map((category, index) => (
+
+                        {Array.isArray(categories) && categories.map((category, index) => (
                             <div
                                 key={category.categories_id}
                                 className={index > 0 ? "gap-y-4" : "gap-y-0"} // Atur jarak berdasarkan indeks

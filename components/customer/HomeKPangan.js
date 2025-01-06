@@ -26,7 +26,7 @@ export default function HomeKPangan() {
                     className="flex overflow-x-auto space-x-4 py-4 w-full scroll-snap-x"
                     style={{ scrollSnapType: "x mandatory" }}
                 >
-                    {categories.map((product, index) => (
+                    {Array.isArray(categories) && categories.map((product, index) => (
                         <ProductCard
                             key={index}
                             imageSrc={product.imageSrc}

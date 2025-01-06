@@ -125,30 +125,29 @@ export async function AddToCartCustomers({ request, user }) {
 
 // http://localhost:3000/api/customer/navbar_cart/ea1975e8-e225-4988-9c31-e4e1d8d11693
 export async function GetCountCarttCustomers({ user_id }) {
-    // Hitung total quantity produk di dalam keranjang berdasarkan user_id
+    // Hitung total produk unik di dalam keranjang berdasarkan user_id
     try {
         const result = await sql`
             SELECT
-                COALESCE(SUM(ci.quantity), 0) AS total_quantity
+                COUNT(DISTINCT ci.product_id) AS total_products
             FROM carts c
             LEFT JOIN carts_items ci ON ci.cart_id = c.carts_id
             WHERE c.user_id = ${user_id}
-            GROUP BY c.carts_id
             LIMIT 1;
         `;
 
         // Jika tidak ada keranjang, kembalikan 0
-        if (result.count === 0) {
+        if (result.length === 0) {
             return {
                 success: true,
                 data: 0
             };
         }
 
-        // Ambil total_quantity dari baris pertama
+        // Ambil total_products dari baris pertama
         return {
             success: true,
-            data: result[0].total_quantity
+            data: result[0].total_products
         };
     } catch (error) {
         console.error("Error GetCountCarttCustomers:", error);
