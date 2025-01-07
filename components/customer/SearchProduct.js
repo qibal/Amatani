@@ -9,7 +9,7 @@ export default function SearchHomeCustomer() {
     const handleSearch = (e) => {
         e.preventDefault();
         if (searchQuery.trim()) {
-            window.location.href = `/products?query=${encodeURIComponent(searchQuery)}`;
+            window.location.href = `/products?products=${encodeURIComponent(searchQuery)}`;
         }
     };
 

@@ -43,7 +43,7 @@ export default function CategoryMenu({ isRootPath }) {
                                 className="w-full text-left mt-2 text-gray-950 bg-white hover:bg-rose-100 hover:outline hover:outline-2 hover:outline-rose-600"
                                 asChild
                             >
-                                <Link href={`/products?query=${formattedCategoryName}`}>{category.categories_name}</Link>
+                                <Link href={`/products?categories=${formattedCategoryName}`}>{category.categories_name}</Link>
                             </Button>
                         );
                     })

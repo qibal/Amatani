@@ -1,31 +1,38 @@
 "use client";
 
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { AlertCircle, ChevronDown, Filter, Search, X } from "lucide-react"; // Ikon untuk fallback
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import React, { useEffect, useState } from 'react'
-
-import { useSearchParams } from 'next/navigation'
 import Image from "next/image";
 import Link from "next/link";
 
 export default function Product() {
-    // Data Dummy
     const [productsData, setProductsData] = useState([]);
     const [categoryName, setCategoryName] = useState('');
-    console.log("🚀 ~ Product ~ productsData:", productsData)
-    const searchParams = useSearchParams()
+    const searchParams = useSearchParams();
+    const [searchQuery, setSearchQuery] = useState('');
 
-    const query = searchParams.get('query');
-    const formattedQuery = query ? query.replace(/-/g, ' - ') : '';
-    // Output: "example - name - with - dashes
-    console.log(formattedQuery);
-    console.log(query);
+    const categoriesQuery = searchParams.get('categories');
+    const productsQuery = searchParams.get('products');
+    const allProductsQuery = searchParams.get('all_product');
+    const query = categoriesQuery || productsQuery || '';
+    const type = categoriesQuery ? 'categories' : (productsQuery ? 'products' : 'all');
+    const formattedQuery = categoriesQuery ? categoriesQuery.replace(/-/g, ' - ') : '';
+
+    console.log('Formatted Query:', formattedQuery);
+    console.log('Query:', query);
+    console.log('Type:', type);
+
     useEffect(() => {
         async function fetchProducts() {
-            const result = await fetch(`/api/customer/products?query=${formattedQuery}`, {
+            const url = type === 'categories'
+                ? `/api/customer/products?categories=${formattedQuery}`
+                : (type === 'products' ? `/api/customer/products?products=${query}` : `/api/customer/products?all_product=true`);
+            const result = await fetch(url, {
                 method: "GET",
             });
             if (result.ok) {
@@ -38,22 +45,32 @@ export default function Product() {
                 }
             }
         }
-        if (formattedQuery) {
+        if (query || type === 'all') {
             fetchProducts();
         }
-    }, [formattedQuery]);
+    }, [query, formattedQuery, type]);
+
+    const handleSearch = (e) => {
+        e.preventDefault();
+        if (searchQuery.trim()) {
+            window.location.href = `/products?products=${encodeURIComponent(searchQuery)}`;
+        }
+    };
 
     return (
         <div className="mt-4 px-4 container mx-auto">
             {/* Mobile & Medium Layout */}
             <div className="flex flex-col gap-2 py-2 lg:hidden">
+
                 {/* Search Input */}
-                <div className="flex items-center gap-4 w-full">
+                <form onSubmit={handleSearch} className="flex items-center gap-4 w-full">
                     <div className="relative flex items-center w-full">
                         <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 transform text-muted-foreground pointer-events-none" />
                         <Input
                             type="text"
                             placeholder="Cari produk"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
                             className="w-full pl-8 pr-8 rounded-full"
                         />
                         <Button
@@ -63,10 +80,10 @@ export default function Product() {
                             <X className="h-4 w-4 text-gray-950" />
                         </Button>
                     </div>
-                    <Button className="bg-rose-100 text-rose-600 hover:bg-rose-200 rounded-full">
+                    <Button type="submit" className="bg-rose-100 text-rose-600 hover:bg-rose-200 rounded-full">
                         Cari
                     </Button>
-                </div>
+                </form>
 
                 {/* Hasil Pencarian, Filter, dan Sort By */}
                 <div className="flex justify-between items-center w-full">
@@ -93,13 +110,18 @@ export default function Product() {
                     </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-4 w-full lg:w-auto">
+                    <Button variant="outline">
+                        <Link href="/products?all_product=true">Semua Produk</Link>
+                    </Button>
                     {/* Search Input */}
-                    <div className="flex items-center gap-2 flex-grow lg:flex-grow-0 w-full lg:w-auto">
+                    <form onSubmit={handleSearch} className="flex items-center gap-2 flex-grow lg:flex-grow-0 w-full lg:w-auto">
                         <div className="relative flex items-center w-full lg:w-[300px]">
                             <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 transform text-muted-foreground pointer-events-none" />
                             <Input
                                 type="text"
                                 placeholder="Search..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
                                 className="w-full pl-8 pr-8 rounded-full"
                             />
                             <Button
@@ -109,13 +131,11 @@ export default function Product() {
                                 <X className="h-4 w-4 text-gray-950" />
                             </Button>
                         </div>
-                        <Button
-                            className="bg-rose-100 text-rose-600 hover:bg-rose-200 rounded-full"
-                        >
+                        <Button type="submit" className="bg-rose-100 text-rose-600 hover:bg-rose-200 rounded-full">
                             <Search className="w-4 h-4 mr-2" />
                             Cari
                         </Button>
-                    </div>
+                    </form>
                     {/* Filter dan Sort By Buttons */}
                     <div className="flex items-center gap-2">
                         <Button className="flex items-center gap-2 bg-gray-50 hover:bg-gray-100">
@@ -171,7 +191,6 @@ function ProductCard({ imageSrc, name, category, priceType, fixedPrice, wholesal
         priceRange = "Harga tidak tersedia";
     }
     return (
-        // Output: "example - name_with_dashes"
         <Link href={`/products/${product_id}`}>
             <Card className="w-full border-0 shadow-none">
                 <CardHeader className="p-0">
@@ -195,7 +214,6 @@ function ProductCard({ imageSrc, name, category, priceType, fixedPrice, wholesal
         </Link >
     );
 };
-
 
 function NoProduct() {
     return (
