@@ -26,7 +26,7 @@ export default function HomeBuah() {
     }, []);
 
     return (
-        <section className="py-8 px-8 bg-white">
+        <section className="py-8 px-16 bg-white">
             <div className="container mx-auto">
                 {/* Judul */}
                 {/* <h2 className="text-2xl font-semibold mb-6 text-gray-800">Buah-Buahan</h2> */}

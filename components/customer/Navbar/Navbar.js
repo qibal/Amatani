@@ -56,7 +56,7 @@ export default function Navbar({ isAuthenticated }) {
 
     return (
         <header
-            className={`navbar w-full z-50 transition-all duration-300 px-8 ${isRootPath ? "fixed" : "relative"} ${navbarClass}`}
+            className={`navbar w-full z-50 transition-all duration-300 px-16  ${isRootPath ? "fixed" : "relative"} ${navbarClass}`}
         >
             <div className="container mx-auto flex items-center justify-between py-4">
                 {/* Logo */}
@@ -111,10 +111,10 @@ export default function Navbar({ isAuthenticated }) {
                         </Button>
                     ) : (
                         <>
-                            <Button className="bg-white text-gray-950 outline-rose-600">
+                            <Button className="bg-white text-gray-950 outline-rose-600 hover:bg-gray-200">
                                 <Link href="/login">Masuk</Link>
                             </Button>
-                            <Button className="bg-rose-600 text-white">
+                            <Button className="bg-rose-600 text-white hover:bg-rose-700">
                                 <Link href="/signup">Daftar</Link>
                             </Button>
                         </>

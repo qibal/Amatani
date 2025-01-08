@@ -17,7 +17,7 @@ const Statistics = ({ stats }) => {
 
     return (
         <section className="bg-white">
-            <div className="container mx-auto px-4">
+            <div className="container mx-auto px-16">
                 {/* Grid untuk mobile dan tablet, flex untuk desktop */}
                 <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4">
                     {stats.map((stat, index) => (
@@ -38,7 +38,7 @@ const Statistics = ({ stats }) => {
 
 // Komponen Fitur Reusable
 const FeatureGrid = ({ features }) => (
-    <section className="px-24 py-8 bg-white">
+    <section className="px-16 py-8 bg-white">
         <div className="container  mx-auto py-12">
             <h2 className="text-2xl font-semibold text-center text-gray-800 mb-4">
                 Kostumisasi Produk <br /> Sesuai Kebutuhan Usaha Anda.
@@ -109,7 +109,7 @@ export default function CustomerPage() {
                     <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent"></div>
                     <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/40"></div>
                 </div>
-                <div className="relative h-full flex items-center px-4">
+                <div className="relative h-full flex items-center px-16">
                     <div className="container mx-auto">
                         <h1 className="text-white font-bold text-5xl md:text-6xl">
                             <span className="block">Sumber Segar</span>
@@ -139,7 +139,7 @@ export default function CustomerPage() {
 
             {/* Packing Facilities Section */}
             <section>
-                <div className="container  mx-auto px-4 py-8 bg-white">
+                <div className="container  mx-auto px-16 py-8 bg-white">
                     <h2 className="text-2xl font-semibold text-center text-gray-800 mb-6">
                         Fasilitas Distribusi & Packing House
                     </h2>

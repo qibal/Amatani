@@ -10,20 +10,21 @@ export default function StatikPreview() {
 
     return (
         <section className="bg-white">
-            <div className="container mx-auto px-4">
-                {/* Grid untuk mobile dan tablet, flex untuk desktop */}
-                <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4">
-                    {stats.map(function (stat, index) {
-                        return (
-                            <div
-                                key={index}
-                                className="flex flex-col justify-center items-center py-8"
-                            >
-                                <p className="text-3xl font-bold text-gray-800">{stat.number}</p>
-                                <p className="text-gray-600 text-sm mt-2">{stat.description}</p>
-                            </div>
-                        );
-                    })}
+            <div className="container mx-auto ">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center ">
+                    {stats.map((stat, index) => (
+                        <div
+                            key={index}
+                            className="flex flex-col"
+                        >
+                            <p className="text-xl md:text-2xl font-bold text-gray-800">
+                                {stat.number}
+                            </p>
+                            <p className="text-gray-600 text-sm md:text-base">
+                                {stat.description}
+                            </p>
+                        </div>
+                    ))}
                 </div>
             </div>
         </section>

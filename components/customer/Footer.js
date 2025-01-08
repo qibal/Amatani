@@ -16,7 +16,7 @@ export default function Footer() {
 
     return (
         <footer className="bg-white border-t py-8">
-            <div className="max-w-7xl mx-auto px-4 md:px-16">
+            <div className="max-w-7xl mx-auto px-16 md:px-16">
                 {/* Navigation Links */}
                 <nav className="flex flex-wrap justify-center space-x-4 text-gray-600 text-sm mb-8">
                     <a href="#" className="hover:text-gray-800">

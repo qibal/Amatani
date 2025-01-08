@@ -1,6 +1,6 @@
 'use client'
 
-import { Carousel, CarouselContent, CarouselItem, } from "@/components/ui/carousel";
+import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import { Card, CardContent } from "@/components/ui/card";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { useEffect, useState } from "react";
@@ -16,9 +16,9 @@ export default function CompanyLogosPreview() {
         { src: "/FE/img02.png", alt: "Company 6 Logo" },
         { src: "/FE/img02.png", alt: "Company 7 Logo" },
         { src: "/FE/img02.png", alt: "Company 8 Logo" },
-        // Add more company logos as needed
-    ]
-    const [api, setApi] = useState(null)
+    ];
+
+    const [api, setApi] = useState(null);
 
     useEffect(() => {
         if (!api) {
@@ -34,13 +34,13 @@ export default function CompanyLogosPreview() {
     }, [api]);
 
     return (
-        <section className="py-5 bg-white">
-            <div className="container py-12 mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <section className="bg-white">
+            <div className="container mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                 <div className="text-center lg:text-left">
-                    <h2 className="text-3xl md:text-4xl font-bold text-gray-800 leading-tight">
+                    <h2 className="text-xl md:text-2xl font-semibold text-gray-800 leading-tight">
                         Mulai Dari Kedai Kopi Hingga Restoran
                     </h2>
-                    <p className="mt-4 text-gray-600 text-base md:text-lg leading-relaxed">
+                    <p className="mt-4 text-gray-500 text-xs md:text-sm leading-relaxed">
                         Produk Hasil Panen Kami Telah Dipercaya Oleh Para Pengusaha Bisnis Kuliner Untuk
                         Menyediakan Bahan Baku Segar Dan Berkualitas, Mendukung Cita Rasa Terbaik Dalam
                         Setiap Hidangan.
@@ -48,7 +48,7 @@ export default function CompanyLogosPreview() {
                 </div>
                 <Carousel
                     setApi={setApi}
-                    className="w-full max-w-xl mx-auto"
+                    className="w-full max-w-4xl mx-auto"
                     opts={{
                         align: "start",
                         loop: true,
@@ -56,7 +56,7 @@ export default function CompanyLogosPreview() {
                 >
                     <CarouselContent className="-ml-2 md:-ml-4">
                         {companyLogos.map((logo, index) => (
-                            <CarouselItem key={index} className="pl-2 md:pl-4 basis-1/4">
+                            <CarouselItem key={index} className="pl-2 md:pl-4 basis-1/3">
                                 <Card className="border-none shadow-none">
                                     <CardContent className="p-2">
                                         <AspectRatio ratio={1 / 1} className="bg-white">
@@ -64,7 +64,7 @@ export default function CompanyLogosPreview() {
                                                 src={logo.src}
                                                 alt={logo.alt}
                                                 fill
-                                                className="object-contain p-2"
+                                                className="object-contain"
                                             />
                                         </AspectRatio>
                                     </CardContent>
@@ -72,10 +72,8 @@ export default function CompanyLogosPreview() {
                             </CarouselItem>
                         ))}
                     </CarouselContent>
-                    {/* <CarouselPrevious />
-                    <CarouselNext /> */}
                 </Carousel>
             </div>
         </section>
-    )
+    );
 }

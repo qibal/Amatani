@@ -35,7 +35,7 @@ export default function CompanyLogosCarousel() {
 
     return (
         <section className="py-5 bg-white">
-            <div className="container py-12 mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="container py-12 mx-auto px-16 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                 <div className="text-center lg:text-left">
                     <h2 className="text-3xl md:text-4xl font-bold text-gray-800 leading-tight">
                         Mulai Dari Kedai Kopi Hingga Restoran

@@ -36,7 +36,7 @@ export default function CompanyLogo() {
     return (
         <div className="flex">
             {/* Combined Form and Preview Section */}
-            <div className="flex gap-6 w-full border rounded-lg overflow-hidden">
+            <div className="flex gap-6 w-full rounded-lg overflow-hidden">
                 {/* Form Section */}
                 <div className="w-2/5 p-6">
                     <Toaster position="top-right" />

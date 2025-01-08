@@ -182,4 +182,3 @@ export function UserTable({ users, onDelete, onEdit }) {
         </div>
     )
 }
-

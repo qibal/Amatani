@@ -50,7 +50,7 @@ const testimonials = [
 
 export default function HomeTestimoni() {
     return (
-        <section className="px-8 py-12 bg-white">
+        <section className="px-16 py-12 bg-white">
             <div className=" mx-auto py-4 container grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                 {testimonials.map((testimonial, index) => (
                     <Card

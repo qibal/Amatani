@@ -266,8 +266,6 @@ export default function ProductForm({ mode, product, onSubmit }) {
                                                     const value = e.target.value;
                                                     if (!isNaN(value)) {
                                                         field.onChange(Number(value));
-                                                    } else {
-                                                        field.onChange(0);
                                                     }
                                                 }}
                                             />
@@ -382,8 +380,6 @@ export default function ProductForm({ mode, product, onSubmit }) {
                                                                     const value = e.target.value;
                                                                     if (!isNaN(value)) {
                                                                         field.onChange(Number(value));
-                                                                    } else {
-                                                                        field.onChange(0);
                                                                     }
                                                                 }}
                                                             />
@@ -407,8 +403,6 @@ export default function ProductForm({ mode, product, onSubmit }) {
                                                                     const value = e.target.value;
                                                                     if (!isNaN(value)) {
                                                                         field.onChange(Number(value));
-                                                                    } else {
-                                                                        field.onChange(0);
                                                                     }
                                                                 }}
                                                             />
@@ -432,9 +426,7 @@ export default function ProductForm({ mode, product, onSubmit }) {
                                                                     const value = e.target.value;
                                                                     if (!isNaN(value)) {
                                                                         field.onChange(Number(value));
-                                                                    } else {
-                                                                        field.onChange(0);
-                                                                    }
+                                                                    } 
                                                                 }}
                                                             />
                                                         </FormControl>
@@ -471,8 +463,6 @@ export default function ProductForm({ mode, product, onSubmit }) {
                                                         const value = e.target.value;
                                                         if (!isNaN(value)) {
                                                             field.onChange(Number(value));
-                                                        } else {
-                                                            field.onChange(0);
                                                         }
                                                     }} />
                                             </FormControl>

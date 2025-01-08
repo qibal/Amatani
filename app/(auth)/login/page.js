@@ -33,14 +33,14 @@ export default function SignUpPage() {
                         <Input placeholder="Email" className="w-full" />
                         <Button className="w-full bg-rose-600 text-white hover:bg-rose-700">Masuk</Button>
                     </form>
-                    <form>
+                    {/* <form>
                         <label htmlFor="email">Email:</label>
                         <input id="email" name="email" type="email" required /><br />
                         <label htmlFor="password">Password:</label>
                         <input id="password" name="password" type="password" required />
                         <button formAction={login}>Log in</button>
                         <button formAction={signup}>Sign up</button>
-                    </form>
+                    </form> */}
 
                     <p className="text-sm text-gray-600 mt-4">
                         Dengan mendaftar, saya menyetujui{' '}

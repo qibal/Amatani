@@ -9,8 +9,8 @@ export default function JasaGratisPreview() {
     ];
 
     return (
-        <section className="px-24 py-8 bg-white">
-            <div className="container mx-auto py-12">
+        <section className="bg-white">
+            <div className="container mx-auto py-6">
                 <h2 className="text-2xl font-semibold text-center text-gray-800 mb-4">
                     Kostumisasi Produk <br /> Sesuai Kebutuhan Usaha Anda.
                 </h2>
@@ -27,7 +27,7 @@ export default function JasaGratisPreview() {
                                 className="relative group flex flex-col items-center overflow-hidden"
                             >
                                 <div
-                                    className="w-full h-[400px] bg-cover bg-center transform group-hover:scale-105 transition duration-300"
+                                    className="w-full h-[300px] bg-cover bg-center transform group-hover:scale-105 transition duration-300"
                                     style={{ backgroundImage: `url(${feature.imageSrc})` }}
                                 ></div>
                                 <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white text-gray-800 text-sm font-semibold py-1 px-4 rounded-full shadow-md">

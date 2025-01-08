@@ -38,7 +38,7 @@ export default function CompanyLogo() {
     return (
         <div className="flex">
             {/* Combined Form and Preview Section */}
-            <div className="flex gap-6 w-full border rounded-lg overflow-hidden">
+            <div className="flex gap-6 w-full rounded-lg overflow-hidden">
                 {/* Form Section */}
                 <div className="w-2/5 p-6">
                     <Toaster position="top-right" />
@@ -113,9 +113,9 @@ export default function CompanyLogo() {
                 </div>
 
                 {/* Preview Section */}
-                <div className="w-3/5">
-                    <div className="transform scale-[1] origin-top">
-                        {/* <HomeKPanganPreview /> lamun di hurungkeun bakal bisa ngascroll ka kanan */}
+                <div className="w-3/5 flex justify-center items-center p-">
+                    <div className="w-full max-w-4xl">
+                        <HomeKPanganPreview />
                     </div>
                 </div>
             </div>
