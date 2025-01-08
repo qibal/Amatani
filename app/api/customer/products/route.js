@@ -1,15 +1,18 @@
 import { GetProductActionCustomers } from "../../server_actions/customer/products/ProductActions";
 
-
-
-
-
-//   ]
-export async function GET(request,) {
+export async function GET(request) {
     const { searchParams } = new URL(request.url);
-    const query = searchParams.get('query');
+    const categories = searchParams.get('categories');
+    const products = searchParams.get('products');
+    const allProducts = searchParams.get('all_product');
+    const query = categories || products || '';
+    const type = categories ? 'categories' : (products ? 'products' : 'all');
+
+    console.log('Query:', query);
+    console.log('Type:', type);
+
     try {
-        const data = await GetProductActionCustomers({ query });
+        const data = await GetProductActionCustomers({ query, type });
         if (data) {
             return new Response(JSON.stringify(data), {
                 status: 200,
