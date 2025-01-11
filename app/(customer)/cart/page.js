@@ -9,6 +9,9 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Separator } from "@/components/ui/separator"
 import Link from 'next/link'
 import { useCart } from '@/components/customer/Navbar/CartContext'
+import { Trash2 } from 'lucide-react'
+import { toast } from 'sonner'
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog'
 
 export default function CartPage() {
     const [cartData, setCartData] = useState(null)
@@ -29,6 +32,29 @@ export default function CartPage() {
         }
         fetchCart()
     }, [userId])
+
+    const removeItem = async (cart_items_id) => {
+        try {
+            const response = await fetch(`/api/customer/cart/${userId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ cart_items_id }),
+            });
+
+            if (response.ok) {
+                // Jika berhasil dihapus, update state lokal
+                setCartItems(cartItems.filter(item => item.cart_items_id !== cart_items_id));
+                toast.success("Item removed successfully");
+            } else {
+                console.error('Failed to delete item');
+                toast.error("Failed to remove item");
+            }
+        } catch (error) {
+            console.error('Error deleting item:', error);
+        }
+    };
 
     const updateQuantity = (id, newQuantity) => {
         setCartItems(cartItems.map(item =>
@@ -137,7 +163,6 @@ export default function CartPage() {
                                             -
                                         </Button>
                                         <Input
-                                            type="number"
                                             value={item.quantity}
                                             onChange={(e) => {
                                                 const newQuantity = parseInt(e.target.value, 10);
@@ -157,6 +182,28 @@ export default function CartPage() {
                                         >
                                             +
                                         </Button>
+                                        <AlertDialog>
+                                            <AlertDialogTrigger asChild>
+                                                <Button variant="outline" size="icon" className="ml-2">
+                                                    <Trash2 className="w-4 h-4" />
+                                                </Button>
+                                            </AlertDialogTrigger>
+                                            <AlertDialogContent>
+                                                <AlertDialogHeader>
+                                                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                                    <AlertDialogDescription>
+                                                        This action cannot be undone. This will permanently remove the item from your cart.
+                                                    </AlertDialogDescription>
+                                                </AlertDialogHeader>
+                                                <AlertDialogFooter>
+                                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                    <AlertDialogAction onClick={() => removeItem(item.cart_items_id)}>
+                                                        Remove
+                                                    </AlertDialogAction>
+                                                </AlertDialogFooter>
+                                            </AlertDialogContent>
+                                        </AlertDialog>
+
                                     </div>
                                     {item.quantity > item.stock && (
                                         <p className="text-red-500 mt-2">Exceeded stock limit!</p>

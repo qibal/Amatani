@@ -3,7 +3,7 @@
 import { useState, useEffect, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Edit, Trash, Plus, SortDesc, Search, X, Loader2 } from "lucide-react";
+import { Edit, Trash, Plus, SortDesc, Search, X, Loader2 } from 'lucide-react';
 import Link from "next/link";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
@@ -128,10 +128,12 @@ export default function FaqPage() {
                                             {faq.title}
                                         </AccordionTrigger>
                                         <div className="flex space-x-3">
-                                            <Button variant="outline" className="flex items-center justify-center px-3 py-2 sm:px-4 sm:py-2 rounded-md">
-                                                <Edit className="w-4 h-4 mr-2" />
-                                                Edit
-                                            </Button>
+                                            <Link href={`/dashboard/faq/edit/${faq.faq_id}`} passHref>
+                                                <Button variant="outline" className="flex items-center justify-center px-3 py-2 sm:px-4 sm:py-2 rounded-md">
+                                                    <Edit className="w-4 h-4 mr-2" />
+                                                    Edit
+                                                </Button>
+                                            </Link>
                                             <AlertDialog>
                                                 <AlertDialogTrigger asChild>
                                                     <Button
@@ -176,3 +178,4 @@ export default function FaqPage() {
         </div>
     );
 }
+

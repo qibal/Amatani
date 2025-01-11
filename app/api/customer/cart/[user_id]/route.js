@@ -1,4 +1,6 @@
-import { GetCarttActionCustomers } from "@/app/api/server_actions/customer/cart/CartActions";
+// route.js
+
+import { GetCarttActionCustomers, DeleteCartItem } from "@/app/api/server_actions/customer/cart/CartActions";
 
 
 
@@ -24,6 +26,31 @@ export async function GET(request, props) {
                 }
             });
         }
+    } catch (error) {
+        return new Response(JSON.stringify({ error: error.message }), {
+            status: 500,
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+    }
+}
+
+// ... kode GET yang sudah ada ...
+
+export async function DELETE(request, props) {
+    const params = await props.params;
+    const user_id = await params.user_id;
+    const { cart_items_id } = await request.json();
+
+    try {
+        const result = await DeleteCartItem({ cart_items_id, user_id });
+        return new Response(JSON.stringify(result), {
+            status: result.success ? 200 : 400,
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
     } catch (error) {
         return new Response(JSON.stringify({ error: error.message }), {
             status: 500,

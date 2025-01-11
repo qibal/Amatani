@@ -162,7 +162,6 @@ export default function ProductPage() {
             setHasMore(data.length === limit);
         } catch (error) {
             console.error("Failed to fetch products:", error);
-            toast.error("Failed to fetch products");
         }
     }, []);
 

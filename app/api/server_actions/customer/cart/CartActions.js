@@ -73,5 +73,27 @@ export async function GetCarttActionCustomers({ user_id }) {
     }
 }
 
+// CartActions.js
+
+export async function DeleteCartItem({ cart_items_id, user_id }) {
+    try {
+        const result = await sql`
+            DELETE FROM carts_items
+            WHERE cart_items_id = ${cart_items_id}
+            AND cart_id IN (SELECT carts_id FROM carts WHERE user_id = ${user_id})
+            RETURNING *;
+        `;
+
+        if (result.count === 0) {
+            return { success: false, message: "Item not found or not authorized to delete" };
+        }
+
+        return { success: true, message: "Item deleted successfully" };
+    } catch (error) {
+        console.error("Error DeleteCartItem:", error);
+        return { success: false, error: error.message };
+    }
+}
+
 
 

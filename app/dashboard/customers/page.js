@@ -205,7 +205,7 @@ const initialUsers = [
     }
 ]
 
-export default function OrdersPage() {
+export default function CustomersPage() {
     const [users, setUsers] = useState(initialUsers)
 
     const handleDeleteUser = (userId) => {
