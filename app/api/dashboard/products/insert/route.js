@@ -2,7 +2,7 @@ import { InsertProductAction } from "@/app/api/server_actions/dashboard/products
 
 
 export async function POST(req,) {
-
+    console.log('masuk ke route insert');
 
     try {
         const data = await InsertProductAction(req)

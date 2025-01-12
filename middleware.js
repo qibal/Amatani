@@ -43,13 +43,13 @@ export async function middleware(request) {
         const jwt = jwtDecode(session.access_token)
         user_role = jwt['user_role']
         console.log('ada user dan session');
-        console.log('access_token:', session.access_token);
+        // console.log('access_token:', session.access_token);
     }
 
     console.log('berhasil decode acces token');
     console.log('cek user ?');
     console.log("User_role:", user_role)
-    console.log("Get user:", user.user)
+    // console.log("Get user:", user.user)
 
     //router admin
     if (url.pathname.startsWith('/dashboard')) {

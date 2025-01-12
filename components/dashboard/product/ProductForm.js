@@ -24,7 +24,7 @@ const formSchema = z.object({
         categories_name: z.string().min(1, { message: "Kategori produk harus dipilih" }),
     }),
     stock: z.number().min(1, { message: "Harus lebih dari 0" }),
-    product_id: z.string().min(1, { message: "Product Id tidak di temukan" }),
+    product_id: z.string().min(0, { message: "Product Id tidak di temukan" }),
     products_description: z.string().min(1, { message: "Tidak boleh kosong" }),
     price_type: z.enum(["fixed", "wholesale"]),
     fixed_price: z.number().optional(),
@@ -266,6 +266,8 @@ export default function ProductForm({ mode, product, onSubmit }) {
                                                     const value = e.target.value;
                                                     if (!isNaN(value)) {
                                                         field.onChange(Number(value));
+                                                    } else {
+                                                        field.onChange(0);
                                                     }
                                                 }}
                                             />
@@ -403,6 +405,8 @@ export default function ProductForm({ mode, product, onSubmit }) {
                                                                     const value = e.target.value;
                                                                     if (!isNaN(value)) {
                                                                         field.onChange(Number(value));
+                                                                    } else {
+                                                                        field.onChange(0);
                                                                     }
                                                                 }}
                                                             />
@@ -426,7 +430,9 @@ export default function ProductForm({ mode, product, onSubmit }) {
                                                                     const value = e.target.value;
                                                                     if (!isNaN(value)) {
                                                                         field.onChange(Number(value));
-                                                                    } 
+                                                                    } else {
+                                                                        field.onChange(0);
+                                                                    }
                                                                 }}
                                                             />
                                                         </FormControl>
@@ -463,6 +469,8 @@ export default function ProductForm({ mode, product, onSubmit }) {
                                                         const value = e.target.value;
                                                         if (!isNaN(value)) {
                                                             field.onChange(Number(value));
+                                                        } else {
+                                                            field.onChange(0);
                                                         }
                                                     }} />
                                             </FormControl>
