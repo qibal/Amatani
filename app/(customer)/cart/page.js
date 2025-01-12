@@ -153,6 +153,7 @@ export default function CartPage() {
             return savings;
         }, []);
     }
+    const isCheckoutDisabled = cartItems.every(item => !item.isSelected);
 
     if (!cartData || !cartData.data || cartData.data.items.length === 0) {
         return <EmptyCart />;
@@ -323,7 +324,12 @@ export default function CartPage() {
                             )}
                         </CardContent>
                         <CardFooter>
-                            <Button className="w-full bg-rose-600 hover:bg-rose-700 rounded-full">Checkout</Button>
+                            <Button
+                                className={`w-full rounded-full ${isCheckoutDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-rose-600 hover:bg-rose-700'}`}
+                                disabled={isCheckoutDisabled}
+                            >
+                                Checkout
+                            </Button>
                         </CardFooter>
                     </Card>
                 </div>
