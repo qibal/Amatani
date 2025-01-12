@@ -95,5 +95,23 @@ export async function DeleteCartItem({ cart_items_id, user_id }) {
     }
 }
 
+export async function QuantityChangeCartCustomer({ cart_items_id, quantity, user_id }) {
+    try {
+        const result = await sql`
+            UPDATE carts_items
+            SET quantity = ${quantity}
+            WHERE cart_items_id = ${cart_items_id}
+            AND cart_id IN (SELECT carts_id FROM carts WHERE user_id = ${user_id})
+            RETURNING *;
+        `;
 
+        if (result.length === 0) {
+            return { success: false, message: "Item not found or not authorized to update" };
+        }
 
+        return { success: true, message: "Quantity updated successfully", data: result[0] };
+    } catch (error) {
+        console.error("Error QuantityChangeCartCustomer:", error);
+        return { success: false, error: error.message };
+    }
+}

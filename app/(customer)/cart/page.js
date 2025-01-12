@@ -17,6 +17,7 @@ export default function CartPage() {
     const [cartData, setCartData] = useState(null)
     const [cartItems, setCartItems] = useState([])
     const { userId } = useCart()
+    const [debounceTimeout, setDebounceTimeout] = useState(null)
 
     useEffect(() => {
         async function fetchCart() {
@@ -60,6 +61,42 @@ export default function CartPage() {
         setCartItems(cartItems.map(item =>
             item.cart_items_id === id ? { ...item, quantity: Math.max(1, Math.min(newQuantity, item.stock)) } : item
         ))
+
+        // Clear previous timeout
+        if (debounceTimeout) {
+            clearTimeout(debounceTimeout)
+        }
+
+        // Set new timeout
+        setDebounceTimeout(setTimeout(() => {
+            // Update quantity in the database
+            updateQuantityInDatabase(id, newQuantity)
+        }, 500))
+    }
+
+    const updateQuantityInDatabase = async (id, newQuantity) => {
+        try {
+            const response = await fetch(`/api/customer/cart/quantity_change`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ cart_items_id: id, quantity: newQuantity, user_id: userId }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to update quantity')
+            }
+        } catch (error) {
+            console.error('Error updating quantity:', error)
+            toast.error("Failed to update quantity")
+        }
+    }
+
+    const handleQuantityChange = (id, value) => {
+        setCartItems(cartItems.map(item =>
+            item.cart_items_id === id ? { ...item, quantity: value === '' ? '' : Math.max(1, Math.min(parseInt(value, 10), item.stock)) } : item
+        ))
     }
 
     const toggleSelection = (id) => {
@@ -71,9 +108,18 @@ export default function CartPage() {
     const calculateItemPrice = (item) => {
         if (item.price_type === 'wholesale' && item.wholesale_prices) {
             const applicablePrice = item.wholesale_prices
-                .filter(wp => item.quantity >= wp.min_quantity)
+                .filter(wp => item.quantity >= wp.min_quantity && item.quantity <= wp.max_quantity)
                 .sort((a, b) => b.min_quantity - a.min_quantity)[0];
-            return applicablePrice ? applicablePrice.price : item.fixed_price;
+            return applicablePrice ? applicablePrice.price : 0;
+        }
+        return item.fixed_price;
+    }
+
+    const calculateRegularPrice = (item) => {
+        if (item.price_type === 'wholesale' && item.wholesale_prices) {
+            const highestPrice = item.wholesale_prices
+                .sort((a, b) => b.price - a.price)[0];
+            return highestPrice ? highestPrice.price : 0;
         }
         return item.fixed_price;
     }
@@ -82,7 +128,7 @@ export default function CartPage() {
         return cartItems.reduce((total, item) => {
             if (item.isSelected) {
                 const price = calculateItemPrice(item);
-                return total + price * item.quantity;
+                return total + (price ? price * item.quantity : 0);
             }
             return total;
         }, 0);
@@ -91,7 +137,7 @@ export default function CartPage() {
     const calculateSavings = () => {
         return cartItems.reduce((savings, item) => {
             if (item.isSelected && item.price_type === 'wholesale' && item.wholesale_prices) {
-                const regularPrice = item.fixed_price * item.quantity;
+                const regularPrice = calculateRegularPrice(item) * item.quantity;
                 const wholesalePrice = calculateItemPrice(item) * item.quantity;
                 const itemSavings = regularPrice - wholesalePrice;
                 if (itemSavings > 0) {
@@ -139,21 +185,21 @@ export default function CartPage() {
                                         <p className="text-gray-600">
                                             Price Type: {item.price_type.charAt(0).toUpperCase() + item.price_type.slice(1)}
                                         </p>
-                                        <p className="text-gray-600">
-                                            Price: Rp {calculateItemPrice(item).toLocaleString()}
-                                            {item.price_type === 'wholesale' && ` (${item.quantity} items)`}
-                                        </p>
-                                        <p className="text-gray-600">Stock: {item.stock}</p>
-                                        {item.price_type === 'wholesale' && (
+                                        {item.price_type === 'fixed' ? (
+                                            <p className="text-gray-600">
+                                                Price: Rp {item.fixed_price ? item.fixed_price.toLocaleString() : '0'}
+                                            </p>
+                                        ) : (
                                             <div className="text-sm text-gray-500 mt-1">
                                                 Wholesale Pricing:
                                                 {item.wholesale_prices.map((wp, index) => (
                                                     <span key={index} className="ml-2">
-                                                        {wp.min_quantity}+: Rp {wp.price.toLocaleString()}
+                                                        {wp.min_quantity} - {wp.max_quantity}: Rp {wp.price ? wp.price.toLocaleString() : '0'}
                                                     </span>
                                                 ))}
                                             </div>
                                         )}
+                                        <p className="text-gray-600">Stock: {item.stock}</p>
                                     </div>
                                 </div>
 
@@ -168,11 +214,11 @@ export default function CartPage() {
                                             -
                                         </Button>
                                         <Input
-                                            value={item.quantity}
-                                            onChange={(e) => {
-                                                const newQuantity = parseInt(e.target.value, 10);
-                                                if (!isNaN(newQuantity)) {
-                                                    updateQuantity(item.cart_items_id, newQuantity);
+                                            value={item.quantity === '' ? '' : item.quantity}
+                                            onChange={(e) => handleQuantityChange(item.cart_items_id, e.target.value)}
+                                            onBlur={(e) => {
+                                                if (e.target.value === '') {
+                                                    updateQuantity(item.cart_items_id, 1);
                                                 }
                                             }}
                                             className="w-16 mx-2 text-center"
@@ -221,14 +267,33 @@ export default function CartPage() {
                             <CardTitle>Order Summary</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            {cartItems.filter(item => item.isSelected).map(item => (
-                                <div key={item.cart_items_id} className="flex justify-between mb-2">
-                                    <span>{item.products_name} (x{item.quantity})</span>
-                                    <span>Rp {(calculateItemPrice(item) * item.quantity).toLocaleString()}</span>
-                                </div>
-                            ))}
+                            {cartItems.filter(item => item.isSelected).map(item => {
+                                const price = calculateItemPrice(item);
+                                const totalPrice = price ? price * item.quantity : 0;
+                                const regularPrice = calculateRegularPrice(item) * item.quantity;
+                                const savings = regularPrice - totalPrice;
+
+                                return (
+                                    <div key={item.cart_items_id} className="flex justify-between mb-2">
+                                        <span>{item.products_name} (x{item.quantity})</span>
+                                        <span>
+                                            {savings > 0 ? (
+                                                <>
+                                                    <span style={{ textDecoration: 'line-through' }}>
+                                                        Rp {regularPrice.toLocaleString()}
+                                                    </span>
+                                                    {' '}
+                                                    Rp {totalPrice.toLocaleString()}
+                                                </>
+                                            ) : (
+                                                <>Rp {totalPrice.toLocaleString()}</>
+                                            )}
+                                        </span>
+                                    </div>
+                                );
+                            })}
                             <Separator className="my-4" />
-                            {calculateSavings().length > 0 && (
+                            {/* {calculateSavings().length > 0 && (
                                 <>
                                     <div className="text-sm font-semibold mb-2">Wholesale Savings:</div>
                                     {calculateSavings().map((saving, index) => (
@@ -236,16 +301,16 @@ export default function CartPage() {
                                             <span>{saving.name} (x{saving.quantity})</span>
                                             <span>
                                                 <span style={{ textDecoration: 'line-through' }}>
-                                                    (Rp {saving.regularPrice.toLocaleString()})
+                                                    (Rp {saving.regularPrice ? saving.regularPrice.toLocaleString() : ''})
                                                 </span>
                                                 {' '}
-                                                Rp {saving.wholesalePrice.toLocaleString()}
+                                                Rp {saving.wholesalePrice ? saving.wholesalePrice.toLocaleString() : ''}
                                             </span>
                                         </div>
                                     ))}
                                     <Separator className="my-4" />
                                 </>
-                            )}
+                            )}  */}
                             <div className="flex justify-between font-bold">
                                 <span>Total</span>
                                 <span>Rp {calculateTotal().toLocaleString()}</span>
