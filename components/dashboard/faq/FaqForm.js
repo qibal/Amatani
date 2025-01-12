@@ -74,7 +74,7 @@ export default function FAQForm({ mode, faq, onSubmit }) {
             <Toaster position="top-right" />
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(handleSubmit)} className="lg:w-4/6">
-                    <div className="border">
+                    <div className="">
                         <div className="flex justify-between items-center pb-4">
                             <h1 className="text-xl font-semibold">{mode === 'add' ? 'Tambah FAQ' : 'Edit FAQ'}</h1>
                             <div className="flex gap-3">

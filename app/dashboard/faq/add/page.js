@@ -7,30 +7,22 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 
 export default function AddFaqPage() {
 
-    const handleAddProduct = async (params) => {
-        console.log('Adding product:', params);
-
+    const handleAddFaq = async (params) => {
+        console.log('Adding FAQ:', params);
+    
         const formData = new FormData();
-        formData.append('products_name', params.products_name);
-        formData.append('products_description', params.products_description);
-        formData.append('stock', params.stock);
-        formData.append('fixed_price', params.fixed_price);
-        formData.append('price_type', params.price_type);
-        formData.append('category', JSON.stringify(params.category));
-        formData.append('wholesalePrices', JSON.stringify(params.wholesalePrices));
-
-        params.product_images.forEach((image) => {
-            formData.append(`product_images`, image);
-        });
-
-        const result = await fetch('/api/dashboard/products/insert', {
+        formData.append('title', params.title);
+        formData.append('content', params.content);
+        formData.append('category_id', params.category_id);
+    
+        const result = await fetch('/api/dashboard/faq/insert', {
             method: 'POST',
             body: formData
         });
-
+    
         const data = await result.json();
         console.log('result =', data);
-        console.log('berhasil di upload');
+        console.log('FAQ berhasil ditambahkan');
     };
 
 
@@ -55,7 +47,7 @@ export default function AddFaqPage() {
             </header>
             <div className="mx-auto px-12 py-6">
                 <div className="lg:flex justify-between sm:gap-x-12 xl:gap-x-20">
-                    <FaqForm mode="add" onSubmit={handleAddProduct} />
+                    <FaqForm mode="add" onSubmit={handleAddFaq} />
                 </div>
             </div>
         </div>

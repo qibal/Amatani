@@ -36,10 +36,9 @@ const ActionButtons = ({ product_id, onDelete }) => {
         startTransition(async () => {
             try {
                 await onDelete(product_id);
-                toast.success("Product deleted successfully");
+                // toast.success("Product deleted successfully"); di hurungkeun muncul error
             } catch (error) {
                 console.error("Gagal menghapus produk:", error);
-                toast.error("Failed to delete product");
             }
         });
     };
@@ -57,8 +56,13 @@ const ActionButtons = ({ product_id, onDelete }) => {
                     <Button
                         variant="outline"
                         className="flex items-center justify-center w-9 h-9 rounded-md relative"
+                        disabled={isPending}
                     >
-                        <Trash className="w-5 h-5" />
+                        {isPending ? (
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                        ) : (
+                            <Trash className="w-5 h-5" />
+                        )}
                     </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
@@ -189,7 +193,6 @@ export default function ProductPage() {
             }
             await response.json();
             setProducts(prevProducts => prevProducts.filter(product => product.product_id !== productId));
-            toast.success("Product deleted successfully");
         } catch (error) {
             console.error("Error deleting product:", error);
             toast.error("Failed to delete product");
