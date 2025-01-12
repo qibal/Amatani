@@ -117,44 +117,49 @@ export default function CartPage() {
             <h1 className="text-2xl font-bold mb-4">Shopping Cart</h1>
             <div className="flex flex-col md:flex-row gap-4">
                 <div className="w-full md:w-2/3">
-                    {cartItems.map(item => (
+                    {cartItems.map((item) => (
                         <Card key={item.cart_items_id} className="mb-4">
-                            <CardContent className="flex items-center p-4">
-                                <Checkbox
-                                    checked={item.isSelected}
-                                    onCheckedChange={() => toggleSelection(item.cart_items_id)}
-                                    className="mr-4"
-                                />
-                                <Image
-                                    src={`https://xmlmcdfzbwjljhaebzna.supabase.co/storage/v1/object/public/${item.product_images[0].image_path}`}
-                                    alt={item.products_name}
-                                    width={100}
-                                    height={100}
-                                    className="rounded-md mr-4"
-                                />
-                                <div className="flex-grow">
-                                    <h2 className="text-lg font-semibold">{item.products_name}</h2>
-                                    <p className="text-gray-600">
-                                        Price Type: {item.price_type.charAt(0).toUpperCase() + item.price_type.slice(1)}
-                                    </p>
-                                    <p className="text-gray-600">
-                                        Price: Rp {calculateItemPrice(item).toLocaleString()}
-                                        {item.price_type === 'wholesale' && ` (${item.quantity} items)`}
-                                    </p>
-                                    <p className="text-gray-600">
-                                        Stock: {item.stock}
-                                    </p>
-                                    {item.price_type === 'wholesale' && (
-                                        <div className="text-sm text-gray-500 mt-1">
-                                            Wholesale Pricing:
-                                            {item.wholesale_prices.map((wp, index) => (
-                                                <span key={index} className="ml-2">
-                                                    {wp.min_quantity}+: Rp {wp.price.toLocaleString()}
-                                                </span>
-                                            ))}
-                                        </div>
-                                    )}
-                                    <div className="flex items-center mt-2">
+                            <CardContent className="flex items-center justify-between p-4">
+                                {/* Kolom Kiri (Produk) */}
+                                <div className="flex items-center">
+                                    <Checkbox
+                                        checked={item.isSelected}
+                                        onCheckedChange={() => toggleSelection(item.cart_items_id)}
+                                        className="mr-4"
+                                    />
+                                    <Image
+                                        src={`https://xmlmcdfzbwjljhaebzna.supabase.co/storage/v1/object/public/${item.product_images[0].image_path}`}
+                                        alt={item.products_name}
+                                        width={100}
+                                        height={100}
+                                        className="rounded-md mr-4"
+                                    />
+                                    <div className="flex-grow">
+                                        <h2 className="text-lg font-semibold">{item.products_name}</h2>
+                                        <p className="text-gray-600">
+                                            Price Type: {item.price_type.charAt(0).toUpperCase() + item.price_type.slice(1)}
+                                        </p>
+                                        <p className="text-gray-600">
+                                            Price: Rp {calculateItemPrice(item).toLocaleString()}
+                                            {item.price_type === 'wholesale' && ` (${item.quantity} items)`}
+                                        </p>
+                                        <p className="text-gray-600">Stock: {item.stock}</p>
+                                        {item.price_type === 'wholesale' && (
+                                            <div className="text-sm text-gray-500 mt-1">
+                                                Wholesale Pricing:
+                                                {item.wholesale_prices.map((wp, index) => (
+                                                    <span key={index} className="ml-2">
+                                                        {wp.min_quantity}+: Rp {wp.price.toLocaleString()}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Kolom Kanan (Kontrol Kuantitas dan Hapus) */}
+                                <div className="flex flex-col justify-center items-center space-y-2 ml-4">
+                                    <div className="flex items-center space-x-2">
                                         <Button
                                             variant="outline"
                                             size="sm"
@@ -203,16 +208,13 @@ export default function CartPage() {
                                                 </AlertDialogFooter>
                                             </AlertDialogContent>
                                         </AlertDialog>
-
                                     </div>
-                                    {item.quantity > item.stock && (
-                                        <p className="text-red-500 mt-2">Exceeded stock limit!</p>
-                                    )}
                                 </div>
                             </CardContent>
                         </Card>
                     ))}
                 </div>
+
                 <div className="w-full md:w-1/3">
                     <Card className="sticky top-0">
                         <CardHeader>
