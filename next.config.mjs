@@ -1,7 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     images: {
-        domains: ['xmlmcdfzbwjljhaebzna.supabase.co'], // Tambahkan hostname Supabase di sini
+        remotePatterns: [
+            {
+                protocol: 'https',
+                hostname: 'xmlmcdfzbwjljhaebzna.supabase.co',
+                port: '',
+                pathname: '/**',
+                search: '',
+            },
+        ],
     },
 };
 
