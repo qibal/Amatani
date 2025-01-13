@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -8,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Toaster, toast } from "sonner";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import StatikPreview from './previewcomponent/StatikPreview';
 
 const formSchema = z.object({
@@ -26,49 +28,110 @@ export default function Statik() {
         },
     });
 
-    const onSubmit = async (data) => {
-        const toastId = "statistics-toast"; // ID unik untuk toast ini
+    const [statistics, setStatistics] = useState([]);
+    const [isPending, startTransition] = useTransition();
+    const [isDeleting, startDeleteTransition] = useTransition();
 
+    const fetchStatistics = async () => {
         try {
-            // Membuat FormData untuk data yang akan dikirim
-            const formData = new FormData();
-            formData.append('number', data.number);
-            formData.append('description', data.description);
-
-            // Mengirim data ke API
-            const response = await fetch('/api/dashboard/shop_decoration/statistics', {
-                method: 'POST',
-                body: formData,
-            });
-
+            const response = await fetch('/api/dashboard/shop_decoration/statistics');
             if (!response.ok) {
-                throw new Error('Failed to insert statistics');
+                throw new Error('Failed to fetch statistics');
             }
-
-            const result = await response.json();
-            console.log('Statistics inserted successfully:', result);
-
-            // Tampilkan atau perbarui toast jika berhasil
-            toast.success("Data berhasil disimpan!", {
-                id: toastId,
-                description: `Statistik dengan angka "${data.number}" telah berhasil disimpan.`,
-                duration: 5000,
-            });
-
-            // Reset form jika berhasil
-            form.reset();
+            const data = await response.json();
+            setStatistics(data);
         } catch (error) {
-            console.error('Error submitting form:', error);
-
-            // Tampilkan atau perbarui toast jika gagal
-            toast.error("Gagal menyimpan data", {
-                id: toastId,
-                description: "Terjadi kesalahan saat menyimpan data.",
-                duration: 5000,
-            });
+            console.error('Error fetching statistics:', error);
         }
     };
 
+    useEffect(() => {
+        fetchStatistics();
+    }, []);
+
+    const onSubmit = async (data) => {
+        const toastId = "statistics-toast"; // ID unik untuk toast ini
+
+        startTransition(async () => {
+            try {
+                // Membuat FormData untuk data yang akan dikirim
+                const formData = new FormData();
+                formData.append('number', data.number);
+                formData.append('description', data.description);
+
+                // Mengirim data ke API
+                const response = await fetch('/api/dashboard/shop_decoration/statistics', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to insert statistics');
+                }
+
+                const result = await response.json();
+                console.log('Statistics inserted successfully:', result);
+
+                // Tampilkan atau perbarui toast jika berhasil
+                toast.success("Data berhasil disimpan!", {
+                    id: toastId,
+                    description: `Statistik dengan angka "${data.number}" telah berhasil disimpan.`,
+                    duration: 5000,
+                });
+
+                // Reset form jika berhasil
+                form.reset();
+
+                // Fetch statistics again to update the list
+                fetchStatistics();
+            } catch (error) {
+                console.error('Error submitting form:', error);
+
+                // Tampilkan atau perbarui toast jika gagal
+                toast.error("Gagal menyimpan data", {
+                    id: toastId,
+                    description: "Terjadi kesalahan saat menyimpan data.",
+                    duration: 5000,
+                });
+            }
+        });
+    };
+
+    const handleDelete = async (id_statistic) => {
+        const toastId = "delete-toast"; // ID unik untuk toast ini
+
+        startDeleteTransition(async () => {
+            try {
+                const response = await fetch(`/api/dashboard/shop_decoration/statistics/${id_statistic}`, {
+                    method: 'DELETE',
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to delete statistic');
+                }
+
+                const result = await response.json();
+                console.log('Statistic deleted successfully:', result);
+
+                // Tampilkan atau perbarui toast jika berhasil
+                toast.success("Data berhasil dihapus!", {
+                    id: toastId,
+                    description: `Data Statistik  telah berhasil dihapus.`,
+                    duration: 5000,
+                });
+
+                // Fetch statistics again to update the list
+                fetchStatistics();
+            } catch (error) {
+                console.error('Error deleting statistic:', error);
+                toast.error("Gagal menghapus data", {
+                    id: toastId,
+                    description: "Terjadi kesalahan saat menghapus data.",
+                    duration: 5000,
+                });
+            }
+        });
+    };
 
     return (
         <div className="">
@@ -89,13 +152,43 @@ export default function Statik() {
                                                 <SheetHeader>
                                                     <SheetTitle>Kelola Statistik</SheetTitle>
                                                 </SheetHeader>
+                                                <div className="p-4">
+                                                    {statistics.map(stat => (
+                                                        <div key={stat.id_statistic} className="flex justify-between items-center mb-4">
+                                                            <div>
+                                                                <p>{stat.number}</p>
+                                                                <p>{stat.description}</p>
+                                                            </div>
+                                                            <AlertDialog>
+                                                                <AlertDialogTrigger asChild>
+                                                                    <Button variant="outline" disabled={isDeleting}>Hapus</Button>
+                                                                </AlertDialogTrigger>
+                                                                <AlertDialogContent>
+                                                                    <AlertDialogHeader>
+                                                                        <AlertDialogTitle>Konfirmasi Hapus</AlertDialogTitle>
+                                                                        <AlertDialogDescription>
+                                                                            Apakah Anda yakin ingin menghapus statistik ini?
+                                                                        </AlertDialogDescription>
+                                                                    </AlertDialogHeader>
+                                                                    <AlertDialogFooter>
+                                                                        <AlertDialogCancel>Batal</AlertDialogCancel>
+                                                                        <AlertDialogAction onClick={() => handleDelete(stat.id_statistic)} disabled={isDeleting}>
+                                                                            {isDeleting ? 'Menghapus...' : 'Hapus'}
+                                                                        </AlertDialogAction>
+                                                                    </AlertDialogFooter>
+                                                                </AlertDialogContent>
+                                                            </AlertDialog>
+                                                        </div>
+                                                    ))}
+                                                </div>
                                             </SheetContent>
                                         </Sheet>
                                         <Button
                                             type="submit"
-                                            className="bg-rose-600 hover:bg-rose-500"
+                                            className={`bg-rose-600 hover:bg-rose-500 ${isPending ? 'cursor-not-allowed' : ''}`}
+                                            disabled={isPending}
                                         >
-                                            Simpan
+                                            {isPending ? 'Menyimpan...' : 'Simpan'}
                                         </Button>
                                     </div>
                                 </div>
@@ -143,7 +236,7 @@ export default function Statik() {
 
                 <div className="w-3/5 flex justify-center items-center p-6">
                     <div className="w-full max-w-4xl">
-                        <StatikPreview />
+                        <StatikPreview fetchStatistics={fetchStatistics} />
                     </div>
                 </div>
             </div>

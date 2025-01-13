@@ -6,19 +6,26 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 
-export default function CompanyLogosPreview() {
-    const companyLogos = [
-        { src: "/FE/img02.png", alt: "Company 1 Logo" },
-        { src: "/FE/img02.png", alt: "Company 2 Logo" },
-        { src: "/FE/img02.png", alt: "Company 3 Logo" },
-        { src: "/FE/img02.png", alt: "Company 4 Logo" },
-        { src: "/FE/img02.png", alt: "Company 5 Logo" },
-        { src: "/FE/img02.png", alt: "Company 6 Logo" },
-        { src: "/FE/img02.png", alt: "Company 7 Logo" },
-        { src: "/FE/img02.png", alt: "Company 8 Logo" },
-    ];
-
+export default function CompanyLogosPreview({ refresh }) {
+    const [logos, setLogos] = useState([]);
     const [api, setApi] = useState(null);
+
+    const fetchCompanyLogos = async () => {
+        try {
+            const response = await fetch('/api/dashboard/shop_decoration/company_logos');
+            if (!response.ok) {
+                throw new Error('Failed to fetch company logos');
+            }
+            const data = await response.json();
+            setLogos(data);
+        } catch (error) {
+            console.error('Error fetching company logos:', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchCompanyLogos();
+    }, [refresh]);
 
     useEffect(() => {
         if (!api) {
@@ -26,7 +33,7 @@ export default function CompanyLogosPreview() {
         }
         const interval = setInterval(() => {
             api.scrollNext();
-        }, 2500); // Change slide every 2.5 seconds
+        }, 2000); // Change slide every 2.5 seconds
 
         return () => {
             clearInterval(interval);
@@ -55,15 +62,16 @@ export default function CompanyLogosPreview() {
                     }}
                 >
                     <CarouselContent className="-ml-2 md:-ml-4">
-                        {companyLogos.map((logo, index) => (
-                            <CarouselItem key={index} className="pl-2 md:pl-4 basis-1/3">
+                        {logos.map((logo) => (
+                            <CarouselItem key={logo.id} className="pl-2 md:pl-4 basis-1/3">
                                 <Card className="border-none shadow-none">
                                     <CardContent className="p-2">
                                         <AspectRatio ratio={1 / 1} className="bg-white">
                                             <Image
-                                                src={logo.src}
-                                                alt={logo.alt}
-                                                fill
+                                                src={`https://xmlmcdfzbwjljhaebzna.supabase.co/storage/v1/object/public/${logo.image_path}`}
+                                                alt="Company Logo"
+                                                width={200}
+                                                height={200}
                                                 className="object-contain"
                                             />
                                         </AspectRatio>

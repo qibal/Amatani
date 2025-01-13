@@ -1,22 +1,35 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
-export default function StatikPreview() {
-    const stats = [
-        { number: "18,000+", description: "Serving Culinary Businesses" },
-        { number: "1,000+", description: "Petani, Peternak, Nelayan" },
-        { number: "100+", description: "Produk Hasil Panen" },
-        { number: "20th+", description: "Berpengalaman" },
-    ];
+export default function StatikPreview({ fetchStatistics }) {
+    const [stats, setStats] = useState([]);
+
+    const fetchStatisticsInternal = async () => {
+        try {
+            const response = await fetch('/api/dashboard/shop_decoration/statistics');
+            if (!response.ok) {
+                throw new Error('Failed to fetch statistics');
+            }
+            const data = await response.json();
+            setStats(data);
+        } catch (error) {
+            console.error('Error fetching statistics:', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchStatisticsInternal();
+    }, []);
+
+    useEffect(() => {
+        fetchStatisticsInternal();
+    }, [fetchStatistics]);
 
     return (
         <section className="bg-white">
-            <div className="container mx-auto ">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center ">
+            <div className="container mx-auto">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
                     {stats.map((stat, index) => (
-                        <div
-                            key={index}
-                            className="flex flex-col"
-                        >
+                        <div key={index} className="flex flex-col">
                             <p className="text-xl md:text-2xl font-bold text-gray-800">
                                 {stat.number}
                             </p>
