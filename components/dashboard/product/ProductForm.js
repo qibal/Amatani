@@ -88,7 +88,7 @@ export default function ProductForm({ mode, product, onSubmit }) {
     useEffect(() => {
         async function GetData() {
             try {
-                const response = await fetch('http://localhost:3000/api/dashboard/products/categories');
+                const response = await fetch(`${process.env.DOMAIN_URL}/api/dashboard/products/categories`);
                 const data = await response.json();
                 setCategories(data); // Simpan data kategori ke dalam state
             } catch (error) {

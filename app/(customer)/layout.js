@@ -13,7 +13,7 @@ export default async function RootLayout({ children }) {
 
     if (auth.isAuthenticated && auth.user_id) {
         // Lakukan fetch server-side ke /api/customer/navbar_cart/{user_id}
-        const res = await fetch(`http://localhost:3000/api/customer/navbar_cart/${auth.user_id}`, {
+        const res = await fetch(`${process.env.DOMAIN_URL}/api/customer/navbar_cart/${auth.user_id}`, {
             cache: "no-store"
         });
         const json = await res.json();
