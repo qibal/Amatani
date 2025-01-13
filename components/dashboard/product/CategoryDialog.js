@@ -19,9 +19,9 @@ const formschema = z.object({
 
 export default function ManageCategoriesDialog() {
     const [categories, setCategories] = useState([]);
-    const [isAdding, startAdding] = useTransition(); 
-    const [isDeleting, startDeleting] = useTransition(); 
-    const [pendingCategoryId, setPendingCategoryId] = useState(null); 
+    const [isAdding, startAdding] = useTransition();
+    const [isDeleting, startDeleting] = useTransition();
+    const [pendingCategoryId, setPendingCategoryId] = useState(null);
 
     const form = useForm({
         resolver: zodResolver(formschema),
@@ -45,15 +45,15 @@ export default function ManageCategoriesDialog() {
             try {
                 const formData = new FormData();
                 formData.append('category_name', params.categories_name);
-    
+
                 const result = await fetch('/api/dashboard/products/categories/insert', {
                     method: 'POST',
                     body: formData,
                 });
-    
+
                 if (!result.ok) throw new Error('Failed to add category');
                 await result.json();
-    
+
                 fetchCategories();
                 form.reset();
                 toast.success("Category added successfully!", { duration: 5000 });
@@ -65,23 +65,23 @@ export default function ManageCategoriesDialog() {
     };
 
     const handleDeleteCategory = (categoryId, categoryName) => {
-        setPendingCategoryId(categoryId); 
+        setPendingCategoryId(categoryId);
         startDeleting(async () => {
             try {
                 const response = await fetch(`/api/dashboard/products/categories/delete/${categoryId}`, {
                     method: 'DELETE',
                 });
-    
+
                 if (!response.ok) throw new Error('Failed to delete category');
                 await response.json();
-    
-                fetchCategories(); 
+
+                fetchCategories();
                 toast.success(`Category "${categoryName}" deleted successfully.`, { duration: 5000 });
             } catch (error) {
                 console.error('Failed to delete category:', error);
                 toast.error("Failed to delete category.", { duration: 5000 });
             } finally {
-                setPendingCategoryId(null); 
+                setPendingCategoryId(null);
             }
         });
     };
