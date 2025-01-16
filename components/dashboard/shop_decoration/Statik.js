@@ -11,6 +11,7 @@ import { Toaster, toast } from "sonner";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import StatikPreview from './previewcomponent/StatikPreview';
+import { Loader2 } from 'lucide-react';
 
 const formSchema = z.object({
     number: z
@@ -173,7 +174,7 @@ export default function Statik() {
                                                                     <AlertDialogFooter>
                                                                         <AlertDialogCancel>Batal</AlertDialogCancel>
                                                                         <AlertDialogAction onClick={() => handleDelete(stat.id_statistic)} disabled={isDeleting}>
-                                                                            {isDeleting ? 'Menghapus...' : 'Hapus'}
+                                                                            {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Hapus'}
                                                                         </AlertDialogAction>
                                                                     </AlertDialogFooter>
                                                                 </AlertDialogContent>
@@ -188,7 +189,7 @@ export default function Statik() {
                                             className={`bg-rose-600 hover:bg-rose-500 ${isPending ? 'cursor-not-allowed' : ''}`}
                                             disabled={isPending}
                                         >
-                                            {isPending ? 'Menyimpan...' : 'Simpan'}
+                                            {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Simpan'}
                                         </Button>
                                     </div>
                                 </div>
@@ -234,7 +235,8 @@ export default function Statik() {
                     </Form>
                 </div>
 
-                <div className="w-3/5 flex justify-center items-center p-6">
+                <div className="w-3/5 flex flex-col justify-center items-center p-6 gap-y-10">
+                    <h2 className="text-xl font-semibold mb-4">Preview</h2>
                     <div className="w-full max-w-4xl">
                         <StatikPreview fetchStatistics={fetchStatistics} />
                     </div>

@@ -1,12 +1,25 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import Image from "next/image";
 
-export default function JasaGratisPreview() {
-    const features = [
-        { name: "Kupas", imageSrc: "/FE/img01.jpg" },
-        { name: "Potong", imageSrc: "/FE/img01.jpg" },
-        { name: "Giling", imageSrc: "/FE/img01.jpg" },
-        { name: "Bersihkan", imageSrc: "/FE/img01.jpg" },
-    ];
+export default function JasaGratisPreview({ refresh }) {
+    const [features, setFeatures] = useState([]);
+
+    const fetchJasaData = async () => {
+        try {
+            const response = await fetch('/api/dashboard/shop_decoration/jasa');
+            if (!response.ok) {
+                throw new Error('Failed to fetch jasa data');
+            }
+            const data = await response.json();
+            setFeatures(data);
+        } catch (error) {
+            console.error('Error fetching jasa data:', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchJasaData();
+    }, [refresh]);
 
     return (
         <section className="bg-white">
@@ -20,22 +33,25 @@ export default function JasaGratisPreview() {
                     </span>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {features.map(function (feature, index) {
-                        return (
-                            <div
-                                key={index}
-                                className="relative group flex flex-col items-center overflow-hidden"
-                            >
-                                <div
-                                    className="w-full h-[300px] bg-cover bg-center transform group-hover:scale-105 transition duration-300"
-                                    style={{ backgroundImage: `url(${feature.imageSrc})` }}
-                                ></div>
-                                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white text-gray-800 text-sm font-semibold py-1 px-4 rounded-full shadow-md">
-                                    {feature.name}
-                                </div>
+                    {features.map((feature, index) => (
+                        <div
+                            key={index}
+                            className="relative group flex flex-col items-center overflow-hidden"
+                        >
+                            <div className="w-full h-[300px] bg-cover bg-center transform group-hover:scale-105 transition duration-300">
+                                <Image
+                                    src={`https://xmlmcdfzbwjljhaebzna.supabase.co/storage/v1/object/public/${feature.image_path}`}
+                                    alt="Jasa Gratis"
+                                    width={300}
+                                    height={400}
+                                    className="object-contain"
+                                />
                             </div>
-                        );
-                    })}
+                            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white text-gray-800 text-sm font-semibold py-1 px-4 rounded-full shadow-md">
+                                {feature.jasa_name}
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </div>
         </section>

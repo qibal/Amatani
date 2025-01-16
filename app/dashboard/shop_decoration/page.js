@@ -12,7 +12,7 @@ export default function ShopDecoration() {
                 <CompanyLogo />
                 <JasaGratis />
                 <KategoriPangan />
-                <MediaSocial />
+                {/* <MediaSocial /> */}
             </div>
         </div>
     )

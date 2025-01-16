@@ -1,19 +1,28 @@
 "use client";
 
-const categories = [
-    { imageSrc: "/FE/img01.jpg", categoryName: "Buah - Buahan" },
-    { imageSrc: "/FE/img01.jpg", categoryName: "Sayuran" },
-    { imageSrc: "/FE/img01.jpg", categoryName: "Unggas dan Telur" },
-    { imageSrc: "/FE/img01.jpg", categoryName: "Daging Sapi" },
-    { imageSrc: "/FE/img01.jpg", categoryName: "Ikan dan Seafood" },
-    { imageSrc: "/FE/img01.jpg", categoryName: "Bumbu Dapur" },
-    { imageSrc: "/FE/img01.jpg", categoryName: "Produk Olahan" },
-    { imageSrc: "/FE/img01.jpg", categoryName: "Minuman" },
-    { imageSrc: "/FE/img01.jpg", categoryName: "Makanan Ringan" },
-    { imageSrc: "/FE/img01.jpg", categoryName: "Bahan Pokok" },
-];
+import React, { useEffect, useState } from "react";
+import Image from "next/image";
 
-export default function HomeKPangan() {
+export default function HomeKPanganPreview({ refresh }) {
+    const [categories, setCategories] = useState([]);
+
+    const fetchCategories = async () => {
+        try {
+            const response = await fetch('/api/dashboard/shop_decoration/kategori_pangan');
+            if (!response.ok) {
+                throw new Error('Failed to fetch categories');
+            }
+            const data = await response.json();
+            setCategories(data);
+        } catch (error) {
+            console.error('Error fetching categories:', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchCategories();
+    }, [refresh]);
+
     return (
         <section className="bg-white px-4 sm:px-8 py-8">
             <div className="container mx-auto">
@@ -26,11 +35,11 @@ export default function HomeKPangan() {
                     className="flex overflow-x-auto space-x-4 py-4 w-full scroll-snap-x"
                     style={{ scrollSnapType: "x mandatory" }}
                 >
-                    {Array.isArray(categories) && categories.map((product, index) => (
+                    {Array.isArray(categories) && categories.map((category, index) => (
                         <ProductCard
                             key={index}
-                            imageSrc={product.imageSrc}
-                            categoryName={product.categoryName}
+                            imageSrc={`https://xmlmcdfzbwjljhaebzna.supabase.co/storage/v1/object/public/${category.image_path}`}
+                            categoryName={category.categories_name}
                         />
                     ))}
                 </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useTransition, useRef } from 'react';
+import { useEffect, useState, useTransition, useRef, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -13,9 +13,18 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Image from "next/image";
 import CompanyLogosPreview from './previewcomponent/CompanyLogoPreview';
+import { Loader2 } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
 
 const formSchema = z.object({
-    logo: z.any().refine((file) => file?.length > 0, "Logo harus diupload"),
+    logo: z.any().refine((file) => {
+        if (!file || file.length === 0) return false;
+        const acceptedFormats = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
+        return acceptedFormats.includes(file[0].type);
+    }, "Format gambar harus PNG, JPG, JPEG, atau WEBP").refine((file) => {
+        if (!file || file.length === 0) return false;
+        return file[0].size <= 2 * 1024 * 1024; // 2MB
+    }, "Ukuran gambar harus kurang dari 2MB"),
 });
 
 export default function CompanyLogo() {
@@ -30,6 +39,9 @@ export default function CompanyLogo() {
     const [isPending, startTransition] = useTransition();
     const [isDeleting, startDeleteTransition] = useTransition();
     const [refreshPreview, setRefreshPreview] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [progress, setProgress] = useState(0);
+    const [preview, setPreview] = useState(null);
     const fileInputRef = useRef(null);
 
     const fetchCompanyLogos = async () => {
@@ -97,6 +109,9 @@ export default function CompanyLogo() {
                 const formData = new FormData();
                 formData.append('logo', data.logo[0]);
 
+                setIsLoading(true);
+                setProgress(0);
+
                 // Mengirim data ke API
                 const response = await fetch('/api/dashboard/shop_decoration/company_logos', {
                     method: 'POST',
@@ -114,7 +129,7 @@ export default function CompanyLogo() {
                 // Tampilkan atau perbarui toast jika berhasil
                 toast.success("Data berhasil disimpan!", {
                     id: toastId,
-                    description: "Logo perusahaan telah berhasil diperbarui.",
+                    description: "Logo perusahaan telah berhasil ditambah",
                     duration: 5000,
                 });
 
@@ -127,6 +142,8 @@ export default function CompanyLogo() {
                 // Fetch logos again to update the list
                 fetchCompanyLogos();
                 setRefreshPreview(prev => !prev); // Trigger refresh for CompanyLogosPreview
+                setPreview(null);
+                setIsLoading(false);
             } catch (error) {
                 console.error('Error submitting form:', error);
 
@@ -136,9 +153,22 @@ export default function CompanyLogo() {
                     description: "Terjadi kesalahan saat menyimpan data.",
                     duration: 5000,
                 });
+                setIsLoading(false);
             }
         });
     };
+
+    const handleFileChange = useCallback((e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPreview(reader.result);
+            };
+            reader.readAsDataURL(file);
+            form.setValue('logo', e.target.files);
+        }
+    }, [form]);
 
     return (
         <div className="flex">
@@ -182,7 +212,7 @@ export default function CompanyLogo() {
                                                                                 className="ml-4"
                                                                                 disabled={isDeleting}
                                                                             >
-                                                                                {isDeleting ? 'Menghapus...' : 'Hapus'}
+                                                                                {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Hapus'}
                                                                             </Button>
                                                                         </AlertDialogTrigger>
                                                                         <AlertDialogContent>
@@ -212,7 +242,7 @@ export default function CompanyLogo() {
                                             className={`bg-rose-600 hover:bg-rose-500 ${isPending ? 'cursor-not-allowed' : ''}`}
                                             disabled={isPending}
                                         >
-                                            {isPending ? 'Menyimpan...' : 'Simpan'}
+                                            {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Simpan'}
                                         </Button>
                                     </div>
                                 </div>
@@ -226,8 +256,8 @@ export default function CompanyLogo() {
                                                 <FormControl>
                                                     <Input
                                                         type="file"
-                                                        accept="image/*"
-                                                        onChange={(e) => field.onChange(e.target.files)}
+                                                        accept="image/png, image/jpeg, image/jpg, image/webp"
+                                                        onChange={handleFileChange}
                                                         ref={fileInputRef}
                                                     />
                                                 </FormControl>
@@ -236,6 +266,23 @@ export default function CompanyLogo() {
                                         )}
                                     />
                                 </div>
+                                {isLoading && (
+                                    <div className="mt-4">
+                                        <Progress value={progress} className="w-full" />
+                                        <p className="text-sm text-gray-500 mt-2">Mengunggah gambar: {Math.round(progress)}%</p>
+                                    </div>
+                                )}
+                                {preview && (
+                                    <div className="mt-4">
+                                        <Image
+                                            src={preview}
+                                            alt="Preview"
+                                            width={200}
+                                            height={200}
+                                            className="object-cover rounded-lg"
+                                        />
+                                    </div>
+                                )}
                             </div>
                         </form>
                     </Form>
