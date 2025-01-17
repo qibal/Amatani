@@ -36,7 +36,8 @@ export default function EditFaqPage() {
             formData.append('faq_id', faq_id);
             formData.append('title', faqData.title);
             formData.append('content', faqData.content);
-            formData.append('category_id', faqData.category_id);
+            formData.append('category_id', faqData.category.category_id);
+            formData.append('category_name', faqData.category.category_name);
 
             const response = await fetch('/api/dashboard/faq/edit', {
                 method: 'POST',
@@ -87,4 +88,3 @@ export default function EditFaqPage() {
         </div>
     );
 }
-

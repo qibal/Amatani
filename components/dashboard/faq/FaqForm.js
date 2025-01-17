@@ -15,7 +15,10 @@ import { Toaster, toast } from "sonner";
 const formSchema = z.object({
     title: z.string().min(1, { message: "Tidak boleh kosong" }),
     content: z.string().min(1, { message: "Tidak boleh kosong" }),
-    category_id: z.string().min(1, { message: "Kategori FAQ harus dipilih" }),
+    category: z.object({
+        category_id: z.string().min(1, { message: "Kategori FAQ harus dipilih" }),
+        category_name: z.string().min(1, { message: "Kategori FAQ harus dipilih" }),
+    }),
 });
 
 export default function FAQForm({ mode, faq, onSubmit }) {
@@ -27,7 +30,7 @@ export default function FAQForm({ mode, faq, onSubmit }) {
         defaultValues: {
             title: "",
             content: "",
-            category_id: "",
+            category: { category_id: "", category_name: "" },
         },
     });
 
@@ -36,7 +39,10 @@ export default function FAQForm({ mode, faq, onSubmit }) {
             form.reset({
                 title: faq.title,
                 content: faq.content,
-                category_id: faq.category_id.toString(),
+                category: {
+                    category_id: faq.category_id.toString(),
+                    category_name: faq.category_name,
+                },
             });
         }
     }, [mode, faq, form]);
@@ -133,14 +139,17 @@ export default function FAQForm({ mode, faq, onSubmit }) {
                             />
                             <FormField
                                 control={form.control}
-                                name="category_id"
+                                name="category"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Kategori FAQ</FormLabel>
                                         <FormControl>
                                             <Select
-                                                onValueChange={field.onChange}
-                                                value={field.value}
+                                                onValueChange={(value) => {
+                                                    const selectedCategory = categories.find(category => category.category_id === value);
+                                                    field.onChange(selectedCategory ? { category_id: selectedCategory.category_id, category_name: selectedCategory.name } : { category_id: "", category_name: "" });
+                                                }}
+                                                value={field.value.category_id}
                                             >
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Pilih Kategori" />
@@ -165,4 +174,3 @@ export default function FAQForm({ mode, faq, onSubmit }) {
         </div>
     );
 }
-
