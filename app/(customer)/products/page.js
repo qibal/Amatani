@@ -191,27 +191,56 @@ function ProductCard({ imageSrc, name, category, priceType, fixedPrice, wholesal
         priceRange = "Harga tidak tersedia";
     }
     return (
-        <Link href={`/products/${product_id}`}>
-            <Card className="w-full border-0 shadow-none">
-                <CardHeader className="p-0">
-                    <AspectRatio ratio={1 / 1}>
-                        <Image
-                            width={200}
-                            height={200}
-                            src={`https://xmlmcdfzbwjljhaebzna.supabase.co/storage/v1/object/public/${imageSrc}`} // Gabungkan URL dasar dengan path gambar
+        <>
+            {stock > 0 && (
 
-                            alt={name}
-                            className="object-cover w-full h-full"
-                        />
-                    </AspectRatio >
-                </CardHeader >
-                <CardContent className="space-y-2 p-4">
-                    <p className="text-lg font-semibold text-gray-800">{name}</p>
-                    <p className="text-sm text-gray-500">{category}</p>
-                    <p className="text-base font-bold text-rose-600">{priceRange}</p>
-                </CardContent>
-            </Card >
-        </Link >
+                <Card className="w-full border-0 shadow-none">
+                    <CardHeader className="p-0">
+                        <AspectRatio ratio={1 / 1}>
+                            <Image
+                                width={200}
+                                height={200}
+                                src={`https://xmlmcdfzbwjljhaebzna.supabase.co/storage/v1/object/public/${imageSrc}`} // Gabungkan URL dasar dengan path gambar
+                                alt={name}
+                                className="object-cover w-full h-full"
+                            />
+                            {stock === 0 && (
+                                <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                                    <span className="text-white text-2xl font-bold">Stok Habis</span>
+                                </div>
+                            )}
+                        </AspectRatio>
+                    </CardHeader>
+                    <CardContent className="space-y-2 p-4">
+                        <p className="text-lg font-semibold text-gray-800">{name}</p>
+                        <p className="text-sm text-gray-500">{category}</p>
+                        <p className="text-base font-bold text-rose-600">{priceRange}</p>
+                    </CardContent>
+                </Card>
+
+            )}
+            <Link href={`/products/${product_id}`}>
+                <Card className="w-full border-0 shadow-none">
+                    <CardHeader className="p-0">
+                        <AspectRatio ratio={1 / 1}>
+                            <Image
+                                width={200}
+                                height={200}
+                                src={`https://xmlmcdfzbwjljhaebzna.supabase.co/storage/v1/object/public/${imageSrc}`} // Gabungkan URL dasar dengan path gambar
+
+                                alt={name}
+                                className="object-cover w-full h-full"
+                            />
+                        </AspectRatio >
+                    </CardHeader >
+                    <CardContent className="space-y-2 p-4">
+                        <p className="text-lg font-semibold text-gray-800">{name}</p>
+                        <p className="text-sm text-gray-500">{category}</p>
+                        <p className="text-base font-bold text-rose-600">{priceRange}</p>
+                    </CardContent>
+                </Card >
+            </Link >
+        </>
     );
 };
 
