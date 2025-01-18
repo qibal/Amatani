@@ -1,19 +1,40 @@
 "use client";
 
-const categories = [
-    { imageSrc: "/FE/img01.jpg", categoryName: "Buah - Buahan" },
-    { imageSrc: "/FE/img01.jpg", categoryName: "Sayuran" },
-    { imageSrc: "/FE/img01.jpg", categoryName: "Unggas dan Telur" },
-    { imageSrc: "/FE/img01.jpg", categoryName: "Daging Sapi" },
-    { imageSrc: "/FE/img01.jpg", categoryName: "Ikan dan Seafood" },
-    { imageSrc: "/FE/img01.jpg", categoryName: "Bumbu Dapur" },
-    { imageSrc: "/FE/img01.jpg", categoryName: "Produk Olahan" },
-    { imageSrc: "/FE/img01.jpg", categoryName: "Minuman" },
-    { imageSrc: "/FE/img01.jpg", categoryName: "Makanan Ringan" },
-    { imageSrc: "/FE/img01.jpg", categoryName: "Bahan Pokok" },
-];
+import { useEffect, useState } from 'react';
 
 export default function HomeKPangan() {
+    const [categories, setCategories] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await fetch('/api/dashboard/shop_decoration/kategori_pangan');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch categories');
+                }
+                const data = await response.json();
+                setCategories(data);
+                setIsLoading(false);
+            } catch (error) {
+                console.error('Error fetching categories:', error);
+                setError(error.message);
+                setIsLoading(false);
+            }
+        };
+
+        fetchCategories();
+    }, []);
+
+    if (isLoading) {
+        return <div className="text-center py-8">Loading...</div>;
+    }
+
+    if (error) {
+        return <div className="text-center py-8 text-red-500">Error: {error}</div>;
+    }
+
     return (
         <section className="px-16 py-8 bg-white">
             <div className="container mx-auto">
@@ -26,11 +47,11 @@ export default function HomeKPangan() {
                     className="flex overflow-x-auto space-x-4 py-4 w-full scroll-snap-x"
                     style={{ scrollSnapType: "x mandatory" }}
                 >
-                    {Array.isArray(categories) && categories.map((product, index) => (
+                    {Array.isArray(categories) && categories.map((category) => (
                         <ProductCard
-                            key={index}
-                            imageSrc={product.imageSrc}
-                            categoryName={product.categoryName}
+                            key={category.id_categories_pangan}
+                            imageSrc={category.image_path}
+                            categoryName={category.categories_name}
                         />
                     ))}
                 </div>
@@ -48,7 +69,7 @@ function ProductCard({ imageSrc, categoryName }) {
             {/* Gambar Background */}
             <div
                 className="w-full h-full bg-cover bg-no-repeat bg-center rounded-lg shadow-lg"
-                style={{ backgroundImage: `url(${imageSrc})` }}
+                style={{ backgroundImage: `url(https://xmlmcdfzbwjljhaebzna.supabase.co/storage/v1/object/public/${imageSrc})` }}
             ></div>
             {/* Label Nama Kategori */}
             <div className="absolute bottom-4 sm:bottom-6 md:bottom-8 left-4 flex justify-start items-center px-4 py-2 rounded-full bg-white bg-opacity-90">

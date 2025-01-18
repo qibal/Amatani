@@ -7,18 +7,30 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 
 export default function CompanyLogosCarousel() {
-    const companyLogos = [
-        { src: "/FE/img02.png", alt: "Company 1 Logo" },
-        { src: "/FE/img02.png", alt: "Company 2 Logo" },
-        { src: "/FE/img02.png", alt: "Company 3 Logo" },
-        { src: "/FE/img02.png", alt: "Company 4 Logo" },
-        { src: "/FE/img02.png", alt: "Company 5 Logo" },
-        { src: "/FE/img02.png", alt: "Company 6 Logo" },
-        { src: "/FE/img02.png", alt: "Company 7 Logo" },
-        { src: "/FE/img02.png", alt: "Company 8 Logo" },
-        // Add more company logos as needed
-    ]
-    const [api, setApi] = useState(null)
+    const [companyLogos, setCompanyLogos] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [api, setApi] = useState(null);
+
+    useEffect(() => {
+        const fetchCompanyLogos = async () => {
+            try {
+                const response = await fetch('/api/dashboard/shop_decoration/company_logos');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch company logos');
+                }
+                const data = await response.json();
+                setCompanyLogos(data);
+                setIsLoading(false);
+            } catch (error) {
+                console.error('Error fetching company logos:', error);
+                setError(error.message);
+                setIsLoading(false);
+            }
+        };
+
+        fetchCompanyLogos();
+    }, []);
 
     useEffect(() => {
         if (!api) {
@@ -32,6 +44,14 @@ export default function CompanyLogosCarousel() {
             clearInterval(interval);
         };
     }, [api]);
+
+    if (isLoading) {
+        return <div>Loading...</div>;
+    }
+
+    if (error) {
+        return <div>Error: {error}</div>;
+    }
 
     return (
         <section className="py-5 bg-white">
@@ -56,13 +76,13 @@ export default function CompanyLogosCarousel() {
                 >
                     <CarouselContent className="-ml-2 md:-ml-4">
                         {companyLogos.map((logo, index) => (
-                            <CarouselItem key={index} className="pl-2 md:pl-4 basis-1/4">
+                            <CarouselItem key={logo.id} className="pl-2 md:pl-4 basis-1/4">
                                 <Card className="border-none shadow-none">
                                     <CardContent className="p-2">
                                         <AspectRatio ratio={1 / 1} className="bg-white">
                                             <Image
-                                                src={logo.src}
-                                                alt={logo.alt}
+                                                src={`https://xmlmcdfzbwjljhaebzna.supabase.co/storage/v1/object/public/${logo.image_path}`}
+                                                alt={`Company Logo ${index + 1}`}
                                                 fill
                                                 className="object-contain p-2"
                                             />
@@ -72,8 +92,6 @@ export default function CompanyLogosCarousel() {
                             </CarouselItem>
                         ))}
                     </CarouselContent>
-                    {/* <CarouselPrevious />
-                    <CarouselNext /> */}
                 </Carousel>
             </div>
         </section>
