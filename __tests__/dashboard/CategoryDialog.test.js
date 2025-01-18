@@ -73,4 +73,69 @@ describe('ManageCategoriesDialog', () => {
             expect(screen.getByText(/Category deleted successfully./i)).toBeInTheDocument();
         });
     });
+
+    it('should display validation error when adding an empty category', async () => {
+        render(<ManageCategoriesDialog />);
+
+        fireEvent.click(screen.getByText(/Manage Categories/i));
+
+        await waitFor(() => {
+            expect(screen.getByText(/Manage Your Categories/i)).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getByRole('button', { name: /Add/i }));
+
+        await waitFor(() => {
+            expect(screen.getByText(/Jangan lupa di isi/i)).toBeInTheDocument();
+        });
+    });
+
+    it('should handle API errors gracefully when adding a category', async () => {
+        fetch.mockImplementationOnce(() => Promise.resolve({
+            ok: false,
+            json: () => Promise.resolve({ message: 'Failed to add category' }),
+        }));
+
+        render(<ManageCategoriesDialog />);
+
+        fireEvent.click(screen.getByText(/Manage Categories/i));
+
+        await waitFor(() => {
+            expect(screen.getByText(/Manage Your Categories/i)).toBeInTheDocument();
+        });
+
+        fireEvent.change(screen.getByPlaceholderText(/Enter category name/i), { target: { value: 'New Category' } });
+        fireEvent.click(screen.getByRole('button', { name: /Add/i }));
+
+        await waitFor(() => {
+            expect(screen.getByText(/Failed to add category/i)).toBeInTheDocument();
+        });
+    });
+
+    it('should handle API errors gracefully when deleting a category', async () => {
+        fetch.mockImplementationOnce(() => Promise.resolve({
+            ok: false,
+            json: () => Promise.resolve({ message: 'Failed to delete category' }),
+        }));
+
+        render(<ManageCategoriesDialog />);
+
+        fireEvent.click(screen.getByText(/Manage Categories/i));
+
+        await waitFor(() => {
+            expect(screen.getByText(/Manage Your Categories/i)).toBeInTheDocument();
+        });
+
+        // Find the delete button for the specific category
+        const deleteButton = screen.getAllByRole('button', { name: /Delete/i })[0];
+        fireEvent.click(deleteButton);
+
+        // Confirm the deletion in the alert dialog
+        const confirmDeleteButton = screen.getByRole('button', { name: /Delete/i });
+        fireEvent.click(confirmDeleteButton);
+
+        await waitFor(() => {
+            expect(screen.getByText(/Failed to delete category/i)).toBeInTheDocument();
+        });
+    });
 });
