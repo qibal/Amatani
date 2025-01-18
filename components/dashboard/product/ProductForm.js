@@ -83,13 +83,15 @@ export default function ProductForm({ mode, product, onSubmit }) {
 
     const [isPending, startTransition] = useTransition();
     const [categories, setCategories] = useState([]);
+    console.log("🚀 ~ ProductForm ~ categories:", categories)
 
 
     useEffect(() => {
         async function GetData() {
             try {
-                const response = await fetch(`${process.env.DOMAIN_URL}/api/dashboard/products/categories`);
+                const response = await fetch(`/api/dashboard/products/categories`);
                 const data = await response.json();
+                console.log("🚀 ~ GetData ~ data:", data)
                 setCategories(data); // Simpan data kategori ke dalam state
             } catch (error) {
                 console.error("Failed to fetch categories:", error);
