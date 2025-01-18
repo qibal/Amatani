@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import { useEffect, useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
@@ -53,12 +53,23 @@ export default function FAQForm({ mode, faq, onSubmit }) {
                 const response = await fetch('/api/dashboard/faq/categories');
                 const data = await response.json();
                 setCategories(data);
+
+                if (mode === 'edit' && faq) {
+                    form.reset({
+                        title: faq.title,
+                        content: faq.content,
+                        category: {
+                            category_id: faq.category_id.toString(),
+                            category_name: faq.category_name,
+                        },
+                    });
+                }
             } catch (error) {
                 console.error("Failed to fetch FAQ categories:", error);
             }
         }
         fetchCategories();
-    }, []);
+    }, [mode, faq, form]);
 
     const handleSubmit = (data) => {
         startTransition(async () => {
