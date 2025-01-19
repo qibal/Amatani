@@ -22,7 +22,7 @@ const config = {
   testEnvironment: "jsdom",
   moduleNameMapper: {
     // ...
-    '^@/components/(.*)$': '<rootDir>/components/$1',
+    '^@/(.*)$': '<rootDir>/$1',
   }
 };
 
