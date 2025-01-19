@@ -1,10 +1,11 @@
 
 import { login, signup } from '@/app/api/server_actions/Auth';
-import OauthLoginButton from '@/components/auth/masuk/OauthLogin';
+
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import Image from 'next/image';
+import { OauthLoginButton } from '@/components/auth/masuk/OauthLogin';
 
 export default function SignUpPage() {
 
