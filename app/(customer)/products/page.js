@@ -40,16 +40,16 @@ export default function Product() {
                 const data = await result.json();
                 setProductsData(data);
                 if (data.length > 0) {
-                    setCategoryName(data[0].categories_name);
+                    setCategoryName(allProductsQuery ? 'Semua Produk' : data[0].categories_name);
                 } else {
-                    setCategoryName('');
+                    setCategoryName(allProductsQuery ? 'Semua Produk' : '');
                 }
             }
         }
         if (query || type === 'all') {
             fetchProducts();
         }
-    }, [query, formattedQuery, type]);
+    }, [query, formattedQuery, type, allProductsQuery]);
 
     const handleSearch = (e) => {
         e.preventDefault();
@@ -89,7 +89,7 @@ export default function Product() {
                 {/* Hasil Pencarian, Filter, dan Sort By */}
                 <div className="flex justify-between items-center w-full">
                     <p className="text-xl font-semibold text-gray-800">
-                        {categoryName ? categoryName : (formattedQuery ? formattedQuery : 'Kategori tidak tersedia')} ({productsData.length})
+                        {allProductsQuery ? 'Semua Produk' : (categoryName ? categoryName : (formattedQuery ? formattedQuery : 'Kategori tidak tersedia'))} ({productsData.length})
                     </p>
                     <div className="flex items-center gap-4">
                         <Button className="flex items-center gap-2 bg-gray-50 hover:bg-gray-100">
@@ -109,7 +109,7 @@ export default function Product() {
                 <div>
                     <p className="text-sm text-gray-800">Hasil pencarian:</p>
                     <p className="text-xl font-semibold text-gray-800">
-                        {categoryName ? categoryName : (formattedQuery ? formattedQuery : 'Kategori tidak tersedia')} ({productsData.length})
+                        {allProductsQuery ? 'Semua Produk' : (categoryName ? categoryName : (formattedQuery ? formattedQuery : 'Kategori tidak tersedia'))} ({productsData.length})
                     </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-4 w-full lg:w-auto">
