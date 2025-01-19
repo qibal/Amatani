@@ -10,15 +10,14 @@ import { Select, SelectItem, SelectTrigger, SelectContent, SelectValue } from "@
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ProductImageUpload } from "@/components/dashboard/product/DropProductImage";
-
-import { Trash2, Loader2 } from 'lucide-react';
+import { Trash2, Loader2, ChevronRight } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { useRouter } from 'next/navigation'
-// Zod schema validation
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner'; // Import toast from sonner
+
 const formSchema = z.object({
     products_name: z.string().min(1, { message: "Tidak boleh kosong" }),
-    // categories_name: z.string().min(1, { message: "Kategori produk harus dipilih" }),
     category: z.object({
         categories_id: z.string().min(1, { message: "Kategori produk harus dipilih" }),
         categories_name: z.string().min(1, { message: "Kategori produk harus dipilih" }),
@@ -30,7 +29,7 @@ const formSchema = z.object({
     fixed_price: z.number().optional(),
     wholesalePrices: z.array(z.object({
         min_quantity: z.number().min(1, { message: "Harus lebih dari 0" }),
-        max_quantity: z.number().min(1, { message: "Harus lebih dari 0" }),
+        max_quantity: z.number().nullable(), // Allow null for max_quantity
         price: z.number().min(1, { message: "harus lebih dari 0" })
     })).optional(),
     product_images: z.array(z.any()).min(1, { message: "Setidaknya ada 1 gambar produk" }),
@@ -55,14 +54,11 @@ const formSchema = z.object({
 });
 
 export default function ProductForm({ mode, product, onSubmit }) {
-    console.log("🚀 ~ ProductForm ~ mode:", mode)
-    console.log("🚀 ~ ProductForm ~ product: edit", product)
-    const router = useRouter()
+    const router = useRouter();
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
             products_name: "",
-            // categories_name: "",
             category: {
                 categories_id: "",
                 categories_name: "",
@@ -84,26 +80,22 @@ export default function ProductForm({ mode, product, onSubmit }) {
 
     const [isPending, startTransition] = useTransition();
     const [categories, setCategories] = useState([]);
-    console.log("🚀 ~ ProductForm ~ categories:", categories)
-
 
     useEffect(() => {
         async function GetData() {
             try {
                 const response = await fetch(`/api/dashboard/products/categories`);
                 const data = await response.json();
-                console.log("🚀 ~ GetData ~ data:", data)
-                setCategories(data); // Simpan data kategori ke dalam state
+                setCategories(data);
             } catch (error) {
                 console.error("Failed to fetch categories:", error);
             }
         }
         GetData();
     }, []);
-    // Isi form dengan data product ketika mode adalah 'edit' dan product tersedia
+
     useEffect(() => {
         if (mode === 'edit' && product && categories.length > 0) {
-            // Pastikan categories_id dari product ada di dalam data categories
             const categoryExists = categories.some(
                 (category) => category.categories_id === product.categories_id
             );
@@ -123,14 +115,13 @@ export default function ProductForm({ mode, product, onSubmit }) {
                     product.price_type === 'wholesale' ? product.wholesale_prices : [{ min_quantity: 0, max_quantity: 0, price: 0 }]
                 );
                 form.setValue("product_images", product.images);
-                form.setValue("product_id", product.product_id); // Set product_id di sini
+                form.setValue("product_id", product.product_id);
             } else {
                 console.error("Category not found in categories data.");
             }
         }
     }, [mode, product, categories, form]);
 
-    // Reset form values and clear errors when price type changes
     useEffect(() => {
         if (price_type === 'fixed') {
             form.setValue("wholesalePrices", []);
@@ -141,21 +132,12 @@ export default function ProductForm({ mode, product, onSubmit }) {
         }
     }, [price_type, form]);
 
-    // reset form values and clear errors when price type changes
-    useEffect(() => {
-        if (price_type === 'fixed') {
-            form.setValue("wholesalePrices", []);
-            form.clearErrors("wholesalePrices"); // Clear errors for wholesalePrices
-        } else if (price_type === 'wholesale') {
-            form.setValue("fixed_price", 0);
-            form.clearErrors("fixed_price"); // Clear errors for fixed_price
-        }
-    }, [price_type, form]);
-
-
-
     const addWholesalePrice = () => {
         form.setValue("wholesalePrices", [...form.watch("wholesalePrices"), { min_quantity: 0, max_quantity: 0, price: 0 }]);
+    };
+
+    const addMoreThanQuantity = () => {
+        form.setValue("wholesalePrices", [...form.watch("wholesalePrices"), { min_quantity: 0, max_quantity: null, price: 0 }]);
     };
 
     const removeWholesalePrice = (index) => {
@@ -167,18 +149,20 @@ export default function ProductForm({ mode, product, onSubmit }) {
     };
 
     const handleSubmit = (data) => {
-        console.log("🚀 ~ handleSubmit ~ data:", data)
         startTransition(async () => {
             try {
                 await onSubmit(data);
+                toast.success(`Produk ${mode === 'add' ? 'berhasil ditambahkan' : 'berhasil diperbarui'}!`);
             } catch (error) {
                 console.error('Error submitting form:', error);
             }
         });
     };
+
     if (mode === 'edit' && !product) {
-        return <div>Loading...</div>; // Tampilkan loading indicator
+        return <div>Loading...</div>;
     }
+
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(handleSubmit)} className="lg:w-4/6">
@@ -205,9 +189,7 @@ export default function ProductForm({ mode, product, onSubmit }) {
                         </div>
                     </div>
                     <div className="container mx-auto space-y-12">
-                        {/* Tambahkan input type hidden untuk product_id */}
                         <input type="hidden" {...form.register("product_id")} />
-                        {/* Form fields lainnya */}
                         <Separator />
                         <div className="space-y-6">
                             <h2 className="text-lg font-semibold">Informasi Produk</h2>
@@ -368,8 +350,16 @@ export default function ProductForm({ mode, product, onSubmit }) {
                             />
                             {price_type === "wholesale" && (
                                 <div className="space-y-2">
-                                    {form.watch("wholesalePrices").map((_, index) => (
+                                    {form.watch("wholesalePrices").map((price, index) => (
                                         <div key={index} className="flex gap-2 items-end">
+                                            {price.max_quantity == null && (
+                                                <div className="flex-1 items-center flex-col  bg-gray-50">
+                                                    <FormLabel>Lebih Dari</FormLabel>
+                                                    <div className=" justify-center border mt-2 flex h-9 w-full rounded-md  border-zinc-200 bg-transparent px-3 py-1 text-base shadow-sm ">
+                                                        <ChevronRight />
+                                                    </div>
+                                                </div>
+                                            )}
                                             <FormField
                                                 control={form.control}
                                                 name={`wholesalePrices.${index}.min_quantity`}
@@ -381,6 +371,7 @@ export default function ProductForm({ mode, product, onSubmit }) {
                                                                 placeholder="Min Jumlah"
                                                                 className="flex-1"
                                                                 {...field}
+                                                                value={field.value || ''}
                                                                 onChange={(e) => {
                                                                     const value = e.target.value;
                                                                     if (!isNaN(value)) {
@@ -393,31 +384,35 @@ export default function ProductForm({ mode, product, onSubmit }) {
                                                     </FormItem>
                                                 )}
                                             />
-                                            <FormField
-                                                control={form.control}
-                                                name={`wholesalePrices.${index}.max_quantity`}
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel>Max Quantity</FormLabel>
-                                                        <FormControl>
-                                                            <Input
-                                                                placeholder="Max Jumlah"
-                                                                className="flex-1"
-                                                                {...field}
-                                                                onChange={(e) => {
-                                                                    const value = e.target.value;
-                                                                    if (!isNaN(value)) {
-                                                                        field.onChange(Number(value));
-                                                                    } else {
-                                                                        field.onChange(0);
-                                                                    }
-                                                                }}
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
+
+                                            {price.max_quantity !== null && (
+                                                <FormField
+                                                    control={form.control}
+                                                    name={`wholesalePrices.${index}.max_quantity`}
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>Max Quantity</FormLabel>
+                                                            <FormControl>
+                                                                <Input
+                                                                    placeholder="Max Jumlah"
+                                                                    className="flex-1"
+                                                                    {...field}
+                                                                    value={field.value ?? ''}
+                                                                    onChange={(e) => {
+                                                                        const value = e.target.value;
+                                                                        if (!isNaN(value)) {
+                                                                            field.onChange(Number(value));
+                                                                        } else {
+                                                                            field.onChange(0);
+                                                                        }
+                                                                    }}
+                                                                />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                            )}
                                             <FormField
                                                 control={form.control}
                                                 name={`wholesalePrices.${index}.price`}
@@ -429,6 +424,7 @@ export default function ProductForm({ mode, product, onSubmit }) {
                                                                 placeholder="Harga"
                                                                 className="flex-1"
                                                                 {...field}
+                                                                value={field.value || ''}
                                                                 onChange={(e) => {
                                                                     const value = e.target.value;
                                                                     if (!isNaN(value)) {
@@ -450,10 +446,16 @@ export default function ProductForm({ mode, product, onSubmit }) {
                                             )}
                                         </div>
                                     ))}
-                                    {form.watch("wholesalePrices").length < 3 && (
-                                        <Button type="button" variant="outline" onClick={addWholesalePrice}>
-                                            Tambah Variant
-                                        </Button>
+                                    {form.watch("wholesalePrices").length < 3 && !form.watch("wholesalePrices").some(price => price.max_quantity === null) && (
+                                        <div className='flex gap-2 '>
+                                            <Button type="button" variant="outline" onClick={addWholesalePrice}>
+                                                Tambah Variant
+                                            </Button>
+                                            <Button type="button" variant="outline" onClick={addMoreThanQuantity}>
+                                                <ChevronRight className="mr-2 h-4 w-4" />
+                                                Lebih Dari
+                                            </Button>
+                                        </div>
                                     )}
                                 </div>
                             )}
@@ -463,11 +465,13 @@ export default function ProductForm({ mode, product, onSubmit }) {
                                     name="fixed_price"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Harga</FormLabel>
+                                            <FormLabel>Harga Tetap</FormLabel>
                                             <FormControl>
                                                 <Input
-                                                    {...field}
                                                     placeholder="Harga"
+                                                    className="flex-1"
+                                                    {...field}
+                                                    value={field.value || ''}
                                                     onChange={(e) => {
                                                         const value = e.target.value;
                                                         if (!isNaN(value)) {
@@ -475,7 +479,8 @@ export default function ProductForm({ mode, product, onSubmit }) {
                                                         } else {
                                                             field.onChange(0);
                                                         }
-                                                    }} />
+                                                    }}
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -483,10 +488,10 @@ export default function ProductForm({ mode, product, onSubmit }) {
                                 />
                             )}
                         </div>
+                        <Separator />
                     </div>
                 </div>
             </form>
         </Form>
     );
-};
-
+}

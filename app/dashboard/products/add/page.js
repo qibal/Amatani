@@ -32,6 +32,7 @@ export default function AddProductPage() {
         const data = await result.json();
         console.log('result =', data);
         console.log('berhasil di upload');
+
     };
 
 
