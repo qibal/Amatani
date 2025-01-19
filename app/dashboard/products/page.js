@@ -94,7 +94,11 @@ const ProductCard = ({ product, onDelete }) => {
 
     if (product.price_type === 'wholesale' && product.wholesale_prices) {
         priceRanges = product.wholesale_prices.map((price, index) => (
-            <PriceRange key={index} label={`${price.min_quantity} - ${price.max_quantity}`} price={`Rp ${price.price}`} />
+            <PriceRange
+                key={index}
+                label={price.max_quantity === null ? `> ${price.min_quantity}` : `${price.min_quantity} - ${price.max_quantity}`}
+                price={`Rp ${price.price}`}
+            />
         ));
     } else if (product.price_type === 'fixed') {
         priceRanges = (
@@ -157,6 +161,7 @@ const ProductCardSkeleton = () => (
 export default function ProductPage() {
     const [currentSort, setCurrentSort] = useState('Sort by')
     const [products, setProducts] = useState([]);
+    console.log("🚀 ~ ProductPage ~ products:", products)
     const [isPending, startTransition] = useTransition();
     const [searchQuery, setSearchQuery] = useState("");
     const [offset, setOffset] = useState(0);
