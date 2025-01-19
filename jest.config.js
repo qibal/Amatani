@@ -9,7 +9,7 @@ const config = {
   collectCoverage: true,
   coverageDirectory: "coverage",
   coverageProvider: "v8",
-  coverageReporters: ["json", "text", "lcov", "clover"],
+  coverageReporters: ["json", "text", "lcov", "clover", "text-summary", "html"],
   // coverageThreshold: {
   //   global: {
   //     branches: 90,
