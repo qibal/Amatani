@@ -1,5 +1,4 @@
 'use client'
-
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import {
@@ -10,28 +9,21 @@ import {
 } from "@/components/ui/accordion"
 import { Minus, Plus, Star, Truck } from 'lucide-react'
 import { useEffect, useState } from "react"
-
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-
 import { useTransition } from 'react'
-
 import { useRouter } from 'next/navigation'
 import { useCart } from "../../Navbar/CartContext"
 import CarouselWithThumbnails from "./CarouselImages"
 import { Separator } from "@/components/ui/separator"
 
-
-
-
 export default function ProductDetailComponent({ product_id }) {
 
     const [productsData, setProductsData] = useState(null);
     console.log("🚀 ~ Product ~ productsData:", productsData)
-
 
     useEffect(() => {
         async function fetchProducts(product_id) {
@@ -49,12 +41,13 @@ export default function ProductDetailComponent({ product_id }) {
         return <div>Loading...</div>;
     }
 
-    const images = productsData.images ?
-        productsData.images.map((img) => ({
-            src: `/${img}`,
-            alt: productsData.products_name
+    // Pemetaan gambar untuk digabungkan dengan URL Supabase
+    const images = productsData.images
+        ? productsData.images.map((img) => ({
+            src: `https://xmlmcdfzbwjljhaebzna.supabase.co/storage/v1/object/public/${img}`, // Gabungkan URL dasar dengan path gambar
+            alt: productsData.products_name,
         }))
-        : []
+        : [];
 
     return (
         <div className="container mx-auto px-8 py-6">
@@ -70,43 +63,9 @@ export default function ProductDetailComponent({ product_id }) {
                             <Star className="w-5 h-5 fill-muted text-muted-foreground" />
                         </div>
                     </div>
-                    {/* Images */}
-                    <CarouselWithThumbnails images={images} />
-                    {/* <div className="flex flex-col lg:flex-row gap-4 ">
-                        Main Image
-                        <AspectRatio ratio={1 / 1}>
-                            <Image
-                                src={`https://xmlmcdfzbwjljhaebzna.supabase.co/storage/v1/object/public/${images[0].src}`} // Gabungkan URL dasar dengan path gambar}
-                                alt={images[0].alt}
-                                className="object-cover w-full h-full"
-                                width={800}
-                                height={800}
-                            />
-                        </AspectRatio>
 
-                        Image Thumbnails
-                        <div className="flex lg:flex-col gap-2 order-2 lg:order-1">
-                            {images.map((image, index) => (
-                                <button
-                                    key={index}
-                                    className={cn(
-                                        "relative rounded-lg overflow-hidden w-20 h-20",
-                                        index === 0 ? "ring-2 ring-primary" : "hover:ring-2 hover:ring-primary/50"
-                                    )}
-                                >
-                                    <AspectRatio ratio={1 / 1}>
-                                        <Image
-                                            src={`https://xmlmcdfzbwjljhaebzna.supabase.co/storage/v1/object/public/${image.src}`} // Gabungkan URL dasar dengan path gambar}
-                                            alt={image.alt}
-                                            className="object-cover w-full h-full"
-                                            width={800}
-                                            height={800}
-                                        />
-                                    </AspectRatio>
-                                </button>
-                            ))}
-                        </div>
-                    </div> */}
+                    {/* Carousel with Thumbnails */}
+                    <CarouselWithThumbnails images={images} />
 
                     {/* Product Info Card for Mobile */}
                     <div className="lg:hidden mt-4">
@@ -116,12 +75,12 @@ export default function ProductDetailComponent({ product_id }) {
                     <div className="mt-6 space-y-6">
                         <div className="hidden lg:block">
                             <h1 className="text-3xl font-bold">{productsData.products_name}</h1>
-                            <div className="flex items-center gap-0.5 mt-2">
+                            {/* <div className="flex items-center gap-0.5 mt-2">
                                 {Array(4).fill(0).map((_, index) => (
                                     <Star key={index} className="w-5 h-5 fill-primary text-primary" />
                                 ))}
                                 <Star className="w-5 h-5 fill-muted text-muted-foreground" />
-                            </div>
+                            </div> */}
                         </div>
 
                         {/* Description */}
@@ -141,8 +100,8 @@ export default function ProductDetailComponent({ product_id }) {
                                         <table className="w-full">
                                             <tbody>
                                                 <tr>
-                                                    <td className="py-2">Berat</td>
-                                                    <td className="py-2">{productsData.stock}g</td>
+                                                    <td className="py-2">Stock</td>
+                                                    <td className="py-2">{productsData.stock}</td>
                                                 </tr>
                                                 <tr>
                                                     <td className="py-2">Kategori</td>
@@ -158,7 +117,7 @@ export default function ProductDetailComponent({ product_id }) {
                         {/* Reviews Section */}
                         <div>
                             <h2 className="text-lg font-semibold mb-4">Nilai dan Ulasan</h2>
-                            <div className="space-y-4">
+                            {/* <div className="space-y-4">
                                 {[1, 2].map((review) => (
                                     <div key={review} className="border-b pb-4">
                                         <div className="flex items-center gap-2 mb-2">
@@ -178,7 +137,7 @@ export default function ProductDetailComponent({ product_id }) {
                                         </p>
                                     </div>
                                 ))}
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                 </div>
@@ -193,11 +152,6 @@ export default function ProductDetailComponent({ product_id }) {
         </div>
     );
 }
-
-
-
-
-
 
 const formSchema = z.object({
     quantity: z.number().min(1, "Quantity must be at least 1")

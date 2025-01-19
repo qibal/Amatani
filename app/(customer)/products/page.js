@@ -12,6 +12,7 @@ import Link from "next/link";
 
 export default function Product() {
     const [productsData, setProductsData] = useState([]);
+    console.log("🚀 ~ Product ~ productsData:", productsData)
     const [categoryName, setCategoryName] = useState('');
     const searchParams = useSearchParams();
     const [searchQuery, setSearchQuery] = useState('');
@@ -163,6 +164,7 @@ export default function Product() {
                             fixedPrice={product.fixed_price}
                             wholesalePrices={product.wholesale_prices || []}
                             product_id={product.product_id}
+                            stock={product.stock}
                         />
                     ))
                 ) : (
@@ -173,76 +175,59 @@ export default function Product() {
     );
 }
 
-function ProductCard({ imageSrc, name, category, priceType, fixedPrice, wholesalePrices, product_id }) {
+
+function ProductCard({ imageSrc, name, category, priceType, fixedPrice, wholesalePrices, product_id, stock }) {
     let priceRange;
 
-    if (priceType === 'wholesale' && wholesalePrices.length > 0) {
-        if (wholesalePrices.length === 1) {
-            priceRange = `Rp ${wholesalePrices[0].price}`;
-        } else {
-            const prices = wholesalePrices.map(price => price.price);
-            const minPrice = Math.min(...prices);
-            const maxPrice = Math.max(...prices);
-            priceRange = `Rp ${minPrice} - Rp ${maxPrice}`;
-        }
-    } else if (priceType === 'fixed') {
-        priceRange = `Rp ${fixedPrice}`;
+    if (priceType === 'wholesale' && wholesalePrices && wholesalePrices.length > 0) {
+        // Map seluruh harga grosir menjadi format yang sesuai
+        priceRange = wholesalePrices.map(({ min_quantity, max_quantity, price }) => {
+            if (price) {
+                // Pastikan price valid dan gunakan format yang sesuai
+                return ` ${priceRange.toLocaleString()}`;
+            } else {
+                return `${min_quantity} - ${max_quantity} produk: Harga tidak tersedia`;
+            }
+        }).join(' | ');
+    } else if (priceType === 'fixed' && fixedPrice !== null) {
+        priceRange = `Rp ${fixedPrice.toLocaleString()}`;
     } else {
         priceRange = "Harga tidak tersedia";
     }
-    return (
-        <>
-            {stock > 0 && (
 
-                <Card className="w-full border-0 shadow-none">
-                    <CardHeader className="p-0">
-                        <AspectRatio ratio={1 / 1}>
-                            <Image
-                                width={200}
-                                height={200}
-                                src={`https://xmlmcdfzbwjljhaebzna.supabase.co/storage/v1/object/public/${imageSrc}`} // Gabungkan URL dasar dengan path gambar
-                                alt={name}
-                                className="object-cover w-full h-full"
-                            />
-                            {stock === 0 && (
-                                <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                                    <span className="text-white text-2xl font-bold">Stok Habis</span>
-                                </div>
-                            )}
-                        </AspectRatio>
-                    </CardHeader>
-                    <CardContent className="space-y-2 p-4">
-                        <p className="text-lg font-semibold text-gray-800">{name}</p>
-                        <p className="text-sm text-gray-500">{category}</p>
-                        <p className="text-base font-bold text-rose-600">{priceRange}</p>
-                    </CardContent>
-                </Card>
-
-            )}
-            <Link href={`/products/${product_id}`}>
-                <Card className="w-full border-0 shadow-none">
-                    <CardHeader className="p-0">
-                        <AspectRatio ratio={1 / 1}>
-                            <Image
-                                width={200}
-                                height={200}
-                                src={`https://xmlmcdfzbwjljhaebzna.supabase.co/storage/v1/object/public/${imageSrc}`} // Gabungkan URL dasar dengan path gambar
-
-                                alt={name}
-                                className="object-cover w-full h-full"
-                            />
-                        </AspectRatio >
-                    </CardHeader >
-                    <CardContent className="space-y-2 p-4">
-                        <p className="text-lg font-semibold text-gray-800">{name}</p>
-                        <p className="text-sm text-gray-500">{category}</p>
-                        <p className="text-base font-bold text-rose-600">{priceRange}</p>
-                    </CardContent>
-                </Card >
-            </Link >
-        </>
+    const cardContent = (
+        <Card className="w-full border-0 shadow-none">
+            <CardHeader className="p-0">
+                <AspectRatio ratio={1 / 1}>
+                    <Image
+                        width={200}
+                        height={200}
+                        src={`https://xmlmcdfzbwjljhaebzna.supabase.co/storage/v1/object/public/${imageSrc}`}
+                        alt={name}
+                        className={`object-cover w-full h-full ${stock === 0 ? 'grayscale' : ''}`}
+                    />
+                    {stock === 0 && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                            <span className="text-white text-2xl font-bold">Stok Habis</span>
+                        </div>
+                    )}
+                </AspectRatio>
+            </CardHeader>
+            <CardContent className="space-y-2 p-4">
+                <p className="text-lg font-semibold text-gray-800">{name}</p>
+                <p className="text-sm text-gray-500">{category}</p>
+                <p className="text-base font-bold text-rose-600">{priceRange}</p>
+            </CardContent>
+        </Card>
     );
-};
+
+    return stock === 0 ? (
+        <div className="pointer-events-none">{cardContent}</div>
+    ) : (
+        <Link href={`/products/${product_id}`}>{cardContent}</Link>
+    );
+}
+
 
 function NoProduct() {
     return (
