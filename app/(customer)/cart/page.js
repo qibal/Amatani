@@ -26,7 +26,7 @@ export default function CartPage() {
                 const json = await res.json()
                 console.log("🚀 ~ fetchCart ~ json: berasil api", json)
                 setCartData(json)
-                setCartItems(json.data.items.map(item => ({ ...item, isSelected: true })))
+                setCartItems(json.data.items.map(item => ({ ...item, isSelected: false })))
             } catch (error) {
                 console.error('Fetch cart error:', error)
             }
@@ -160,7 +160,7 @@ export default function CartPage() {
     }
 
     return (
-        <div className="container mx-auto p-4">
+        <div className="container mx-auto pt-6 px-16">
             <h1 className="text-2xl font-bold mb-4">Shopping Cart</h1>
             <div className="flex flex-col md:flex-row gap-4">
                 <div className="w-full md:w-2/3">
@@ -169,99 +169,130 @@ export default function CartPage() {
                             <CardContent className="flex items-center justify-between p-4">
                                 {/* Kolom Kiri (Produk) */}
                                 <div className="flex items-center">
-                                    <Checkbox
-                                        checked={item.isSelected}
-                                        onCheckedChange={() => toggleSelection(item.cart_items_id)}
-                                        className="mr-4"
-                                    />
-                                    <Image
-                                        src={`https://xmlmcdfzbwjljhaebzna.supabase.co/storage/v1/object/public/${item.product_images[0].image_path}`}
-                                        alt={item.products_name}
-                                        width={100}
-                                        height={100}
-                                        className="rounded-md mr-4"
-                                    />
-                                    <div className="flex-grow">
-                                        <h2 className="text-lg font-semibold">{item.products_name}</h2>
-                                        <p className="text-gray-600">
-                                            Price Type: {item.price_type.charAt(0).toUpperCase() + item.price_type.slice(1)}
-                                        </p>
-                                        {item.price_type === 'fixed' ? (
-                                            <p className="text-gray-600">
-                                                Price: Rp {item.fixed_price ? item.fixed_price.toLocaleString() : '0'}
-                                            </p>
-                                        ) : (
-                                            <div className="text-sm text-gray-500 mt-1">
-                                                Wholesale Pricing:
-                                                {item.wholesale_prices.map((wp, index) => (
-                                                    <span key={index} className="ml-2">
-                                                        {wp.min_quantity} - {wp.max_quantity}: Rp {wp.price ? wp.price.toLocaleString() : '0'}
-                                                    </span>
-                                                ))}
+                                    {item.product_id === null ? (
+                                        <>
+                                            {/* <Checkbox
+                                                checked={false}
+                                                disabled
+                                                className="mr-4"
+                                            /> */}
+                                            <div
+                                                className="w-24 h-24 bg-gray-400 rounded-md mr-4 ml-8"
+                                                alt="Produk sudah di hapus"
+                                            />
+                                            <div className="flex-grow">
+                                                <h2 className="text-lg font-semibold text-rose-600">
+                                                    Produk sudah di hapus
+                                                </h2>
                                             </div>
-                                        )}
-                                        <p className="text-gray-600">Stock: {item.stock}</p>
-                                    </div>
+                                        </>
+                                    ) : (
+                                        <>
+                                            {item.stock !== 0 && item.stock !== null ? (
+                                                <Checkbox
+                                                    checked={item.isSelected}
+                                                    onCheckedChange={() => toggleSelection(item.cart_items_id)}
+                                                    className="mr-4"
+                                                />
+                                            ) : (
+                                                <Checkbox
+                                                    checked={false}
+                                                    disabled
+                                                    className="mr-4"
+                                                />
+                                            )}
+                                            <Image
+                                                src={`https://xmlmcdfzbwjljhaebzna.supabase.co/storage/v1/object/public/${item.product_images[0].image_path}`}
+                                                alt={item.products_name}
+                                                width={100}
+                                                height={100}
+                                                className={`rounded-md mr-4 ${item.stock === 0 || item.stock === null ? 'grayscale' : ''}`}
+                                            />
+                                            <div className="flex-grow">
+                                                <h2 className={`text-lg font-semibold ${item.stock === 0 || item.stock === null ? 'text-rose-600' : ''}`}>
+                                                    {item.stock === 0 || item.stock === null ? 'Produk sudah habis' : item.products_name}
+                                                </h2>
+                                                <p className="text-gray-600">
+                                                    Price Type: {item.price_type.charAt(0).toUpperCase() + item.price_type.slice(1)}
+                                                </p>
+                                                {item.price_type === 'fixed' ? (
+                                                    <p className="text-gray-600">
+                                                        Price: Rp {item.fixed_price ? item.fixed_price.toLocaleString() : '0'}
+                                                    </p>
+                                                ) : (
+                                                    <div className="text-sm text-gray-500 mt-1">
+                                                        Wholesale Pricing:
+                                                        {item.wholesale_prices.map((wp, index) => (
+                                                            <span key={index} className="ml-2">
+                                                                {wp.min_quantity} - {wp.max_quantity}: Rp {wp.price ? wp.price.toLocaleString() : '0'}
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                                <p className="text-gray-600">Stock: {item.stock}</p>
+                                            </div>
+                                        </>
+                                    )}
                                 </div>
 
                                 {/* Kolom Kanan (Kontrol Kuantitas dan Hapus) */}
-                                <div className="flex flex-col justify-center items-center space-y-2 ml-4">
-                                    <div className="flex items-center space-x-2">
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => updateQuantity(item.cart_items_id, item.quantity - 1)}
-                                        >
-                                            -
-                                        </Button>
-                                        <Input
-                                            value={item.quantity === '' ? '' : item.quantity}
-                                            onChange={(e) => handleQuantityChange(item.cart_items_id, e.target.value)}
-                                            onBlur={(e) => {
-                                                if (e.target.value === '') {
-                                                    updateQuantity(item.cart_items_id, 1);
-                                                }
-                                            }}
-                                            className="w-16 mx-2 text-center"
-                                        />
-                                        {item.quantity > item.stock && (
-                                            <p className="text-red-500 mt-2">Exceeded stock limit!</p>
-                                        )}
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => updateQuantity(item.cart_items_id, item.quantity + 1)}
-                                        >
-                                            +
-                                        </Button>
-                                        <AlertDialog>
-                                            <AlertDialogTrigger asChild>
-                                                <Button variant="outline" size="icon" className="ml-2">
-                                                    <Trash2 className="w-4 h-4" />
-                                                </Button>
-                                            </AlertDialogTrigger>
-                                            <AlertDialogContent>
-                                                <AlertDialogHeader>
-                                                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                                                    <AlertDialogDescription>
-                                                        This action cannot be undone. This will permanently remove the item from your cart.
-                                                    </AlertDialogDescription>
-                                                </AlertDialogHeader>
-                                                <AlertDialogFooter>
-                                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                    <AlertDialogAction onClick={() => removeItem(item.cart_items_id)}>
-                                                        Remove
-                                                    </AlertDialogAction>
-                                                </AlertDialogFooter>
-                                            </AlertDialogContent>
-                                        </AlertDialog>
-                                    </div>
+                                <div className="flex items-center space-x-2 ml-4">
+                                    {item.product_id !== null && item.stock !== 0 && item.stock !== null && (
+                                        <>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => updateQuantity(item.cart_items_id, item.quantity - 1)}
+                                            >
+                                                -
+                                            </Button>
+                                            <Input
+                                                value={item.quantity === '' ? '' : item.quantity}
+                                                onChange={(e) => handleQuantityChange(item.cart_items_id, e.target.value)}
+                                                onBlur={(e) => {
+                                                    if (e.target.value === '') {
+                                                        updateQuantity(item.cart_items_id, 1);
+                                                    }
+                                                }}
+                                                className="w-16 text-center"
+                                            />
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => updateQuantity(item.cart_items_id, item.quantity + 1)}
+                                            >
+                                                +
+                                            </Button>
+                                        </>
+                                    )}
+                                    <AlertDialog>
+                                        <AlertDialogTrigger asChild>
+                                            <Button variant="outline" size="icon" className="ml-2">
+                                                <Trash2 className="w-4 h-4" />
+                                            </Button>
+                                        </AlertDialogTrigger>
+                                        <AlertDialogContent>
+                                            <AlertDialogHeader>
+                                                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                                <AlertDialogDescription>
+                                                    This action cannot be undone. This will permanently remove the item from your cart.
+                                                </AlertDialogDescription>
+                                            </AlertDialogHeader>
+                                            <AlertDialogFooter>
+                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                <AlertDialogAction onClick={() => removeItem(item.cart_items_id)}>
+                                                    Remove
+                                                </AlertDialogAction>
+                                            </AlertDialogFooter>
+                                        </AlertDialogContent>
+                                    </AlertDialog>
                                 </div>
                             </CardContent>
                         </Card>
                     ))}
                 </div>
 
+                {/* Kolom Kanan (Ringkasan dan Checkout) */}
                 <div className="w-full md:w-1/3">
                     <Card className="sticky top-0">
                         <CardHeader>
