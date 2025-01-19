@@ -35,33 +35,19 @@ export default function FAQForm({ mode, faq, onSubmit }) {
     });
 
     useEffect(() => {
-        if (mode === 'edit' && faq) {
-            form.reset({
-                title: faq.title,
-                content: faq.content,
-                category: {
-                    category_id: faq.category_id.toString(),
-                    category_name: faq.category_name,
-                },
-            });
-        }
-    }, [mode, faq, form]);
-
-    useEffect(() => {
         async function fetchCategories() {
             try {
                 const response = await fetch('/api/dashboard/faq/categories');
                 const data = await response.json();
                 setCategories(data);
+                console.log("Fetched categories:", data);
 
                 if (mode === 'edit' && faq) {
-                    form.reset({
-                        title: faq.title,
-                        content: faq.content,
-                        category: {
-                            category_id: faq.category_id.toString(),
-                            category_name: faq.category_name,
-                        },
+                    form.setValue("title", faq.title);
+                    form.setValue("content", faq.content);
+                    form.setValue("category", {
+                        category_id: faq.category_id.toString(),
+                        category_name: faq.category_name,
                     });
                 }
             } catch (error) {
@@ -71,7 +57,25 @@ export default function FAQForm({ mode, faq, onSubmit }) {
         fetchCategories();
     }, [mode, faq, form]);
 
+    useEffect(() => {
+        if (mode === 'edit' && faq && categories.length > 0) {
+            const categoryExists = categories.some(category => category.category_id.toString() === faq.category_id.toString());
+            console.log("Category exists:", categoryExists);
+            if (categoryExists) {
+                form.setValue("title", faq.title);
+                form.setValue("content", faq.content);
+                form.setValue("category", {
+                    category_id: faq.category_id.toString(),
+                    category_name: faq.category_name,
+                });
+            } else {
+                console.error("Category not found in categories data.");
+            }
+        }
+    }, [mode, faq, categories, form]);
+
     const handleSubmit = (data) => {
+        console.log("Submitting form data:", data);
         startTransition(async () => {
             try {
                 await onSubmit(data);
@@ -158,6 +162,7 @@ export default function FAQForm({ mode, faq, onSubmit }) {
                                             <Select
                                                 onValueChange={(value) => {
                                                     const selectedCategory = categories.find(category => category.category_id === value);
+                                                    console.log("Selected category:", selectedCategory);
                                                     field.onChange(selectedCategory ? { category_id: selectedCategory.category_id, category_name: selectedCategory.name } : { category_id: "", category_name: "" });
                                                 }}
                                                 value={field.value.category_id}

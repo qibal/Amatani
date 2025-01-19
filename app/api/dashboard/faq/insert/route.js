@@ -4,15 +4,11 @@ export async function POST(req) {
     try {
         const formData = await req.formData();
         const title = formData.get('title');
+        console.log("🚀 ~ POST ~ title:", title)
         const content = formData.get('content');
+        console.log("🚀 ~ POST ~ content:", content)
         const category_id = formData.get('category_id');
-
-        if (!title || !content || !category_id) {
-            return new Response(JSON.stringify({ error: "Missing required fields" }), {
-                status: 400,
-                headers: { "Content-Type": "application/json" }
-            });
-        }
+        console.log("🚀 ~ POST ~ category_id:", category_id)
 
         const data = await InsertFaqAction(title, content, category_id);
         if (data) {

@@ -9,17 +9,17 @@ export default function AddFaqPage() {
 
     const handleAddFaq = async (params) => {
         console.log('Adding FAQ:', params);
-    
+
         const formData = new FormData();
         formData.append('title', params.title);
         formData.append('content', params.content);
-        formData.append('category_id', params.category_id);
-    
+        formData.append('category_id', params.category.category_id);
+
         const result = await fetch('/api/dashboard/faq/insert', {
             method: 'POST',
             body: formData
         });
-    
+
         const data = await result.json();
         console.log('result =', data);
         console.log('FAQ berhasil ditambahkan');

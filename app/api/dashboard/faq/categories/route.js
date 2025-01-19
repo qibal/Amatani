@@ -20,6 +20,7 @@ export async function GET() {
             });
         }
     } catch (error) {
+        console.log("🚀 ~ GET ~ error:", error)
         return new Response(JSON.stringify({ error: error.message }), {
             status: 500,
             headers: {

@@ -83,8 +83,9 @@ export default function FaqPage() {
             <div className="p-4 sm:p-6 space-y-6">
                 <div className="space-y-2">
                     <h1 className="text-lg sm:text-xl font-semibold">All FAQs</h1>
-                    <p className="text-xs text-gray-500">Total of {faqItems.length} FAQs</p>
-                </div>
+                    <p className="text-xs text-gray-500">
+                        Total of {faqItems?.length > 0 ? `${faqItems.length} FAQs` : 'No FAQs available'}
+                    </p>                </div>
                 <div className="flex flex-wrap gap-4 items-center justify-between">
                     <ManageCategoryFaqDialog />
                     <div className="flex flex-wrap gap-4 items-center w-full sm:w-auto">
@@ -120,62 +121,67 @@ export default function FaqPage() {
                             <Loader2 className="h-8 w-8 animate-spin" />
                         </div>
                     ) : (
-                        <Accordion type="single" collapsible className="w-full">
-                            {faqItems.map((faq) => (
-                                <AccordionItem key={faq.faq_id} value={`item-${faq.faq_id}`} className="border-b">
-                                    <div className="flex items-center justify-between">
-                                        <AccordionTrigger className="flex-grow text-left">
-                                            {faq.title}
-                                        </AccordionTrigger>
-                                        <div className="flex space-x-3">
-                                            <Link href={`/dashboard/faq/edit/${faq.faq_id}`} passHref>
-                                                <Button variant="outline" className="flex items-center justify-center px-3 py-2 sm:px-4 sm:py-2 rounded-md">
-                                                    <Edit className="w-4 h-4 mr-2" />
-                                                    Edit
-                                                </Button>
-                                            </Link>
-                                            <AlertDialog>
-                                                <AlertDialogTrigger asChild>
-                                                    <Button
-                                                        variant="outline"
-                                                        className="flex items-center justify-center w-9 h-9 rounded-md relative"
-                                                        disabled={pendingDeleteId === faq.faq_id}
-                                                    >
-                                                        {pendingDeleteId === faq.faq_id ? (
-                                                            <Loader2 className="w-4 h-4 animate-spin" />
-                                                        ) : (
-                                                            <Trash className="w-5 h-5" />
-                                                        )}
-                                                    </Button>
-                                                </AlertDialogTrigger>
-                                                <AlertDialogContent>
-                                                    <AlertDialogHeader>
-                                                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                                                        <AlertDialogDescription>
-                                                            This action cannot be undone. This will permanently delete the FAQ
-                                                            from our servers.
-                                                        </AlertDialogDescription>
-                                                    </AlertDialogHeader>
-                                                    <AlertDialogFooter>
-                                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                        <AlertDialogAction onClick={() => handleDeleteFaq(faq.faq_id)}>
-                                                            Delete
-                                                        </AlertDialogAction>
-                                                    </AlertDialogFooter>
-                                                </AlertDialogContent>
-                                            </AlertDialog>
-                                        </div>
-                                    </div>
-                                    <AccordionContent>
-                                        <p>{faq.content}</p>
-                                    </AccordionContent>
-                                </AccordionItem>
-                            ))}
-                        </Accordion>
+                        <>
+                            {faqItems.length === 0 ? (
+                                <p className="text-center text-gray-500">No FAQs available.</p>
+                            ) : (
+                                <Accordion type="single" collapsible className="w-full">
+                                    {faqItems.map((faq) => (
+                                        <AccordionItem key={faq.faq_id} value={`item-${faq.faq_id}`} className="border-b">
+                                            <div className="flex items-center justify-between">
+                                                <AccordionTrigger className="flex-grow text-left">
+                                                    {faq.title}
+                                                </AccordionTrigger>
+                                                <div className="flex space-x-3">
+                                                    <Link href={`/dashboard/faq/edit/${faq.faq_id}`} passHref>
+                                                        <Button variant="outline" className="flex items-center justify-center px-3 py-2 sm:px-4 sm:py-2 rounded-md">
+                                                            <Edit className="w-4 h-4 mr-2" />
+                                                            Edit
+                                                        </Button>
+                                                    </Link>
+                                                    <AlertDialog>
+                                                        <AlertDialogTrigger asChild>
+                                                            <Button
+                                                                variant="outline"
+                                                                className="flex items-center justify-center w-9 h-9 rounded-md relative"
+                                                                disabled={pendingDeleteId === faq.faq_id}
+                                                            >
+                                                                {pendingDeleteId === faq.faq_id ? (
+                                                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                                                ) : (
+                                                                    <Trash className="w-5 h-5" />
+                                                                )}
+                                                            </Button>
+                                                        </AlertDialogTrigger>
+                                                        <AlertDialogContent>
+                                                            <AlertDialogHeader>
+                                                                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                                                <AlertDialogDescription>
+                                                                    This action cannot be undone. This will permanently delete the FAQ
+                                                                    from our servers.
+                                                                </AlertDialogDescription>
+                                                            </AlertDialogHeader>
+                                                            <AlertDialogFooter>
+                                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                                <AlertDialogAction onClick={() => handleDeleteFaq(faq.faq_id)}>
+                                                                    Delete
+                                                                </AlertDialogAction>
+                                                            </AlertDialogFooter>
+                                                        </AlertDialogContent>
+                                                    </AlertDialog>
+                                                </div>
+                                            </div>
+                                            <AccordionContent>
+                                                <p>{faq.content}</p>
+                                            </AccordionContent>
+                                        </AccordionItem>
+                                    ))}
+                                </Accordion>
+                            )}
+                        </>
                     )}
                 </div>
             </div>
         </div>
     );
 }
-
