@@ -1,9 +1,11 @@
 import { GetFaqAction, UpdateFaqAction } from "@/app/api/server_actions/dashboard/faq/FaqActions";
 
-export async function GET() {
+export async function GET(req) {
     try {
-        const data = await GetFaqAction();
-
+        const url = new URL(req.url);
+        const category = url.searchParams.get('category');
+        const query = url.searchParams.get('query');
+        const data = await GetFaqAction(category, query);
 
         return new Response(JSON.stringify(data), {
             status: 200,

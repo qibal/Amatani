@@ -4,9 +4,9 @@ import FaqForm from "@/components/dashboard/faq/FaqForm";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-
+import { useRouter } from 'next/navigation'
 export default function AddFaqPage() {
-
+    const router = useRouter()
     const handleAddFaq = async (params) => {
         console.log('Adding FAQ:', params);
 
@@ -23,6 +23,7 @@ export default function AddFaqPage() {
         const data = await result.json();
         console.log('result =', data);
         console.log('FAQ berhasil ditambahkan');
+        router.back()
     };
 
 
@@ -35,11 +36,11 @@ export default function AddFaqPage() {
                     <Breadcrumb>
                         <BreadcrumbList>
                             <BreadcrumbItem className="hidden md:block">
-                                <BreadcrumbLink href="#">Building Your Application</BreadcrumbLink>
+                                <BreadcrumbLink href="#">FAQ</BreadcrumbLink>
                             </BreadcrumbItem>
                             <BreadcrumbSeparator className="hidden md:block" />
                             <BreadcrumbItem>
-                                <BreadcrumbPage>Data Fetching</BreadcrumbPage>
+                                <BreadcrumbPage>Tambah Produk</BreadcrumbPage>
                             </BreadcrumbItem>
                         </BreadcrumbList>
                     </Breadcrumb>

@@ -118,7 +118,7 @@ const ProductCard = ({ product, onDelete }) => {
             <div className="flex-1 space-y-2">
                 <div className="flex flex-wrap gap-2">
                     <Badge className="text-red-400 bg-red-100 hover:bg-rose-200 hover:text-red-600">
-                        {product.price_type}
+                        {product.price_type === 'wholesale' ? 'Grosir' : 'Harga Tetap'}
                     </Badge>
                     <Badge className="text-red-400 bg-red-100 hover:bg-rose-200 hover:text-red-600">
                         {product.categories_name}
@@ -135,6 +135,24 @@ const ProductCard = ({ product, onDelete }) => {
     );
 };
 
+// Skeleton Loader Component
+const ProductCardSkeleton = () => (
+    <div className="flex items-center p-4 sm:p-6 border rounded-lg border-gray-300 gap-6 animate-pulse">
+        <div className="w-24 h-24 bg-gray-200 rounded-lg"></div>
+        <div className="flex-1 space-y-2">
+            <div className="flex flex-wrap gap-2">
+                <div className="h-6 w-16 bg-gray-300 rounded-md"></div>
+                <div className="h-6 w-24 bg-gray-300 rounded-md"></div>
+            </div>
+            <div className="h-6 w-3/4 bg-gray-300 rounded-md"></div>
+        </div>
+        <div className="flex flex-1 justify-between gap-4">
+            <div className="h-6 w-16 bg-gray-300 rounded-md"></div>
+        </div>
+        <div className="h-6 w-24 bg-gray-300 rounded-md"></div>
+    </div>
+);
+
 // Halaman Utama
 export default function ProductPage() {
     const [currentSort, setCurrentSort] = useState('Sort by')
@@ -144,10 +162,12 @@ export default function ProductPage() {
     const [offset, setOffset] = useState(0);
     const [hasMore, setHasMore] = useState(true);
     const [loadingMore, setLoadingMore] = useState(false);
+    const [loading, setLoading] = useState(true); // State for loading
     const observer = useRef();
 
     const fetchProducts = useCallback(async (query = "", sort = "", limit = 10, offset = 0) => {
         try {
+            setLoading(true); // Set loading state to true
             const url = new URL('/api/dashboard/products', window.location.origin);
             if (query) url.searchParams.append('search', query);
             if (sort) url.searchParams.append('sort', sort);
@@ -166,6 +186,8 @@ export default function ProductPage() {
             setHasMore(data.length === limit);
         } catch (error) {
             console.error("Failed to fetch products:", error);
+        } finally {
+            setLoading(false); // Set loading state to false
         }
     }, []);
 
@@ -321,10 +343,10 @@ export default function ProductPage() {
                 </div>
                 {/* Daftar Produk */}
                 <div className="space-y-4">
-                    {isPending ? (
-                        <div className="flex justify-center items-center h-32">
-                            <Loader2 className="w-8 h-8 animate-spin" />
-                        </div>
+                    {loading ? (
+                        Array.from({ length: 2 }).map((_, index) => (
+                            <ProductCardSkeleton key={index} />
+                        ))
                     ) : products.length === 0 ? (
                         <p className="text-center text-gray-500">Tidak ada produk yang tersedia.</p>
                     ) : (
@@ -358,4 +380,3 @@ export default function ProductPage() {
         </div>
     );
 }
-

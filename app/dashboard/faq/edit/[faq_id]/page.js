@@ -50,7 +50,7 @@ export default function EditFaqPage() {
 
             const result = await response.json();
             console.log('FAQ updated successfully:', result);
-            router.push('/dashboard/faq');
+            router.back();
         } catch (error) {
             console.error('Error updating FAQ:', error);
             alert('Failed to update FAQ');
