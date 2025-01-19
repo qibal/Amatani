@@ -90,7 +90,7 @@ export function AppSidebar() {
                     <span>Produk</span>
                   </a>
                 </SidebarMenuButton>
-                <SidebarMenuBadge>24</SidebarMenuBadge>
+                {/* <SidebarMenuBadge>24</SidebarMenuBadge> */}
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
@@ -104,7 +104,7 @@ export function AppSidebar() {
                     <span>Pesanan</span>
                   </a>
                 </SidebarMenuButton>
-                <SidebarMenuBadge>24</SidebarMenuBadge>
+                {/* <SidebarMenuBadge>24</SidebarMenuBadge> */}
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
@@ -118,7 +118,7 @@ export function AppSidebar() {
                     <span>Penilaian</span>
                   </a>
                 </SidebarMenuButton>
-                <SidebarMenuBadge>24</SidebarMenuBadge>
+                {/* <SidebarMenuBadge>24</SidebarMenuBadge> */}
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
@@ -184,7 +184,7 @@ export function AppSidebar() {
                     <span>Reports</span>
                   </a>
                 </SidebarMenuButton>
-                <SidebarMenuBadge>24</SidebarMenuBadge>
+                {/* <SidebarMenuBadge>24</SidebarMenuBadge> */}
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
