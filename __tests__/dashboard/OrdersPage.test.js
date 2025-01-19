@@ -13,6 +13,11 @@ jest.mock('@/lib/supabase/client', () => ({
     },
 }));
 
+global.fetch = jest.fn(() => Promise.resolve({
+    ok: true,
+    json: () => Promise.resolve([]),
+}));
+
 const ordersData = [
     {
         order_id: 1,
