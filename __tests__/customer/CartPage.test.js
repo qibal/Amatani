@@ -57,6 +57,11 @@ global.fetch = jest.fn((url, options) => {
 describe('CartPage', () => {
     beforeEach(() => {
         fetch.mockClear();
+        jest.spyOn(console, 'log').mockImplementation(() => {}); // Suppress console.log
+    });
+
+    afterEach(() => {
+        jest.restoreAllMocks(); // Restore original behavior
     });
 
     it('should render the CartPage and display cart items', async () => {
@@ -181,5 +186,39 @@ describe('CartPage', () => {
         await waitFor(() => {
             expect(screen.getByDisplayValue('1')).toBeInTheDocument();
         });
+    });
+
+    it('should handle edge cases gracefully', async () => {
+        fetch.mockImplementationOnce(() => Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({
+                data: {
+                    items: [
+                        {
+                            cart_items_id: '3',
+                            products_name: 'Edge Case Product',
+                            price_type: 'fixed',
+                            fixed_price: 0,
+                            stock: 0,
+                            quantity: 0,
+                            product_images: [{ image_path: 'path/to/image3.png' }],
+                            isSelected: false,
+                        },
+                    ],
+                },
+            }),
+        }));
+
+        render(
+            <CartProvider initialUserId="123">
+                <CartPage />
+            </CartProvider>
+        );
+
+        await waitFor(() => {
+            expect(screen.getByText(/Edge Case Product/i)).toBeInTheDocument();
+        });
+
+        expect(screen.getByText(/Rp 0/i)).toBeInTheDocument();
     });
 });

@@ -39,6 +39,11 @@ const usersData = [
 describe('OrdersPage', () => {
     beforeEach(() => {
         fetch.mockClear();
+        jest.spyOn(console, 'log').mockImplementation(() => {}); // Suppress console.log
+    });
+
+    afterEach(() => {
+        jest.restoreAllMocks(); // Restore original behavior
     });
 
     it('should render the OrdersPage and display orders', async () => {
@@ -107,6 +112,37 @@ describe('OrdersPage', () => {
 
         await waitFor(() => {
             expect(screen.queryByText(/Order ID: 1/i)).not.toBeInTheDocument();
+        });
+    });
+
+    it('should handle edge cases gracefully', async () => {
+        fetch.mockImplementationOnce(() => Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve([
+                {
+                    order_id: 2,
+                    user_id: "456",
+                    order_status: "completed",
+                    total_amount: 0,
+                    order_date: "2024-11-19T15:30:45Z",
+                    payment: {
+                        payment_status: "completed",
+                        payment_method: "PayPal",
+                    },
+                    details: [],
+                },
+            ]),
+        }));
+
+        render(<OrdersPage />);
+
+        await waitFor(() => {
+            expect(screen.getByText(/Order ID: 2/i)).toBeInTheDocument();
+            expect(screen.getByText(/User Email: jane.smith@example.com/i)).toBeInTheDocument();
+            expect(screen.getByText(/Order Status: completed/i)).toBeInTheDocument();
+            expect(screen.getByText(/Total Amount: Rp 0/i)).toBeInTheDocument();
+            expect(screen.getByText(/Order Date & Time: 19 November 2024 15:30/i)).toBeInTheDocument();
+            expect(screen.getByText(/Payment Status: completed/i)).toBeInTheDocument();
         });
     });
 });
