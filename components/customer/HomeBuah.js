@@ -32,21 +32,21 @@ export default function HomeBuah() {
                 {/* <h2 className="text-2xl font-semibold mb-6 text-gray-800">Buah-Buahan</h2> */}
 
                 {/* Scrollable Area */}
-                <ScrollArea className="pb-4">
-                    <div className="flex flex-col">
+                <div className="flex flex-col gap-y-8">
 
-                        {Array.isArray(categories) && categories.map((category, index) => (
-                            <div
-                                key={category.categories_id}
-                                className={index > 0 ? "gap-y-4" : "gap-y-0"} // Atur jarak berdasarkan indeks
-                            >
-                                {/* Nama Kategori */}
-                                {category.products && category.products.length > 0 && (
-                                    <h2 className="text-2xl font-semibold mb-6 text-gray-800">
-                                        {category.categories_name}
-                                    </h2>
-                                )}
+                    {Array.isArray(categories) && categories.map((category, index) => (
+                        <div
+                            key={category.categories_id}
+                            className={index > 0 ? "gap-y-4" : "gap-y-0"} // Atur jarak berdasarkan indeks
+                        >
+                            {/* Nama Kategori */}
+                            {category.products && category.products.length > 0 && (
+                                <h2 className="text-2xl font-semibold mb-6 text-gray-800">
+                                    {category.categories_name}
+                                </h2>
+                            )}
 
+                            <ScrollArea className="pb-4">
                                 {/* Produk dalam kategori */}
                                 {category.products && category.products.length > 0 ? (
                                     <div className="flex gap-4">
@@ -65,11 +65,11 @@ export default function HomeBuah() {
                                         ))}
                                     </div>
                                 ) : null}
-                            </div>
-                        ))}
-                    </div>
-                    <ScrollBar orientation="horizontal" />
-                </ScrollArea>
+                                <ScrollBar orientation="horizontal" />
+                            </ScrollArea>
+                        </div>
+                    ))}
+                </div>
             </div>
         </section>
     );

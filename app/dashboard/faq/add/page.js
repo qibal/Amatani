@@ -23,7 +23,6 @@ export default function AddFaqPage() {
         const data = await result.json();
         console.log('result =', data);
         console.log('FAQ berhasil ditambahkan');
-        router.back()
     };
 
 
