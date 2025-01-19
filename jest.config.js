@@ -20,6 +20,10 @@ const config = {
   // },
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   testEnvironment: "jsdom",
+  moduleNameMapper: {
+    // ...
+    '^@/components/(.*)$': '<rootDir>/components/$1',
+  }
 };
 
 module.exports = createJestConfig(config)
