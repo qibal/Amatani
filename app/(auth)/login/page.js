@@ -2,7 +2,7 @@
 import { login, signup } from '@/app/api/server_actions/Auth';
 import OauthLoginButton from '@/components/auth/masuk/OauthLogin';
 import { Button } from '@/components/ui/button';
-
+import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import Image from 'next/image';
 
@@ -15,7 +15,9 @@ export default function SignUpPage() {
                     <h1 className="text-2xl font-semibold">Selamat datang</h1>
                     <p className="text-gray-600">
                         Belum punya akun?{' '}
-                        <a href="#" className="text-rose-600 hover:underline">Daftar</a>
+                        <Link href="/signup" className="text-rose-600 hover:underline">
+                            Daftar
+                        </Link>
                     </p>
 
                     {/* Sign-up with Google Button */}

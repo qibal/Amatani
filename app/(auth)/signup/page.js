@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Image from 'next/image';
+import Link from 'next/link';
 
 export default function SignUpPage() {
     return (
@@ -10,7 +11,9 @@ export default function SignUpPage() {
                     <h1 className="text-2xl font-semibold">Daftar sekarang</h1>
                     <p className="text-gray-600">
                         Sudah punya akun?{' '}
-                        <a href="#" className="text-rose-600 hover:underline">Login</a>
+                        <Link href="/login" className="text-rose-600 hover:underline">
+                            Login
+                        </Link>
                     </p>
 
                     {/* Sign-up with Google Button */}
