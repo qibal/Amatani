@@ -1,9 +1,8 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import FaqPage from '@/app/dashboard/faq/page';
 import '@testing-library/jest-dom';
-import { SidebarProvider } from '@/context/SidebarContext';
+import { SidebarProvider } from '@/components/ui/sidebar';
 
-// Mock fetch
 global.fetch = jest.fn((url, options) => {
     if (url.endsWith('/api/dashboard/faq')) {
         return Promise.resolve({

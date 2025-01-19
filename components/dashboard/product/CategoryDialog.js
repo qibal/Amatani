@@ -34,7 +34,12 @@ export default function ManageCategoriesDialog() {
         try {
             const response = await fetch('/api/dashboard/products/categories');
             const data = await response.json();
-            setCategories(data);
+            if (Array.isArray(data)) {
+                setCategories(data);
+            } else {
+                console.error("Categories data is not an array:", data);
+                setCategories([]);
+            }
         } catch (error) {
             console.error("Failed to fetch categories:", error);
         }
@@ -141,7 +146,7 @@ export default function ManageCategoriesDialog() {
                     <h3 className="font-medium text-sm mt-4">Manage Categories ({categories.length})</h3>
                     <ScrollArea className="max-h-72 border rounded-md p-2 mt-2">
                         <div className="space-y-2">
-                            {categories.map((category) => (
+                            {Array.isArray(categories) && categories.map((category) => (
                                 <div
                                     key={category.categories_id}
                                     className="flex items-center justify-between p-2 border rounded-md"

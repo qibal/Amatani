@@ -193,4 +193,23 @@ describe('ManageCategoriesDialog', () => {
 
         expect(asFragment()).toMatchSnapshot();
     });
+
+    it('should handle non-array responses for categories', async () => {
+        fetch.mockImplementationOnce(() => Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ message: 'Not an array' }),
+        }));
+
+        const { asFragment } = render(<ManageCategoriesDialog />);
+
+        fireEvent.click(screen.getByText(/Manage Categories/i));
+
+        await waitFor(() => {
+            expect(screen.getByText(/Manage Your Categories/i)).toBeInTheDocument();
+        });
+
+        expect(screen.queryByText(/Not an array/i)).not.toBeInTheDocument();
+
+        expect(asFragment()).toMatchSnapshot();
+    });
 });

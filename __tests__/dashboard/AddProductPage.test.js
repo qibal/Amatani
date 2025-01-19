@@ -1,6 +1,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import AddProductPage from '@/app/dashboard/products/add/page';
 import '@testing-library/jest-dom';
+import { SidebarProvider } from '@/components/ui/sidebar'; // P243a
 
 // Mock fetch
 global.fetch = jest.fn((url, options) => {
@@ -24,7 +25,11 @@ describe('AddProductPage', () => {
     });
 
     it('should render the AddProductPage and submit the form', async () => {
-        const { asFragment } = render(<AddProductPage />);
+        const { asFragment } = render(
+            <SidebarProvider>
+                <AddProductPage />
+            </SidebarProvider>
+        );
 
         fireEvent.change(screen.getByLabelText(/Nama Produk/i), { target: { value: 'Test Product' } });
         fireEvent.change(screen.getByLabelText(/Kategori Produk/i), { target: { value: '1' } });
@@ -43,7 +48,11 @@ describe('AddProductPage', () => {
     });
 
     it('should display validation errors when form is submitted with empty fields', async () => {
-        render(<AddProductPage />);
+        render(
+            <SidebarProvider>
+                <AddProductPage />
+            </SidebarProvider>
+        );
 
         fireEvent.submit(screen.getByRole('button', { name: /Tambah/i }));
 
@@ -61,7 +70,11 @@ describe('AddProductPage', () => {
             json: () => Promise.resolve({ message: 'Failed to add product' }),
         }));
 
-        render(<AddProductPage />);
+        render(
+            <SidebarProvider>
+                <AddProductPage />
+            </SidebarProvider>
+        );
 
         fireEvent.change(screen.getByLabelText(/Nama Produk/i), { target: { value: 'Test Product' } });
         fireEvent.change(screen.getByLabelText(/Kategori Produk/i), { target: { value: '1' } });
@@ -78,7 +91,11 @@ describe('AddProductPage', () => {
     });
 
     it('should handle invalid input gracefully', async () => {
-        render(<AddProductPage />);
+        render(
+            <SidebarProvider>
+                <AddProductPage />
+            </SidebarProvider>
+        );
 
         fireEvent.change(screen.getByLabelText(/Stock/i), { target: { value: '-1' } });
 
@@ -108,7 +125,11 @@ describe('AddProductPage', () => {
             ]),
         }));
 
-        render(<AddProductPage product_id="2" />);
+        render(
+            <SidebarProvider>
+                <AddProductPage product_id="2" />
+            </SidebarProvider>
+        );
 
         await waitFor(() => {
             expect(screen.getByText(/Edge Case Product/i)).toBeInTheDocument();

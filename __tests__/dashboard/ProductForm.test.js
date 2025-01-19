@@ -4,6 +4,7 @@ import '@testing-library/jest-dom';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, FormProvider } from 'react-hook-form';
 import { z } from 'zod';
+import { SidebarProvider } from '@/components/ui/sidebar';
 
 const formSchema = z.object({
     products_name: z.string().min(1, { message: "Tidak boleh kosong" }),
@@ -68,7 +69,11 @@ describe('ProductForm', () => {
     });
 
     it('harus menampilkan error ketika form dikirim dengan field kosong', async () => {
-        const { asFragment } = render(<ProductFormWrapper mode="add" onSubmit={jest.fn()} />);
+        const { asFragment } = render(
+            <SidebarProvider>
+                <ProductFormWrapper mode="add" onSubmit={jest.fn()} />
+            </SidebarProvider>
+        );
 
         fireEvent.submit(screen.getByRole('button', { name: /submit/i }));
 
@@ -84,7 +89,11 @@ describe('ProductForm', () => {
 
     it('harus mengirim form ketika semua field diisi', async () => {
         const handleSubmit = jest.fn();
-        const { asFragment } = render(<ProductFormWrapper mode="add" onSubmit={handleSubmit} />);
+        const { asFragment } = render(
+            <SidebarProvider>
+                <ProductFormWrapper mode="add" onSubmit={handleSubmit} />
+            </SidebarProvider>
+        );
 
         fireEvent.change(screen.getByLabelText(/Nama Produk/i), { target: { value: 'Test Product' } });
         fireEvent.change(screen.getByLabelText(/Kategori Produk/i), { target: { value: '1' } });
@@ -111,7 +120,11 @@ describe('ProductForm', () => {
         );
 
         const handleSubmit = jest.fn();
-        const { asFragment } = render(<ProductFormWrapper mode="add" onSubmit={handleSubmit} />);
+        const { asFragment } = render(
+            <SidebarProvider>
+                <ProductFormWrapper mode="add" onSubmit={handleSubmit} />
+            </SidebarProvider>
+        );
 
         fireEvent.change(screen.getByLabelText(/Nama Produk/i), { target: { value: 'Test Product' } });
         fireEvent.change(screen.getByLabelText(/Kategori Produk/i), { target: { value: '1' } });
@@ -130,7 +143,11 @@ describe('ProductForm', () => {
     });
 
     it('should display validation errors when form is submitted with empty fields', async () => {
-        const { asFragment } = render(<ProductFormWrapper mode="add" onSubmit={jest.fn()} />);
+        const { asFragment } = render(
+            <SidebarProvider>
+                <ProductFormWrapper mode="add" onSubmit={jest.fn()} />
+            </SidebarProvider>
+        );
 
         fireEvent.submit(screen.getByRole('button', { name: /submit/i }));
 
@@ -149,7 +166,11 @@ describe('ProductForm', () => {
         const file = new File(['image'], 'image.png', { type: 'image/png' });
         const fileWithPreview = Object.assign(file, { preview: 'data:image/png;base64,example' });
 
-        const { asFragment } = render(<ProductFormWrapper mode="add" onSubmit={handleChange} />);
+        const { asFragment } = render(
+            <SidebarProvider>
+                <ProductFormWrapper mode="add" onSubmit={handleChange} />
+            </SidebarProvider>
+        );
 
         fireEvent.click(screen.getByText(/×/i));
 
@@ -164,7 +185,11 @@ describe('ProductForm', () => {
         const handleChange = jest.fn();
         const fileUrl = 'https://xmlmcdfzbwjljhaebzna.supabase.co/storage/v1/object/public/product_images/image.png';
 
-        const { asFragment } = render(<ProductFormWrapper mode="edit" onSubmit={handleChange} />);
+        const { asFragment } = render(
+            <SidebarProvider>
+                <ProductFormWrapper mode="edit" onSubmit={handleChange} />
+            </SidebarProvider>
+        );
 
         fireEvent.click(screen.getByText(/×/i));
 
@@ -177,7 +202,11 @@ describe('ProductForm', () => {
     });
 
     it('should handle invalid input gracefully', async () => {
-        render(<ProductFormWrapper mode="add" onSubmit={jest.fn()} />);
+        render(
+            <SidebarProvider>
+                <ProductFormWrapper mode="add" onSubmit={jest.fn()} />
+            </SidebarProvider>
+        );
 
         fireEvent.change(screen.getByLabelText(/Stock/i), { target: { value: '-1' } });
 
@@ -207,7 +236,11 @@ describe('ProductForm', () => {
             ]),
         }));
 
-        render(<ProductFormWrapper mode="edit" onSubmit={jest.fn()} />);
+        render(
+            <SidebarProvider>
+                <ProductFormWrapper mode="edit" onSubmit={jest.fn()} />
+            </SidebarProvider>
+        );
 
         await waitFor(() => {
             expect(screen.getByText(/Edge Case Product/i)).toBeInTheDocument();

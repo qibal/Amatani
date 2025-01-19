@@ -4,7 +4,8 @@ import '@testing-library/jest-dom';
 import supabaseAuthAdmin from '@/lib/supabase/client_admin';
 
 jest.mock('@/lib/supabase/client_admin', () => ({
-    supabaseAuthAdmin: {
+    __esModule: true,
+    default: {
         auth: {
             admin: {
                 listUsers: jest.fn(),
