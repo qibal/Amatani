@@ -1,20 +1,12 @@
 'use client'
 
 import {
-
   ChartColumnIncreasing,
-
   ChevronsUpDown,
-
   FileQuestion,
-
-
   LogOut,
-
   Package2,
-
   ShoppingCart,
-
   Star,
   UsersRound,
   WalletMinimal,
@@ -26,13 +18,11 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
-
   SidebarHeader,
   SidebarMenu,
   SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
-
   SidebarSeparator,
 } from "@/components/ui/sidebar"
 import { Home } from "lucide-react"
@@ -42,9 +32,13 @@ import { usePathname, useRouter } from "next/navigation";
 import { Button } from "../ui/button"
 import { Logout } from "@/app/api/server_actions/Auth"
 
-export function AppSidebar() {
+export function AppSidebar({ user }) {
   const pathname = usePathname();
   const router = useRouter()
+
+  const userName = user?.user_metadata?.name || "Loading...";
+  const userEmail = user?.user_metadata?.email || "Loading...";
+  const userAvatar = user?.user_metadata?.avatar_url || "/FE/img02.png";
 
   return (
     <Sidebar collapsible="icon">
@@ -216,17 +210,17 @@ export function AppSidebar() {
                 >
                   <Avatar className="h-8 w-8 rounded-lg">
                     <AvatarImage
-                      src="/FE/img02.png"
-                      alt="iqbal herlambang"
+                      src={userAvatar}
+                      alt={userName}
                     />
                     <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
                     <span className="truncate font-semibold">
-                      Iqbal herlambang
+                      {userName}
                     </span>
                     <span className="truncate text-xs">
-                      iqbal herlambang.39@gmail.com
+                      {userEmail}
                     </span>
                   </div>
                   <ChevronsUpDown className="ml-auto size-4" />
@@ -242,8 +236,8 @@ export function AppSidebar() {
                   <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                     <Avatar className="h-8 w-8 rounded-lg">
                       <AvatarImage
-                        src="/FE/img02.png"
-                        alt="Iqbal herlambang"
+                        src={userAvatar}
+                        alt={userName}
                       />
                       <AvatarFallback className="rounded-lg">
                         CN
@@ -251,12 +245,10 @@ export function AppSidebar() {
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm leading-tight">
                       <span className="truncate font-semibold">
-                        Iqbal herlambang
-
+                        {userName}
                       </span>
                       <span className="truncate text-xs">
-                        Iqbal herlambang
-
+                        {userEmail}
                       </span>
                     </div>
                   </div>
