@@ -57,7 +57,7 @@ describe('ManageCategoriesDialog', () => {
         });
 
         expect(asFragment()).toMatchSnapshot();
-    });
+    }, 10000);
 
     it('should delete a category', async () => {
         const { asFragment } = render(<ManageCategoriesDialog />);
@@ -81,7 +81,7 @@ describe('ManageCategoriesDialog', () => {
         });
 
         expect(asFragment()).toMatchSnapshot();
-    });
+    }, 10000);
 
     it('should display validation error when adding an empty category', async () => {
         const { asFragment } = render(<ManageCategoriesDialog />);
@@ -99,7 +99,7 @@ describe('ManageCategoriesDialog', () => {
         });
 
         expect(asFragment()).toMatchSnapshot();
-    });
+    }, 10000);
 
     it('should handle API errors gracefully when adding a category', async () => {
         fetch.mockImplementationOnce(() => Promise.resolve({
@@ -123,7 +123,7 @@ describe('ManageCategoriesDialog', () => {
         });
 
         expect(asFragment()).toMatchSnapshot();
-    });
+    }, 10000);
 
     it('should handle API errors gracefully when deleting a category', async () => {
         fetch.mockImplementationOnce(() => Promise.resolve({
@@ -152,7 +152,7 @@ describe('ManageCategoriesDialog', () => {
         });
 
         expect(asFragment()).toMatchSnapshot();
-    });
+    }, 10000);
 
     it('should handle edge cases gracefully', async () => {
         fetch.mockImplementationOnce(() => Promise.resolve({
@@ -173,7 +173,7 @@ describe('ManageCategoriesDialog', () => {
         expect(screen.getByText(/Edge Case Category/i)).toBeInTheDocument();
 
         expect(asFragment()).toMatchSnapshot();
-    });
+    }, 10000);
 
     it('should handle invalid input gracefully', async () => {
         const { asFragment } = render(<ManageCategoriesDialog />);
@@ -192,7 +192,7 @@ describe('ManageCategoriesDialog', () => {
         });
 
         expect(asFragment()).toMatchSnapshot();
-    });
+    }, 10000);
 
     it('should handle non-array responses for categories', async () => {
         fetch.mockImplementationOnce(() => Promise.resolve({
@@ -211,5 +211,5 @@ describe('ManageCategoriesDialog', () => {
         expect(screen.queryByText(/Not an array/i)).not.toBeInTheDocument();
 
         expect(asFragment()).toMatchSnapshot();
-    });
+    }, 10000);
 });

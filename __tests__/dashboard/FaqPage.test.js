@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import FaqPage from '@/app/dashboard/faq/page';
 import '@testing-library/jest-dom';
-import { SidebarProvider } from '@/context/SidebarContext';
+import { SidebarProvider, useSidebar } from '@/components/ui/sidebar';
 
 // Mock fetch
 global.fetch = jest.fn((url, options) => {
@@ -36,6 +36,19 @@ window.matchMedia = jest.fn().mockImplementation(query => {
         dispatchEvent: jest.fn(),
     };
 });
+
+jest.mock('@/components/ui/sidebar', () => ({
+    ...jest.requireActual('@/components/ui/sidebar'),
+    useSidebar: jest.fn(() => ({
+        state: 'expanded',
+        open: true,
+        setOpen: jest.fn(),
+        isMobile: false,
+        openMobile: false,
+        setOpenMobile: jest.fn(),
+        toggleSidebar: jest.fn(),
+    })),
+}));
 
 describe('FaqPage', () => {
     beforeEach(() => {

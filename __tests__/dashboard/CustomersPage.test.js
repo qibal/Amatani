@@ -16,6 +16,19 @@ jest.mock('@/lib/supabase/client_admin', () => ({
     },
 }));
 
+jest.mock('@/components/ui/sidebar', () => ({
+    ...jest.requireActual('@/components/ui/sidebar'),
+    useSidebar: jest.fn(() => ({
+        state: 'expanded',
+        open: true,
+        setOpen: jest.fn(),
+        isMobile: false,
+        openMobile: false,
+        setOpenMobile: jest.fn(),
+        toggleSidebar: jest.fn(),
+    })),
+}));
+
 describe('CustomersPage', () => {
     const mockUsers = [
         {
