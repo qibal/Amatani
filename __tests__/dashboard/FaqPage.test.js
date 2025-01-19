@@ -1,8 +1,9 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import FaqPage from '@/app/dashboard/faq/page';
 import '@testing-library/jest-dom';
-import { SidebarProvider } from '@/components/ui/sidebar';
+import { SidebarProvider } from '@/context/SidebarContext';
 
+// Mock fetch
 global.fetch = jest.fn((url, options) => {
     if (url.endsWith('/api/dashboard/faq')) {
         return Promise.resolve({
@@ -22,6 +23,7 @@ global.fetch = jest.fn((url, options) => {
     return Promise.reject(new Error('Unknown endpoint'));
 });
 
+// Mock window.matchMedia
 window.matchMedia = jest.fn().mockImplementation(query => {
     return {
         matches: false,
@@ -34,6 +36,7 @@ window.matchMedia = jest.fn().mockImplementation(query => {
         dispatchEvent: jest.fn(),
     };
 });
+
 describe('FaqPage', () => {
     beforeEach(() => {
         fetch.mockClear();
@@ -155,5 +158,22 @@ describe('FaqPage', () => {
         });
 
         expect(screen.getByText(/Edge Case Content/i)).toBeInTheDocument();
+    });
+
+    it('should handle non-array responses for categories', async () => {
+        fetch.mockImplementationOnce(() => Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ message: 'Not an array' }),
+        }));
+
+        render(
+            <SidebarProvider>
+                <FaqPage />
+            </SidebarProvider>
+        );
+
+        await waitFor(() => {
+            expect(screen.getByText(/Failed to fetch FAQs/i)).toBeInTheDocument();
+        });
     });
 });
