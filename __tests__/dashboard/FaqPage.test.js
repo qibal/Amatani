@@ -1,6 +1,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import FaqPage from '@/app/dashboard/faq/page';
 import '@testing-library/jest-dom';
+import { SidebarProvider } from '@/context/SidebarContext'; // P938f
 
 // Mock fetch
 global.fetch = jest.fn((url, options) => {
@@ -25,7 +26,7 @@ global.fetch = jest.fn((url, options) => {
 describe('FaqPage', () => {
     beforeEach(() => {
         fetch.mockClear();
-        jest.spyOn(console, 'log').mockImplementation(() => {}); // Suppress console.log
+        jest.spyOn(console, 'log').mockImplementation(() => { }); // Suppress console.log
     });
 
     afterEach(() => {
@@ -33,7 +34,11 @@ describe('FaqPage', () => {
     });
 
     it('should render the FaqPage and display FAQs', async () => {
-        const { asFragment } = render(<FaqPage />);
+        const { asFragment } = render(
+            <SidebarProvider>
+                <FaqPage />
+            </SidebarProvider>
+        );
 
         await waitFor(() => {
             expect(screen.getByText(/FAQ 1/i)).toBeInTheDocument();
@@ -44,7 +49,11 @@ describe('FaqPage', () => {
     });
 
     it('should delete an FAQ', async () => {
-        render(<FaqPage />);
+        render(
+            <SidebarProvider>
+                <FaqPage />
+            </SidebarProvider>
+        );
 
         await waitFor(() => {
             expect(screen.getByText(/FAQ 1/i)).toBeInTheDocument();
@@ -63,7 +72,11 @@ describe('FaqPage', () => {
             json: () => Promise.resolve({ message: 'Failed to delete FAQ' }),
         }));
 
-        render(<FaqPage />);
+        render(
+            <SidebarProvider>
+                <FaqPage />
+            </SidebarProvider>
+        );
 
         await waitFor(() => {
             expect(screen.getByText(/FAQ 1/i)).toBeInTheDocument();
@@ -82,7 +95,11 @@ describe('FaqPage', () => {
             json: () => Promise.resolve({ message: 'Failed to fetch FAQs' }),
         }));
 
-        render(<FaqPage />);
+        render(
+            <SidebarProvider>
+                <FaqPage />
+            </SidebarProvider>
+        );
 
         await waitFor(() => {
             expect(screen.getByText(/Failed to fetch FAQs/i)).toBeInTheDocument();
@@ -90,7 +107,11 @@ describe('FaqPage', () => {
     });
 
     it('should handle invalid input gracefully', async () => {
-        render(<FaqPage />);
+        render(
+            <SidebarProvider>
+                <FaqPage />
+            </SidebarProvider>
+        );
 
         await waitFor(() => {
             expect(screen.getByText(/FAQ 1/i)).toBeInTheDocument();
@@ -112,7 +133,11 @@ describe('FaqPage', () => {
             ]),
         }));
 
-        render(<FaqPage />);
+        render(
+            <SidebarProvider>
+                <FaqPage />
+            </SidebarProvider>
+        );
 
         await waitFor(() => {
             expect(screen.getByText(/Edge Case FAQ/i)).toBeInTheDocument();

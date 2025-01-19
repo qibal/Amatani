@@ -37,7 +37,7 @@ global.fetch = jest.fn((url) => {
 describe('Product', () => {
     beforeEach(() => {
         fetch.mockClear();
-        jest.spyOn(console, 'log').mockImplementation(() => {}); // Suppress console.log
+        jest.spyOn(console, 'log').mockImplementation(() => { }); // Suppress console.log
     });
 
     afterEach(() => {
@@ -56,7 +56,12 @@ describe('Product', () => {
     });
 
     it('should handle search functionality', async () => {
-        render(<Product />);
+        const searchParams = new URLSearchParams();
+        searchParams.set('categories', 'Test Category');
+        searchParams.set('products', 'Test Product');
+        searchParams.set('all_product', 'All Products');
+
+        render(<Product searchParams={searchParams} />);
 
         fireEvent.change(screen.getByPlaceholderText(/Search.../i), { target: { value: 'Test Product 1' } });
         fireEvent.submit(screen.getByRole('button', { name: /Cari/i }));
