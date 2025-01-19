@@ -3,38 +3,52 @@
 import { useState, useEffect, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Edit, Trash, Plus, SortDesc, Search, X, Loader2 } from 'lucide-react';
+import { Edit, Trash, Plus, Filter, Search, X, Loader2 } from 'lucide-react';
 import Link from "next/link";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import ManageCategoryFaqDialog from "@/components/dashboard/faq/CategoryFaqDialog";
-import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
-} from "@/components/ui/accordion";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Badge } from "@/components/ui/badge";
+import { Select, SelectItem, SelectTrigger, SelectContent, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 
 export default function FaqPage() {
     const [faqItems, setFaqItems] = useState([]);
+    const [categories, setCategories] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState("");
+    const [searchQuery, setSearchQuery] = useState("");
     const [isPending, startTransition] = useTransition();
     const [pendingDeleteId, setPendingDeleteId] = useState(null);
-
-    const fetchFaqs = async () => {
+    const [loading, setLoading] = useState(true);
+    const fetchFaqs = async (category = "", query = "") => {
         try {
-            const response = await fetch('/api/dashboard/faq');
+            const response = await fetch(`/api/dashboard/faq${category || query ? `?${category ? `category=${category}&` : ''}${query ? `query=${query}` : ''}` : ''}`);
             const data = await response.json();
             setFaqItems(data);
         } catch (error) {
             console.error('Error fetching FAQs:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const fetchCategories = async () => {
+        try {
+            const response = await fetch('/api/dashboard/faq/categories');
+            const data = await response.json();
+            setCategories(data);
+        } catch (error) {
+            console.error('Error fetching categories:', error);
         }
     };
 
     useEffect(() => {
         fetchFaqs();
+        fetchCategories();
     }, []);
 
     const handleDeleteFaq = (faqId) => {
@@ -58,6 +72,12 @@ export default function FaqPage() {
             }
         });
     };
+
+    const handleSearch = (e) => {
+        e.preventDefault();
+        fetchFaqs(selectedCategory, searchQuery);
+    };
+
 
     return (
         <div>
@@ -85,40 +105,79 @@ export default function FaqPage() {
                     <h1 className="text-lg sm:text-xl font-semibold">All FAQs</h1>
                     <p className="text-xs text-gray-500">
                         Total of {faqItems?.length > 0 ? `${faqItems.length} FAQs` : 'No FAQs available'}
-                    </p>                </div>
+                    </p>
+                </div>
                 <div className="flex flex-wrap gap-4 items-center justify-between">
                     <ManageCategoryFaqDialog />
-                    <div className="flex flex-wrap gap-4 items-center w-full sm:w-auto">
-                        <div className="relative flex items-center w-full lg:w-[300px]">
-                            <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 transform text-muted-foreground pointer-events-none" />
-                            <Input
-                                type="text"
-                                placeholder="Search..."
-                                className="w-full pl-8 pr-8 rounded-full"
-                            />
-                            <Button
-                                size="icon"
-                                className="bg-transparent hover:bg-transparent hover:text-gray-800 shadow-none absolute right-1 top-1/2 -translate-y-1/2 transform"
-                            >
-                                <X className="h-4 w-4 text-gray-950" />
-                            </Button>
-                        </div>
+                    <div className="flex flex-row gap-4 items-center w-full sm:w-auto ">
+                        <form onSubmit={handleSearch} className="flex flex-wrap gap-4 items-center w-full sm:w-auto">
+                            <div className="flex items-center w-full lg:w-auto">
+                                <div className="relative flex items-center w-full lg:w-[220px]">
+                                    <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 transform text-muted-foreground pointer-events-none" />
+                                    <Input
+                                        type="text"
+                                        placeholder="Search..."
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        className="w-full pl-8 pr-8 rounded-l-full rounded-r-none"
+                                    />
+                                    <Button
+                                        type="reset"
+                                        size="icon"
+                                        className="bg-transparent hover:border hover:rounded-full hover:bg-transparent hover:text-gray-800 shadow-none absolute right-1 top-1/2 -translate-y-1/2 transform"
+                                        onClick={() => setSearchQuery("")}
+                                    >
+                                        <X className="h-4 w-4 text-gray-950" />
+                                    </Button>
+                                </div>
+                                <Button
+                                    type="submit"
+                                    variant="outline"
+                                    className="w-full sm:w-auto rounded-r-full rounded-l-none"
+                                >
+                                    Cari
+                                </Button>
+                            </div>
+                        </form>
                         <Link href="/dashboard/faq/add" passHref>
                             <Button variant="outline" className="w-full sm:w-auto">
                                 <Plus className="w-5 h-5 mr-2" />
                                 Add FAQ
                             </Button>
                         </Link>
-                        <Button variant="outline" className="w-full sm:w-auto">
-                            Sort by
-                            <SortDesc className="w-5 h-5 ml-2" />
-                        </Button>
+                        <Select
+                            onValueChange={(value) => {
+                                setSelectedCategory(value);
+                                fetchFaqs(value);
+                            }}
+                        >
+                            <SelectTrigger className="w-auto gap-4">
+                                <SelectValue placeholder="Filter" />
+                                {/* <Filter className="w-5 h-5 ml-2" /> */}
+                            </SelectTrigger>
+                            <SelectContent>
+                                {categories.map(category => (
+                                    <SelectItem key={category.category_id} value={category.category_id}>
+                                        {category.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                     </div>
                 </div>
                 <div className="space-y-4">
-                    {isPending ? (
-                        <div className="flex justify-center items-center h-32">
-                            <Loader2 className="h-8 w-8 animate-spin" />
+                    {isPending || loading ? (
+                        <div className="space-y-4">
+                            {[...Array(2)].map((_, index) => (
+                                <div key={index} className="space-y-2 flex flex-row justify-between">
+                                    <Skeleton className="h-8 w-1/2" />
+                                    <div className="flex space-x-3">
+                                        <Skeleton className="h-8 w-20" />
+                                        <Skeleton className="h-8 w-20" />
+                                    </div>
+
+                                </div>
+                            ))}
                         </div>
                     ) : (
                         <>
@@ -129,9 +188,11 @@ export default function FaqPage() {
                                     {faqItems.map((faq) => (
                                         <AccordionItem key={faq.faq_id} value={`item-${faq.faq_id}`} className="border-b">
                                             <div className="flex items-center justify-between">
-                                                <AccordionTrigger className="flex-grow text-left">
+                                                <AccordionTrigger className="flex-grow text-left flex items-center">
                                                     {faq.title}
-                                                </AccordionTrigger>
+                                                    <Badge className="ml-2 bg-rose-100 text-rose-600 hover:bg-rose-200">
+                                                        {faq.category_name || 'tidak ada kategori'}
+                                                    </Badge>                                                </AccordionTrigger>
                                                 <div className="flex space-x-3">
                                                     <Link href={`/dashboard/faq/edit/${faq.faq_id}`} passHref>
                                                         <Button variant="outline" className="flex items-center justify-center px-3 py-2 sm:px-4 sm:py-2 rounded-md">

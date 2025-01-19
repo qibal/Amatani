@@ -2,12 +2,14 @@
 
 import sql from "@/lib/postgres";
 
-export async function GetFaqAction() {
+export async function GetFaqAction(category, query) {
     try {
         const faqs = await sql`
             SELECT f.*, c.name AS category_name
             FROM faq f
             LEFT JOIN faq_category c ON f.category_id = c.category_id
+            ${category ? sql`WHERE f.category_id = ${category}` : sql``}
+            ${(category && query) ? sql`AND (f.title ILIKE ${'%' + query + '%'} OR f.content ILIKE ${'%' + query + '%'})` : (query ? sql`WHERE (f.title ILIKE ${'%' + query + '%'} OR f.content ILIKE ${'%' + query + '%'})` : sql``)}
             ORDER BY f.created_at DESC
         `;
         return faqs;
