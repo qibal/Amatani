@@ -33,6 +33,11 @@ global.fetch = jest.fn((url) => {
 describe('ManageCategoriesDialog', () => {
     beforeEach(() => {
         fetch.mockClear();
+        jest.spyOn(console, 'log').mockImplementation(() => {}); // Suppress console.log
+    });
+
+    afterEach(() => {
+        jest.restoreAllMocks(); // Restore original behavior
     });
 
     it('should render the dialog and add category', async () => {
@@ -144,6 +149,46 @@ describe('ManageCategoriesDialog', () => {
 
         await waitFor(() => {
             expect(screen.getByText(/Failed to delete category/i)).toBeInTheDocument();
+        });
+
+        expect(asFragment()).toMatchSnapshot();
+    });
+
+    it('should handle edge cases gracefully', async () => {
+        fetch.mockImplementationOnce(() => Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve([
+                { categories_id: 'edge-case-id', categories_name: 'Edge Case Category' },
+            ]),
+        }));
+
+        const { asFragment } = render(<ManageCategoriesDialog />);
+
+        fireEvent.click(screen.getByText(/Manage Categories/i));
+
+        await waitFor(() => {
+            expect(screen.getByText(/Manage Your Categories/i)).toBeInTheDocument();
+        });
+
+        expect(screen.getByText(/Edge Case Category/i)).toBeInTheDocument();
+
+        expect(asFragment()).toMatchSnapshot();
+    });
+
+    it('should handle invalid input gracefully', async () => {
+        const { asFragment } = render(<ManageCategoriesDialog />);
+
+        fireEvent.click(screen.getByText(/Manage Categories/i));
+
+        await waitFor(() => {
+            expect(screen.getByText(/Manage Your Categories/i)).toBeInTheDocument();
+        });
+
+        fireEvent.change(screen.getByPlaceholderText(/Enter category name/i), { target: { value: '' } });
+        fireEvent.click(screen.getByRole('button', { name: /Add/i }));
+
+        await waitFor(() => {
+            expect(screen.getByText(/Jangan lupa di isi/i)).toBeInTheDocument();
         });
 
         expect(asFragment()).toMatchSnapshot();

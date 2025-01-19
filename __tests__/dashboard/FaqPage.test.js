@@ -25,6 +25,11 @@ global.fetch = jest.fn((url, options) => {
 describe('FaqPage', () => {
     beforeEach(() => {
         fetch.mockClear();
+        jest.spyOn(console, 'log').mockImplementation(() => {}); // Suppress console.log
+    });
+
+    afterEach(() => {
+        jest.restoreAllMocks(); // Restore original behavior
     });
 
     it('should render the FaqPage and display FAQs', async () => {
@@ -97,5 +102,22 @@ describe('FaqPage', () => {
             expect(screen.queryByText(/FAQ 1/i)).not.toBeInTheDocument();
             expect(screen.queryByText(/FAQ 2/i)).not.toBeInTheDocument();
         });
+    });
+
+    it('should handle edge cases gracefully', async () => {
+        fetch.mockImplementationOnce(() => Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve([
+                { faq_id: '3', title: 'Edge Case FAQ', content: 'Edge Case Content', category_id: '3', category_name: 'Edge Case Category' },
+            ]),
+        }));
+
+        render(<FaqPage />);
+
+        await waitFor(() => {
+            expect(screen.getByText(/Edge Case FAQ/i)).toBeInTheDocument();
+        });
+
+        expect(screen.getByText(/Edge Case Content/i)).toBeInTheDocument();
     });
 });

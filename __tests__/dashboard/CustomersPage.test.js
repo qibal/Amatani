@@ -37,10 +37,11 @@ describe('CustomersPage', () => {
     beforeEach(() => {
         supabaseAuthAdmin.auth.admin.listUsers.mockResolvedValue({ data: { users: mockUsers }, error: null });
         supabaseAuthAdmin.auth.admin.deleteUser.mockResolvedValue({ data: null, error: null });
+        jest.spyOn(console, 'log').mockImplementation(() => {}); // Suppress console.log
     });
 
     afterEach(() => {
-        jest.clearAllMocks();
+        jest.restoreAllMocks(); // Restore original behavior
     });
 
     it('should render the CustomersPage and display users', async () => {
@@ -91,6 +92,26 @@ describe('CustomersPage', () => {
         await waitFor(() => {
             expect(screen.queryByText('John Doe')).not.toBeInTheDocument();
             expect(screen.queryByText('Jane Smith')).not.toBeInTheDocument();
+        });
+    });
+
+    it('should handle edge cases gracefully', async () => {
+        supabaseAuthAdmin.auth.admin.listUsers.mockResolvedValueOnce({ data: { users: [] }, error: null });
+
+        render(<CustomersPage />);
+
+        await waitFor(() => {
+            expect(screen.getByText('No users found')).toBeInTheDocument();
+        });
+    });
+
+    it('should handle error cases gracefully', async () => {
+        supabaseAuthAdmin.auth.admin.listUsers.mockResolvedValueOnce({ data: null, error: new Error('Error fetching users') });
+
+        render(<CustomersPage />);
+
+        await waitFor(() => {
+            expect(screen.getByText('Error fetching users')).toBeInTheDocument();
         });
     });
 });

@@ -16,6 +16,11 @@ global.fetch = jest.fn((url, options) => {
 describe('AddProductPage', () => {
     beforeEach(() => {
         fetch.mockClear();
+        jest.spyOn(console, 'log').mockImplementation(() => {}); // Suppress console.log
+    });
+
+    afterEach(() => {
+        jest.restoreAllMocks(); // Restore original behavior
     });
 
     it('should render the AddProductPage and submit the form', async () => {
@@ -79,6 +84,37 @@ describe('AddProductPage', () => {
 
         await waitFor(() => {
             expect(screen.getByLabelText(/Stock/i)).toHaveValue(0);
+        });
+    });
+
+    it('should handle edge cases gracefully', async () => {
+        fetch.mockImplementationOnce(() => Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve([
+                {
+                    product_id: '2',
+                    products_name: 'Edge Case Product',
+                    products_description: 'Edge Case Description',
+                    stock: 0,
+                    categories_name: 'Category 2',
+                    price_type: 'wholesale',
+                    fixed_price: null,
+                    wholesale_prices: [
+                        { min_quantity: 1, max_quantity: 5, price: 80 },
+                        { min_quantity: 6, max_quantity: 10, price: 70 },
+                    ],
+                    images: ['image2.png'],
+                },
+            ]),
+        }));
+
+        render(<AddProductPage product_id="2" />);
+
+        await waitFor(() => {
+            expect(screen.getByText(/Edge Case Product/i)).toBeInTheDocument();
+            expect(screen.getByText(/Edge Case Description/i)).toBeInTheDocument();
+            expect(screen.getByText(/Category 2/i)).toBeInTheDocument();
+            expect(screen.getByText(/Rp 80 - Rp 70/i)).toBeInTheDocument();
         });
     });
 });

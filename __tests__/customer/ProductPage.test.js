@@ -37,6 +37,11 @@ global.fetch = jest.fn((url) => {
 describe('Product', () => {
     beforeEach(() => {
         fetch.mockClear();
+        jest.spyOn(console, 'log').mockImplementation(() => {}); // Suppress console.log
+    });
+
+    afterEach(() => {
+        jest.restoreAllMocks(); // Restore original behavior
     });
 
     it('should render the Product page and display products', async () => {
@@ -130,5 +135,30 @@ describe('Product', () => {
             expect(screen.getByText(/Test Product 1/i)).toBeInTheDocument();
             expect(screen.getByText(/Test Product 2/i)).toBeInTheDocument();
         });
+    });
+
+    it('should handle edge cases gracefully', async () => {
+        fetch.mockImplementationOnce(() => Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve([
+                {
+                    product_id: '3',
+                    products_name: 'Edge Case Product',
+                    categories_name: 'Category 3',
+                    price_type: 'fixed',
+                    fixed_price: 0,
+                    wholesale_prices: [],
+                    images: ['image3.png'],
+                },
+            ]),
+        }));
+
+        render(<Product />);
+
+        await waitFor(() => {
+            expect(screen.getByText(/Edge Case Product/i)).toBeInTheDocument();
+        });
+
+        expect(screen.getByText(/Rp 0/i)).toBeInTheDocument();
     });
 });

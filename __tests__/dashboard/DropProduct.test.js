@@ -14,6 +14,14 @@ jest.mock('@/lib/supabase/client', () => ({
 }));
 
 describe('ProductImageUpload', () => {
+    beforeEach(() => {
+        jest.spyOn(console, 'log').mockImplementation(() => {}); // Suppress console.log
+    });
+
+    afterEach(() => {
+        jest.restoreAllMocks(); // Restore original behavior
+    });
+
     it('should render the component and handle file upload', async () => {
         const handleChange = jest.fn();
         const { asFragment } = render(<ProductImageUpload onChange={handleChange} value={[]} error={null} mode="add" />);
@@ -112,6 +120,20 @@ describe('ProductImageUpload', () => {
 
         await waitFor(() => {
             expect(screen.getByLabelText(/Product Images/i)).toHaveValue(null);
+        });
+    });
+
+    it('should handle edge cases gracefully', async () => {
+        const handleChange = jest.fn();
+        const file = new File(['image'], 'image.png', { type: 'image/png' });
+        const fileWithPreview = Object.assign(file, { preview: 'data:image/png;base64,example' });
+
+        render(<ProductImageUpload onChange={handleChange} value={[fileWithPreview]} error={null} mode="add" />);
+
+        fireEvent.change(screen.getByLabelText(/Product Images/i), { target: { value: 'edge-case' } });
+
+        await waitFor(() => {
+            expect(screen.getByLabelText(/Product Images/i)).toHaveValue('edge-case');
         });
     });
 });
