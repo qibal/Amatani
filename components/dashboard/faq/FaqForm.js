@@ -11,7 +11,7 @@ import { Select, SelectItem, SelectTrigger, SelectContent, SelectValue } from "@
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Loader2 } from 'lucide-react';
 import { Toaster, toast } from "sonner";
-
+import { useRouter } from 'next/navigation'
 const formSchema = z.object({
     title: z.string().min(1, { message: "Tidak boleh kosong" }),
     content: z.string().min(1, { message: "Tidak boleh kosong" }),
@@ -24,7 +24,7 @@ const formSchema = z.object({
 export default function FAQForm({ mode, faq, onSubmit }) {
     const [categories, setCategories] = useState([]);
     const [isPending, startTransition] = useTransition();
-
+    const router = useRouter()
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -99,7 +99,7 @@ export default function FAQForm({ mode, faq, onSubmit }) {
                         <div className="flex justify-between items-center pb-4">
                             <h1 className="text-xl font-semibold">{mode === 'add' ? 'Tambah FAQ' : 'Edit FAQ'}</h1>
                             <div className="flex gap-3">
-                                <Button variant="outline" type="button" onClick={() => form.reset()}>Cancel</Button>
+                                <Button variant="outline" type="button" onClick={() => router.back()}>Cancel</Button>
                                 <Button
                                     variant="default"
                                     type="submit"

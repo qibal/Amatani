@@ -24,6 +24,7 @@ export default function FaqPage() {
     const [isPending, startTransition] = useTransition();
     const [pendingDeleteId, setPendingDeleteId] = useState(null);
     const [loading, setLoading] = useState(true);
+
     const fetchFaqs = async (category = "", query = "") => {
         try {
             const response = await fetch(`/api/dashboard/faq${category || query ? `?${category ? `category=${category}&` : ''}${query ? `query=${query}` : ''}` : ''}`);
@@ -64,20 +65,23 @@ export default function FaqPage() {
                 await response.json();
                 setFaqItems(prevFaqs => prevFaqs.filter(faq => faq.faq_id !== faqId));
                 toast.success('The FAQ has been successfully deleted.');
+                setLoading(true); // Start skeleton loading
+                fetchFaqs(selectedCategory, searchQuery); // Refresh FAQs
             } catch (error) {
                 toast.error('Failed to delete FAQ. Please try again.');
                 console.error('Failed to delete FAQ:', error);
             } finally {
                 setPendingDeleteId(null);
+                setLoading(false); // Stop skeleton loading
             }
         });
     };
 
     const handleSearch = (e) => {
         e.preventDefault();
+        setLoading(true); // Start skeleton loading
         fetchFaqs(selectedCategory, searchQuery);
     };
-
 
     return (
         <div>
@@ -107,9 +111,9 @@ export default function FaqPage() {
                         Total of {faqItems?.length > 0 ? `${faqItems.length} FAQs` : 'No FAQs available'}
                     </p>
                 </div>
-                <div className="flex flex-wrap gap-4 items-center justify-between">
+                <div className="flex flex-wrap gap-4 items-center justify-between ">
                     <ManageCategoryFaqDialog />
-                    <div className="flex flex-row gap-4 items-center w-full sm:w-auto ">
+                    <div className="flex flex-row gap-x-4">
                         <form onSubmit={handleSearch} className="flex flex-wrap gap-4 items-center w-full sm:w-auto">
                             <div className="flex items-center w-full lg:w-auto">
                                 <div className="relative flex items-center w-full lg:w-[220px]">
@@ -148,12 +152,13 @@ export default function FaqPage() {
                         <Select
                             onValueChange={(value) => {
                                 setSelectedCategory(value);
-                                fetchFaqs(value);
+                                setLoading(true); // Start skeleton loading
+                                fetchFaqs(value, searchQuery);
                             }}
                         >
                             <SelectTrigger className="w-auto gap-4">
                                 <SelectValue placeholder="Filter" />
-                                {/* <Filter className="w-5 h-5 ml-2" /> */}
+                                <Filter className="w-5 h-5 ml-2" />
                             </SelectTrigger>
                             <SelectContent>
                                 {categories.map(category => (
@@ -175,7 +180,6 @@ export default function FaqPage() {
                                         <Skeleton className="h-8 w-20" />
                                         <Skeleton className="h-8 w-20" />
                                     </div>
-
                                 </div>
                             ))}
                         </div>
@@ -192,7 +196,8 @@ export default function FaqPage() {
                                                     {faq.title}
                                                     <Badge className="ml-2 bg-rose-100 text-rose-600 hover:bg-rose-200">
                                                         {faq.category_name || 'tidak ada kategori'}
-                                                    </Badge>                                                </AccordionTrigger>
+                                                    </Badge>
+                                                </AccordionTrigger>
                                                 <div className="flex space-x-3">
                                                     <Link href={`/dashboard/faq/edit/${faq.faq_id}`} passHref>
                                                         <Button variant="outline" className="flex items-center justify-center px-3 py-2 sm:px-4 sm:py-2 rounded-md">
