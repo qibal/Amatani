@@ -60,7 +60,7 @@ describe('CartPage', () => {
     });
 
     it('should render the CartPage and display cart items', async () => {
-        render(
+        const { asFragment } = render(
             <CartProvider initialUserId="123">
                 <CartPage />
             </CartProvider>
@@ -70,6 +70,8 @@ describe('CartPage', () => {
             expect(screen.getByText(/Test Product 1/i)).toBeInTheDocument();
             expect(screen.getByText(/Test Product 2/i)).toBeInTheDocument();
         });
+
+        expect(asFragment()).toMatchSnapshot();
     });
 
     it('should update quantity when increment button is clicked', async () => {
@@ -138,5 +140,46 @@ describe('CartPage', () => {
         });
 
         expect(screen.getByText(/Rp 180/i)).toBeInTheDocument();
+    });
+
+    it('should handle API errors gracefully', async () => {
+        fetch.mockImplementationOnce(() => Promise.resolve({
+            ok: false,
+            json: () => Promise.resolve({ message: 'Failed to update quantity' }),
+        }));
+
+        render(
+            <CartProvider initialUserId="123">
+                <CartPage />
+            </CartProvider>
+        );
+
+        await waitFor(() => {
+            expect(screen.getByText(/Test Product 1/i)).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getAllByText('+')[0]);
+
+        await waitFor(() => {
+            expect(screen.getByText(/Failed to update quantity/i)).toBeInTheDocument();
+        });
+    });
+
+    it('should handle invalid input gracefully', async () => {
+        render(
+            <CartProvider initialUserId="123">
+                <CartPage />
+            </CartProvider>
+        );
+
+        await waitFor(() => {
+            expect(screen.getByText(/Test Product 1/i)).toBeInTheDocument();
+        });
+
+        fireEvent.change(screen.getByDisplayValue('1'), { target: { value: '-1' } });
+
+        await waitFor(() => {
+            expect(screen.getByDisplayValue('1')).toBeInTheDocument();
+        });
     });
 });

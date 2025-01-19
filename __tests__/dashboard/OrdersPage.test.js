@@ -42,7 +42,7 @@ describe('OrdersPage', () => {
     });
 
     it('should render the OrdersPage and display orders', async () => {
-        render(<OrdersPage />);
+        const { asFragment } = render(<OrdersPage />);
 
         await waitFor(() => {
             expect(screen.getByText(/Semua Orders/i)).toBeInTheDocument();
@@ -54,6 +54,8 @@ describe('OrdersPage', () => {
             expect(screen.getByText(/Payment Status/i)).toBeInTheDocument();
             expect(screen.getByText(/Actions/i)).toBeInTheDocument();
         });
+
+        expect(asFragment()).toMatchSnapshot();
     });
 
     it('should handle order deletion', async () => {
@@ -78,6 +80,33 @@ describe('OrdersPage', () => {
             expect(screen.getByText(/Total Amount: Rp 150,000/i)).toBeInTheDocument();
             expect(screen.getByText(/Order Date & Time: 18 November 2024 15:30/i)).toBeInTheDocument();
             expect(screen.getByText(/Payment Status: pending/i)).toBeInTheDocument();
+        });
+    });
+
+    it('should handle API errors gracefully', async () => {
+        fetch.mockImplementationOnce(() => Promise.resolve({
+            ok: false,
+            json: () => Promise.resolve({ message: 'Failed to fetch orders' }),
+        }));
+
+        render(<OrdersPage />);
+
+        await waitFor(() => {
+            expect(screen.getByText(/Failed to fetch orders/i)).toBeInTheDocument();
+        });
+    });
+
+    it('should handle invalid input gracefully', async () => {
+        render(<OrdersPage />);
+
+        await waitFor(() => {
+            expect(screen.getByText(/Order ID/i)).toBeInTheDocument();
+        });
+
+        fireEvent.change(screen.getByLabelText('Search'), { target: { value: 'Invalid Input' } });
+
+        await waitFor(() => {
+            expect(screen.queryByText(/Order ID: 1/i)).not.toBeInTheDocument();
         });
     });
 });

@@ -60,7 +60,7 @@ const ProductFormWrapper = (props) => {
 
 describe('ProductForm', () => {
     it('harus menampilkan error ketika form dikirim dengan field kosong', async () => {
-        render(<ProductFormWrapper mode="add" onSubmit={jest.fn()} />);
+        const { asFragment } = render(<ProductFormWrapper mode="add" onSubmit={jest.fn()} />);
 
         fireEvent.submit(screen.getByRole('button', { name: /submit/i }));
 
@@ -70,11 +70,13 @@ describe('ProductForm', () => {
             expect(screen.getByText('Harus lebih dari 0')).toBeInTheDocument();
             expect(screen.getByText('Setidaknya ada 1 gambar produk')).toBeInTheDocument();
         });
+
+        expect(asFragment()).toMatchSnapshot();
     });
 
     it('harus mengirim form ketika semua field diisi', async () => {
         const handleSubmit = jest.fn();
-        render(<ProductFormWrapper mode="add" onSubmit={handleSubmit} />);
+        const { asFragment } = render(<ProductFormWrapper mode="add" onSubmit={handleSubmit} />);
 
         fireEvent.change(screen.getByLabelText(/Nama Produk/i), { target: { value: 'Test Product' } });
         fireEvent.change(screen.getByLabelText(/Kategori Produk/i), { target: { value: '1' } });
@@ -88,6 +90,8 @@ describe('ProductForm', () => {
         await waitFor(() => {
             expect(handleSubmit).toHaveBeenCalled();
         });
+
+        expect(asFragment()).toMatchSnapshot();
     });
 
     it('should handle API errors gracefully', async () => {
@@ -99,7 +103,7 @@ describe('ProductForm', () => {
         );
 
         const handleSubmit = jest.fn();
-        render(<ProductFormWrapper mode="add" onSubmit={handleSubmit} />);
+        const { asFragment } = render(<ProductFormWrapper mode="add" onSubmit={handleSubmit} />);
 
         fireEvent.change(screen.getByLabelText(/Nama Produk/i), { target: { value: 'Test Product' } });
         fireEvent.change(screen.getByLabelText(/Kategori Produk/i), { target: { value: '1' } });
@@ -113,10 +117,12 @@ describe('ProductForm', () => {
         await waitFor(() => {
             expect(screen.getByText(/Failed to add product/i)).toBeInTheDocument();
         });
+
+        expect(asFragment()).toMatchSnapshot();
     });
 
     it('should display validation errors when form is submitted with empty fields', async () => {
-        render(<ProductFormWrapper mode="add" onSubmit={jest.fn()} />);
+        const { asFragment } = render(<ProductFormWrapper mode="add" onSubmit={jest.fn()} />);
 
         fireEvent.submit(screen.getByRole('button', { name: /submit/i }));
 
@@ -126,6 +132,8 @@ describe('ProductForm', () => {
             expect(screen.getByText('Harus lebih dari 0')).toBeInTheDocument();
             expect(screen.getByText('Setidaknya ada 1 gambar produk')).toBeInTheDocument();
         });
+
+        expect(asFragment()).toMatchSnapshot();
     });
 
     it('should handle file removal', async () => {
@@ -133,20 +141,22 @@ describe('ProductForm', () => {
         const file = new File(['image'], 'image.png', { type: 'image/png' });
         const fileWithPreview = Object.assign(file, { preview: 'data:image/png;base64,example' });
 
-        render(<ProductFormWrapper mode="add" onSubmit={handleChange} />);
+        const { asFragment } = render(<ProductFormWrapper mode="add" onSubmit={handleChange} />);
 
         fireEvent.click(screen.getByText(/×/i));
 
         await waitFor(() => {
             expect(handleChange).toHaveBeenCalledWith([]);
         });
+
+        expect(asFragment()).toMatchSnapshot();
     });
 
     it('should handle file removal from storage', async () => {
         const handleChange = jest.fn();
         const fileUrl = 'https://xmlmcdfzbwjljhaebzna.supabase.co/storage/v1/object/public/product_images/image.png';
 
-        render(<ProductFormWrapper mode="edit" onSubmit={handleChange} />);
+        const { asFragment } = render(<ProductFormWrapper mode="edit" onSubmit={handleChange} />);
 
         fireEvent.click(screen.getByText(/×/i));
 
@@ -154,5 +164,7 @@ describe('ProductForm', () => {
             expect(handleChange).toHaveBeenCalledWith([]);
             expect(supabase.storage.from().remove).toHaveBeenCalledWith(['image.png']);
         });
+
+        expect(asFragment()).toMatchSnapshot();
     });
 });

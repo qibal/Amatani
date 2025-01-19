@@ -16,7 +16,7 @@ jest.mock('@/lib/supabase/client', () => ({
 describe('ProductImageUpload', () => {
     it('should render the component and handle file upload', async () => {
         const handleChange = jest.fn();
-        render(<ProductImageUpload onChange={handleChange} value={[]} error={null} mode="add" />);
+        const { asFragment } = render(<ProductImageUpload onChange={handleChange} value={[]} error={null} mode="add" />);
 
         fireEvent.click(screen.getByText(/Drag and drop product images here/i));
 
@@ -28,10 +28,12 @@ describe('ProductImageUpload', () => {
         await waitFor(() => {
             expect(handleChange).toHaveBeenCalled();
         });
+
+        expect(asFragment()).toMatchSnapshot();
     });
 
     it('should display error for invalid file type', async () => {
-        render(<ProductImageUpload onChange={jest.fn()} value={[]} error={null} mode="add" />);
+        const { asFragment } = render(<ProductImageUpload onChange={jest.fn()} value={[]} error={null} mode="add" />);
 
         fireEvent.click(screen.getByText(/Drag and drop product images here/i));
 
@@ -43,6 +45,8 @@ describe('ProductImageUpload', () => {
         await waitFor(() => {
             expect(screen.getByText(/Hanya menerima format gambar JPG, PNG, JPEG, or WebP./i)).toBeInTheDocument();
         });
+
+        expect(asFragment()).toMatchSnapshot();
     });
 
     it('should handle file removal', async () => {
@@ -50,16 +54,41 @@ describe('ProductImageUpload', () => {
         const file = new File(['image'], 'image.png', { type: 'image/png' });
         const fileWithPreview = Object.assign(file, { preview: 'data:image/png;base64,example' });
 
-        render(<ProductImageUpload onChange={handleChange} value={[fileWithPreview]} error={null} mode="add" />);
+        const { asFragment } = render(<ProductImageUpload onChange={handleChange} value={[fileWithPreview]} error={null} mode="add" />);
 
         fireEvent.click(screen.getByText(/×/i));
 
         await waitFor(() => {
             expect(handleChange).toHaveBeenCalledWith([]);
         });
+
+        expect(asFragment()).toMatchSnapshot();
     });
 
     it('should handle file removal from storage', async () => {
+        const handleChange = jest.fn();
+        const fileUrl = 'https://xmlmcdfzbwjljhaebzna.supabase.co/storage/v1/object/public/product_images/image.png';
+
+        const { asFragment } = render(<ProductImageUpload onChange={handleChange} value={[fileUrl]} error={null} mode="edit" />);
+
+        fireEvent.click(screen.getByText(/×/i));
+
+        await waitFor(() => {
+            expect(handleChange).toHaveBeenCalledWith([]);
+            expect(supabase.storage.from().remove).toHaveBeenCalledWith(['image.png']);
+        });
+
+        expect(asFragment()).toMatchSnapshot();
+    });
+
+    it('should handle API errors gracefully', async () => {
+        global.fetch = jest.fn(() =>
+            Promise.resolve({
+                ok: false,
+                json: () => Promise.resolve({ message: 'Failed to remove image' }),
+            })
+        );
+
         const handleChange = jest.fn();
         const fileUrl = 'https://xmlmcdfzbwjljhaebzna.supabase.co/storage/v1/object/public/product_images/image.png';
 
@@ -68,8 +97,21 @@ describe('ProductImageUpload', () => {
         fireEvent.click(screen.getByText(/×/i));
 
         await waitFor(() => {
-            expect(handleChange).toHaveBeenCalledWith([]);
-            expect(supabase.storage.from().remove).toHaveBeenCalledWith(['image.png']);
+            expect(screen.getByText(/Failed to remove image/i)).toBeInTheDocument();
+        });
+    });
+
+    it('should handle invalid input gracefully', async () => {
+        const handleChange = jest.fn();
+        const file = new File(['image'], 'image.png', { type: 'image/png' });
+        const fileWithPreview = Object.assign(file, { preview: 'data:image/png;base64,example' });
+
+        render(<ProductImageUpload onChange={handleChange} value={[fileWithPreview]} error={null} mode="add" />);
+
+        fireEvent.change(screen.getByLabelText(/Product Images/i), { target: { value: '' } });
+
+        await waitFor(() => {
+            expect(screen.getByLabelText(/Product Images/i)).toHaveValue(null);
         });
     });
 });

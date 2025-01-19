@@ -57,12 +57,14 @@ describe('ProductPage', () => {
     });
 
     it('should render the ProductPage and display products', async () => {
-        render(<ProductPage />);
+        const { asFragment } = render(<ProductPage />);
 
         await waitFor(() => {
             expect(screen.getByText(/Test Product 1/i)).toBeInTheDocument();
             expect(screen.getByText(/Test Product 2/i)).toBeInTheDocument();
         });
+
+        expect(asFragment()).toMatchSnapshot();
     });
 
     it('should handle product deletion', async () => {
@@ -130,6 +132,16 @@ describe('ProductPage', () => {
         await waitFor(() => {
             expect(handleChange).toHaveBeenCalledWith([]);
             expect(supabase.storage.from().remove).toHaveBeenCalledWith(['image.png']);
+        });
+    });
+
+    it('should handle invalid input gracefully', async () => {
+        render(<ProductPage />);
+
+        fireEvent.change(screen.getByLabelText(/Stock/i), { target: { value: '-1' } });
+
+        await waitFor(() => {
+            expect(screen.getByLabelText(/Stock/i)).toHaveValue(0);
         });
     });
 });
