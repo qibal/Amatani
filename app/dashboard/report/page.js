@@ -1,5 +1,9 @@
+"use client";
 import Image from 'next/image';
 import Head from 'next/head';
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import { Separator } from "@/components/ui/separator";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 
 export default function Report() {
     return (
@@ -8,7 +12,22 @@ export default function Report() {
                 <title>Website Sedang Dalam Pengembangan</title>
                 <meta name="description" content="Website ini sedang dalam pengembangan. Kembali lagi nanti." />
             </Head>
-            <div className="flex items-center justify-center min-h-screen bg-gray-100">
+            <header className="flex h-16 items-center gap-2 px-4">
+                <SidebarTrigger className="-ml-1" />
+                <Separator orientation="vertical" className="mr-2 h-4" />
+                <Breadcrumb>
+                    <BreadcrumbList>
+                        <BreadcrumbItem>
+                            <BreadcrumbLink href="#">Dashboard</BreadcrumbLink>
+                        </BreadcrumbItem>
+                        <BreadcrumbSeparator />
+                        <BreadcrumbItem>
+                            <BreadcrumbPage>Report</BreadcrumbPage>
+                        </BreadcrumbItem>
+                    </BreadcrumbList>
+                </Breadcrumb>
+            </header>
+            <div className="flex items-center justify-center min-h-screen ">
                 <div className="text-center">
                     <div className="flex justify-center mb-4">
                         <Image
@@ -20,7 +39,7 @@ export default function Report() {
                         />
                     </div>
                     <h1 className="text-3xl font-bold text-gray-800 mb-2">
-                        Website Sedang Dalam Pengembangan
+                        Menu Report Sedang Dalam Pengembangan
                     </h1>
                     <p className="text-gray-600">
                         Kami sedang bekerja keras untuk segera meluncurkan website ini. Silakan kembali lagi nanti!

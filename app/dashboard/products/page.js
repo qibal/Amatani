@@ -259,13 +259,13 @@ export default function ProductPage() {
                         <BreadcrumbList>
                             <BreadcrumbItem className="hidden md:block">
                                 <BreadcrumbLink href="#">
-                                    Building Your Application
+                                    Produk
                                 </BreadcrumbLink>
                             </BreadcrumbItem>
-                            <BreadcrumbSeparator className="hidden md:block" />
+                            {/* <BreadcrumbSeparator className="hidden md:block" />
                             <BreadcrumbItem>
                                 <BreadcrumbPage>Data Fetching</BreadcrumbPage>
-                            </BreadcrumbItem>
+                            </BreadcrumbItem> */}
                         </BreadcrumbList>
                     </Breadcrumb>
                 </div>
