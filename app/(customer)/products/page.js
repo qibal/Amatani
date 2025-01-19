@@ -88,7 +88,7 @@ export default function Product() {
 
                 {/* Hasil Pencarian, Filter, dan Sort By */}
                 <div className="flex justify-between items-center w-full">
-                <p className="text-xl font-semibold text-gray-800">
+                    <p className="text-xl font-semibold text-gray-800">
                         {categoryName ? categoryName : (formattedQuery ? formattedQuery : 'Kategori tidak tersedia')} ({productsData.length})
                     </p>
                     <div className="flex items-center gap-4">
@@ -177,22 +177,20 @@ export default function Product() {
     );
 }
 
-
 function ProductCard({ imageSrc, name, category, priceType, fixedPrice, wholesalePrices, product_id, stock }) {
     let priceRange;
 
     if (priceType === 'wholesale' && wholesalePrices && wholesalePrices.length > 0) {
-        // Map seluruh harga grosir menjadi format yang sesuai
-        priceRange = wholesalePrices.map(({ min_quantity, max_quantity, price }) => {
-            if (price) {
-                // Pastikan price valid dan gunakan format yang sesuai
-                return ` ${priceRange.toLocaleString()}`;
-            } else {
-                return `${min_quantity} - ${max_quantity} produk: Harga tidak tersedia`;
-            }
-        }).join(' | ');
+        const prices = wholesalePrices.map(price => price.price);
+        const minPrice = Math.min(...prices);
+        const maxPrice = Math.max(...prices);
+        if (minPrice === maxPrice) {
+            priceRange = `Rp ${minPrice.toLocaleString()}`;
+        } else {
+            priceRange = `Rp ${minPrice.toLocaleString()} - Rp ${maxPrice.toLocaleString()}`;
+        }
     } else if (priceType === 'fixed' && fixedPrice !== null) {
-        priceRange = `Rp ${fixedPrice.toLocaleString()}`;
+        priceRange = `Rp ${Number(fixedPrice).toLocaleString()}`;
     } else {
         priceRange = "Harga tidak tersedia";
     }
@@ -229,7 +227,6 @@ function ProductCard({ imageSrc, name, category, priceType, fixedPrice, wholesal
         <Link href={`/products/${product_id}`}>{cardContent}</Link>
     );
 }
-
 
 function NoProduct() {
     return (

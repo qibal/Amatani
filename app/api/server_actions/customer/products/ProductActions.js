@@ -18,7 +18,7 @@ export async function GetProductActionCustomers({ query, type }) {
                 p.price_type,
                 f.price AS fixed_price,
                 (
-                    SELECT json_agg(json_build_object('min_quantity', w.min_quantity, 'max_quantity', w.price))
+                    SELECT json_agg(json_build_object('min_quantity', w.min_quantity, 'max_quantity',w.max_quantity,'price', w.price))
                     FROM wholesale_prices w
                     WHERE w.product_id = p.product_id
                 ) AS wholesale_prices,
@@ -49,7 +49,7 @@ export async function GetProductActionCustomers({ query, type }) {
                 p.price_type,
                 f.price AS fixed_price,
                 (
-                    SELECT json_agg(json_build_object('min_quantity', w.min_quantity, 'max_quantity', w.price))
+                    SELECT json_agg(json_build_object('min_quantity', w.min_quantity, 'max_quantity',w.max_quantity,'price', w.price))
                     FROM wholesale_prices w
                     WHERE w.product_id = p.product_id
                 ) AS wholesale_prices,

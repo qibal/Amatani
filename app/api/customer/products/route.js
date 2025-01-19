@@ -13,6 +13,7 @@ export async function GET(request) {
 
     try {
         const data = await GetProductActionCustomers({ query, type });
+        console.log("🚀 ~ GET ~ data:", data[0].wholesale_prices[0])
         if (data) {
             return new Response(JSON.stringify(data), {
                 status: 200,
