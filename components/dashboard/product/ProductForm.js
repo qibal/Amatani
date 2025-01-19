@@ -14,7 +14,6 @@ import { Trash2, Loader2, ChevronRight } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { useRouter } from 'next/navigation';
-import { toast } from 'sonner'; // Import toast from sonner
 
 const formSchema = z.object({
     products_name: z.string().min(1, { message: "Tidak boleh kosong" }),
@@ -149,10 +148,11 @@ export default function ProductForm({ mode, product, onSubmit }) {
     };
 
     const handleSubmit = (data) => {
+        console.log('Submitting form with data:', data); // Tambahkan log ini
         startTransition(async () => {
             try {
                 await onSubmit(data);
-                toast.success(`Produk ${mode === 'add' ? 'berhasil ditambahkan' : 'berhasil diperbarui'}!`);
+                router.back(); // Tambahkan ini untuk kembali ke halaman sebelumnya
             } catch (error) {
                 console.error('Error submitting form:', error);
             }
@@ -495,3 +495,4 @@ export default function ProductForm({ mode, product, onSubmit }) {
         </Form>
     );
 }
+

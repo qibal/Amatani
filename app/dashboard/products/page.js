@@ -130,7 +130,7 @@ const ProductCard = ({ product, onDelete }) => {
                 </div>
                 <h2 className="text-sm sm:text-base font-semibold text-black">{product.products_name}</h2>
             </div>
-            <div className="flex flex-1 justify-between gap-4">
+            <div className="flex flex-1 justify-start gap-8">
                 {priceRanges}
             </div>
             <p className="text-sm sm:text-base text-black flex-shrink-0">Stock: {product.stock}</p>
