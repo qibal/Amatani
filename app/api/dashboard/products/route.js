@@ -9,6 +9,7 @@ export async function GET(req) {
         const offset = parseInt(url.searchParams.get('offset')) || 0;
 
         const data = await GetProductAction({ searchQuery, sort, limit, offset });
+        console.log("🚀 ~ GET ~ data:", data)
 
         if (data) {
             return new Response(JSON.stringify(data), {

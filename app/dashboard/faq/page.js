@@ -93,13 +93,13 @@ export default function FaqPage() {
                         <BreadcrumbList>
                             <BreadcrumbItem className="hidden md:block">
                                 <BreadcrumbLink href="#">
-                                    Building Your Application
+                                    FAQ
                                 </BreadcrumbLink>
                             </BreadcrumbItem>
-                            <BreadcrumbSeparator className="hidden md:block" />
-                            <BreadcrumbItem>
+                            {/* <BreadcrumbSeparator className="hidden md:block" /> */}
+                            {/* <BreadcrumbItem>
                                 <BreadcrumbPage>Data Fetching</BreadcrumbPage>
-                            </BreadcrumbItem>
+                            </BreadcrumbItem> */}
                         </BreadcrumbList>
                     </Breadcrumb>
                 </div>
@@ -158,7 +158,7 @@ export default function FaqPage() {
                         >
                             <SelectTrigger className="w-auto gap-4">
                                 <SelectValue placeholder="Filter" />
-                                <Filter className="w-5 h-5 ml-2" />
+                                {/* <Filter className="w-5 h-5 ml-2" /> */}
                             </SelectTrigger>
                             <SelectContent>
                                 {categories.map(category => (

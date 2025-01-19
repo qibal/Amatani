@@ -89,6 +89,7 @@ const ActionButtons = ({ product_id, onDelete }) => {
 };
 
 // Komponen Reusable untuk Card Produk
+// Komponen Reusable untuk Card Produk
 const ProductCard = ({ product, onDelete }) => {
     let priceRanges;
 
@@ -118,7 +119,7 @@ const ProductCard = ({ product, onDelete }) => {
             <div className="flex-1 space-y-2">
                 <div className="flex flex-wrap gap-2">
                     <Badge className="text-red-400 bg-red-100 hover:bg-rose-200 hover:text-red-600">
-                        {product.price_type}
+                        {product.price_type === 'wholesale' ? 'Grosir' : 'Harga Tetap'}
                     </Badge>
                     <Badge className="text-red-400 bg-red-100 hover:bg-rose-200 hover:text-red-600">
                         {product.categories_name}
