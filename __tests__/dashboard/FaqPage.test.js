@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import FaqPage from '@/app/dashboard/faq/page';
 import '@testing-library/jest-dom';
-import { SidebarProvider } from '@/context/SidebarContext'; // P938f
+import { SidebarProvider } from '@/context/SidebarContext';
 
 // Mock fetch
 global.fetch = jest.fn((url, options) => {
