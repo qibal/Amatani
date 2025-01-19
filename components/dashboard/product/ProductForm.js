@@ -152,7 +152,7 @@ export default function ProductForm({ mode, product, onSubmit }) {
         startTransition(async () => {
             try {
                 await onSubmit(data);
-                router.back(); // Tambahkan ini untuk kembali ke halaman sebelumnya
+                // Tambahkan ini untuk kembali ke halaman sebelumnya
             } catch (error) {
                 console.error('Error submitting form:', error);
             }
