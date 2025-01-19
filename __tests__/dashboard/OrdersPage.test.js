@@ -2,6 +2,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import OrdersPage from '@/app/dashboard/orders/page';
 import '@testing-library/jest-dom';
 import { supabase } from '@/lib/supabase/client';
+import { SidebarProvider } from '@/components/ui/sidebar';
 
 jest.mock('@/lib/supabase/client', () => ({
     supabase: {
@@ -44,7 +45,7 @@ const usersData = [
 describe('OrdersPage', () => {
     beforeEach(() => {
         fetch.mockClear();
-        jest.spyOn(console, 'log').mockImplementation(() => {}); // Suppress console.log
+        jest.spyOn(console, 'log').mockImplementation(() => { }); // Suppress console.log
     });
 
     afterEach(() => {
@@ -52,7 +53,11 @@ describe('OrdersPage', () => {
     });
 
     it('should render the OrdersPage and display orders', async () => {
-        const { asFragment } = render(<OrdersPage />);
+        const { asFragment } = render(
+            <SidebarProvider>
+                <OrdersPage />
+            </SidebarProvider>
+        );
 
         await waitFor(() => {
             expect(screen.getByText(/Semua Orders/i)).toBeInTheDocument();
@@ -69,7 +74,11 @@ describe('OrdersPage', () => {
     });
 
     it('should handle order deletion', async () => {
-        render(<OrdersPage />);
+        render(
+            <SidebarProvider>
+                <OrdersPage />
+            </SidebarProvider>
+        );
 
         fireEvent.click(screen.getByText(/Delete Order/i));
 
@@ -79,7 +88,11 @@ describe('OrdersPage', () => {
     });
 
     it('should display order details', async () => {
-        render(<OrdersPage />);
+        render(
+            <SidebarProvider>
+                <OrdersPage />
+            </SidebarProvider>
+        );
 
         fireEvent.click(screen.getByText(/View Details/i));
 
@@ -99,7 +112,11 @@ describe('OrdersPage', () => {
             json: () => Promise.resolve({ message: 'Failed to fetch orders' }),
         }));
 
-        render(<OrdersPage />);
+        render(
+            <SidebarProvider>
+                <OrdersPage />
+            </SidebarProvider>
+        );
 
         await waitFor(() => {
             expect(screen.getByText(/Failed to fetch orders/i)).toBeInTheDocument();
@@ -107,7 +124,11 @@ describe('OrdersPage', () => {
     });
 
     it('should handle invalid input gracefully', async () => {
-        render(<OrdersPage />);
+        render(
+            <SidebarProvider>
+                <OrdersPage />
+            </SidebarProvider>
+        );
 
         await waitFor(() => {
             expect(screen.getByText(/Order ID/i)).toBeInTheDocument();
@@ -139,7 +160,11 @@ describe('OrdersPage', () => {
             ]),
         }));
 
-        render(<OrdersPage />);
+        render(
+            <SidebarProvider>
+                <OrdersPage />
+            </SidebarProvider>
+        );
 
         await waitFor(() => {
             expect(screen.getByText(/Order ID: 2/i)).toBeInTheDocument();

@@ -2,6 +2,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import CustomersPage from '@/app/dashboard/customers/page';
 import '@testing-library/jest-dom';
 import supabaseAuthAdmin from '@/lib/supabase/client_admin';
+import { SidebarProvider } from '@/components/ui/sidebar';
 
 jest.mock('@/lib/supabase/client_admin', () => ({
     __esModule: true,
@@ -38,7 +39,7 @@ describe('CustomersPage', () => {
     beforeEach(() => {
         supabaseAuthAdmin.auth.admin.listUsers.mockResolvedValue({ data: { users: mockUsers }, error: null });
         supabaseAuthAdmin.auth.admin.deleteUser.mockResolvedValue({ data: null, error: null });
-        jest.spyOn(console, 'log').mockImplementation(() => {}); // Suppress console.log
+        jest.spyOn(console, 'log').mockImplementation(() => { }); // Suppress console.log
     });
 
     afterEach(() => {
@@ -46,7 +47,11 @@ describe('CustomersPage', () => {
     });
 
     it('should render the CustomersPage and display users', async () => {
-        const { asFragment } = render(<CustomersPage />);
+        const { asFragment } = render(
+            <SidebarProvider>
+                <CustomersPage />
+            </SidebarProvider>
+        );
 
         await waitFor(() => {
             expect(screen.getByText('John Doe')).toBeInTheDocument();
@@ -57,7 +62,11 @@ describe('CustomersPage', () => {
     });
 
     it('should delete a user', async () => {
-        render(<CustomersPage />);
+        render(
+            <SidebarProvider>
+                <CustomersPage />
+            </SidebarProvider>
+        );
 
         await waitFor(() => {
             expect(screen.getByText('John Doe')).toBeInTheDocument();
@@ -74,7 +83,11 @@ describe('CustomersPage', () => {
     it('should handle API errors gracefully', async () => {
         supabaseAuthAdmin.auth.admin.listUsers.mockResolvedValueOnce({ data: null, error: new Error('Failed to fetch users') });
 
-        render(<CustomersPage />);
+        render(
+            <SidebarProvider>
+                <CustomersPage />
+            </SidebarProvider>
+        );
 
         await waitFor(() => {
             expect(screen.getByText('Failed to fetch users')).toBeInTheDocument();
@@ -82,7 +95,11 @@ describe('CustomersPage', () => {
     });
 
     it('should handle invalid input gracefully', async () => {
-        render(<CustomersPage />);
+        render(
+            <SidebarProvider>
+                <CustomersPage />
+            </SidebarProvider>
+        );
 
         await waitFor(() => {
             expect(screen.getByText('John Doe')).toBeInTheDocument();
@@ -99,7 +116,11 @@ describe('CustomersPage', () => {
     it('should handle edge cases gracefully', async () => {
         supabaseAuthAdmin.auth.admin.listUsers.mockResolvedValueOnce({ data: { users: [] }, error: null });
 
-        render(<CustomersPage />);
+        render(
+            <SidebarProvider>
+                <CustomersPage />
+            </SidebarProvider>
+        );
 
         await waitFor(() => {
             expect(screen.getByText('No users found')).toBeInTheDocument();
@@ -109,7 +130,11 @@ describe('CustomersPage', () => {
     it('should handle error cases gracefully', async () => {
         supabaseAuthAdmin.auth.admin.listUsers.mockResolvedValueOnce({ data: null, error: new Error('Error fetching users') });
 
-        render(<CustomersPage />);
+        render(
+            <SidebarProvider>
+                <CustomersPage />
+            </SidebarProvider>
+        );
 
         await waitFor(() => {
             expect(screen.getByText('Error fetching users')).toBeInTheDocument();
