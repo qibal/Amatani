@@ -181,13 +181,17 @@ function ProductCard({ imageSrc, name, category, priceType, fixedPrice, wholesal
     let priceRange;
 
     if (priceType === 'wholesale' && wholesalePrices && wholesalePrices.length > 0) {
-        const prices = wholesalePrices.map(price => price.price);
-        const minPrice = Math.min(...prices);
-        const maxPrice = Math.max(...prices);
-        if (minPrice === maxPrice) {
-            priceRange = `Rp ${minPrice.toLocaleString()}`;
+        const prices = wholesalePrices.map(price => price.max_quantity).filter(price => price !== undefined && price !== null);
+        if (prices.length > 0) {
+            const minPrice = Math.min(...prices);
+            const maxPrice = Math.max(...prices);
+            if (minPrice === maxPrice) {
+                priceRange = `Rp ${minPrice.toLocaleString()}`;
+            } else {
+                priceRange = `Rp ${minPrice.toLocaleString()} - Rp ${maxPrice.toLocaleString()}`;
+            }
         } else {
-            priceRange = `Rp ${minPrice.toLocaleString()} - Rp ${maxPrice.toLocaleString()}`;
+            priceRange = "Harga tidak tersedia";
         }
     } else if (priceType === 'fixed' && fixedPrice !== null) {
         priceRange = `Rp ${Number(fixedPrice).toLocaleString()}`;
