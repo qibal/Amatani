@@ -88,7 +88,9 @@ export default function Product() {
 
                 {/* Hasil Pencarian, Filter, dan Sort By */}
                 <div className="flex justify-between items-center w-full">
-                    <p className="text-sm text-gray-800 font-medium">Apel (20)</p>
+                <p className="text-xl font-semibold text-gray-800">
+                        {categoryName ? categoryName : (formattedQuery ? formattedQuery : 'Kategori tidak tersedia')} ({productsData.length})
+                    </p>
                     <div className="flex items-center gap-4">
                         <Button className="flex items-center gap-2 bg-gray-50 hover:bg-gray-100">
                             <Filter className="w-4 h-4 text-gray-950" />
