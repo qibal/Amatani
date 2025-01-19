@@ -19,7 +19,7 @@ describe('AddProductPage', () => {
     });
 
     it('should render the AddProductPage and submit the form', async () => {
-        render(<AddProductPage />);
+        const { asFragment } = render(<AddProductPage />);
 
         fireEvent.change(screen.getByLabelText(/Nama Produk/i), { target: { value: 'Test Product' } });
         fireEvent.change(screen.getByLabelText(/Kategori Produk/i), { target: { value: '1' } });
@@ -33,6 +33,8 @@ describe('AddProductPage', () => {
         await waitFor(() => {
             expect(screen.getByText(/berhasil di upload/i)).toBeInTheDocument();
         });
+
+        expect(asFragment()).toMatchSnapshot();
     });
 
     it('should display validation errors when form is submitted with empty fields', async () => {
@@ -67,6 +69,16 @@ describe('AddProductPage', () => {
 
         await waitFor(() => {
             expect(screen.getByText(/Failed to add product/i)).toBeInTheDocument();
+        });
+    });
+
+    it('should handle invalid input gracefully', async () => {
+        render(<AddProductPage />);
+
+        fireEvent.change(screen.getByLabelText(/Stock/i), { target: { value: '-1' } });
+
+        await waitFor(() => {
+            expect(screen.getByLabelText(/Stock/i)).toHaveValue(0);
         });
     });
 });

@@ -48,7 +48,7 @@ describe('ProductDetailComponent', () => {
     });
 
     it('should render the ProductDetailComponent and display product details', async () => {
-        render(<ProductDetailComponent product_id="1" />);
+        const { asFragment } = render(<ProductDetailComponent product_id="1" />);
 
         await waitFor(() => {
             expect(screen.getByText(/Test Product/i)).toBeInTheDocument();
@@ -56,6 +56,8 @@ describe('ProductDetailComponent', () => {
             expect(screen.getByText(/Category 1/i)).toBeInTheDocument();
             expect(screen.getByText(/Rp 100/i)).toBeInTheDocument();
         });
+
+        expect(asFragment()).toMatchSnapshot();
     });
 
     it('should handle adding product to cart', async () => {
@@ -102,6 +104,20 @@ describe('ProductDetailComponent', () => {
 
         await waitFor(() => {
             expect(screen.getByText(/Failed to add product to cart/i)).toBeInTheDocument();
+        });
+    });
+
+    it('should handle invalid input gracefully', async () => {
+        render(<ProductDetailComponent product_id="1" />);
+
+        await waitFor(() => {
+            expect(screen.getByText(/Test Product/i)).toBeInTheDocument();
+        });
+
+        fireEvent.change(screen.getByLabelText(/quantity/i), { target: { value: '-1' } });
+
+        await waitFor(() => {
+            expect(screen.getByLabelText(/quantity/i)).toHaveValue(1);
         });
     });
 });

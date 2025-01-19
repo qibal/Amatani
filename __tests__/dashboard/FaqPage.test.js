@@ -28,12 +28,14 @@ describe('FaqPage', () => {
     });
 
     it('should render the FaqPage and display FAQs', async () => {
-        render(<FaqPage />);
+        const { asFragment } = render(<FaqPage />);
 
         await waitFor(() => {
             expect(screen.getByText(/FAQ 1/i)).toBeInTheDocument();
             expect(screen.getByText(/FAQ 2/i)).toBeInTheDocument();
         });
+
+        expect(asFragment()).toMatchSnapshot();
     });
 
     it('should delete an FAQ', async () => {
@@ -66,6 +68,34 @@ describe('FaqPage', () => {
 
         await waitFor(() => {
             expect(screen.getByText(/Failed to delete FAQ/i)).toBeInTheDocument();
+        });
+    });
+
+    it('should handle API errors gracefully when fetching FAQs', async () => {
+        fetch.mockImplementationOnce(() => Promise.resolve({
+            ok: false,
+            json: () => Promise.resolve({ message: 'Failed to fetch FAQs' }),
+        }));
+
+        render(<FaqPage />);
+
+        await waitFor(() => {
+            expect(screen.getByText(/Failed to fetch FAQs/i)).toBeInTheDocument();
+        });
+    });
+
+    it('should handle invalid input gracefully', async () => {
+        render(<FaqPage />);
+
+        await waitFor(() => {
+            expect(screen.getByText(/FAQ 1/i)).toBeInTheDocument();
+        });
+
+        fireEvent.change(screen.getByPlaceholderText(/Search FAQs/i), { target: { value: 'Invalid Input' } });
+
+        await waitFor(() => {
+            expect(screen.queryByText(/FAQ 1/i)).not.toBeInTheDocument();
+            expect(screen.queryByText(/FAQ 2/i)).not.toBeInTheDocument();
         });
     });
 });

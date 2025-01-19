@@ -40,12 +40,14 @@ describe('Product', () => {
     });
 
     it('should render the Product page and display products', async () => {
-        render(<Product />);
+        const { asFragment } = render(<Product />);
 
         await waitFor(() => {
             expect(screen.getByText(/Test Product 1/i)).toBeInTheDocument();
             expect(screen.getByText(/Test Product 2/i)).toBeInTheDocument();
         });
+
+        expect(asFragment()).toMatchSnapshot();
     });
 
     it('should handle search functionality', async () => {
@@ -98,6 +100,31 @@ describe('Product', () => {
         render(<Product />);
 
         fireEvent.click(screen.getByText(/Next/i));
+
+        await waitFor(() => {
+            expect(screen.getByText(/Test Product 1/i)).toBeInTheDocument();
+            expect(screen.getByText(/Test Product 2/i)).toBeInTheDocument();
+        });
+    });
+
+    it('should handle API errors gracefully', async () => {
+        fetch.mockImplementationOnce(() => Promise.resolve({
+            ok: false,
+            json: () => Promise.resolve({ message: 'Failed to fetch products' }),
+        }));
+
+        render(<Product />);
+
+        await waitFor(() => {
+            expect(screen.getByText(/Failed to fetch products/i)).toBeInTheDocument();
+        });
+    });
+
+    it('should handle invalid input gracefully', async () => {
+        render(<Product />);
+
+        fireEvent.change(screen.getByPlaceholderText(/Search.../i), { target: { value: '' } });
+        fireEvent.submit(screen.getByRole('button', { name: /Cari/i }));
 
         await waitFor(() => {
             expect(screen.getByText(/Test Product 1/i)).toBeInTheDocument();

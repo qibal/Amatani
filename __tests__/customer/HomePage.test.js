@@ -37,7 +37,7 @@ describe('CustomerPage', () => {
     });
 
     it('should render the CustomerPage and display products', async () => {
-        render(<CustomerPage />);
+        const { asFragment } = render(<CustomerPage />);
 
         await waitFor(() => {
             expect(screen.getByText(/Sumber Segar/i)).toBeInTheDocument();
@@ -45,10 +45,26 @@ describe('CustomerPage', () => {
             expect(screen.getByText(/Apel/i)).toBeInTheDocument();
             expect(screen.getByText(/Jeruk/i)).toBeInTheDocument();
         });
+
+        expect(asFragment()).toMatchSnapshot();
     });
 
     it('should handle API errors gracefully', async () => {
         fetch.mockImplementationOnce(() => Promise.reject(new Error('Failed to fetch')));
+
+        render(<CustomerPage />);
+
+        await waitFor(() => {
+            expect(screen.getByText(/Sumber Segar/i)).toBeInTheDocument();
+            expect(screen.queryByText(/Buah - Buahan/i)).not.toBeInTheDocument();
+        });
+    });
+
+    it('should handle invalid input gracefully', async () => {
+        fetch.mockImplementationOnce(() => Promise.resolve({
+            ok: false,
+            json: () => Promise.resolve({ message: 'Invalid input' }),
+        }));
 
         render(<CustomerPage />);
 

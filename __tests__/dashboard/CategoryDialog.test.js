@@ -36,7 +36,7 @@ describe('ManageCategoriesDialog', () => {
     });
 
     it('should render the dialog and add category', async () => {
-        render(<ManageCategoriesDialog />);
+        const { asFragment } = render(<ManageCategoriesDialog />);
 
         fireEvent.click(screen.getByText(/Manage Categories/i));
 
@@ -50,10 +50,12 @@ describe('ManageCategoriesDialog', () => {
         await waitFor(() => {
             expect(screen.getByText(/Category added successfully!/i)).toBeInTheDocument();
         });
+
+        expect(asFragment()).toMatchSnapshot();
     });
 
     it('should delete a category', async () => {
-        render(<ManageCategoriesDialog />);
+        const { asFragment } = render(<ManageCategoriesDialog />);
 
         fireEvent.click(screen.getByText(/Manage Categories/i));
 
@@ -72,10 +74,12 @@ describe('ManageCategoriesDialog', () => {
         await waitFor(() => {
             expect(screen.getByText(/Category deleted successfully./i)).toBeInTheDocument();
         });
+
+        expect(asFragment()).toMatchSnapshot();
     });
 
     it('should display validation error when adding an empty category', async () => {
-        render(<ManageCategoriesDialog />);
+        const { asFragment } = render(<ManageCategoriesDialog />);
 
         fireEvent.click(screen.getByText(/Manage Categories/i));
 
@@ -88,6 +92,8 @@ describe('ManageCategoriesDialog', () => {
         await waitFor(() => {
             expect(screen.getByText(/Jangan lupa di isi/i)).toBeInTheDocument();
         });
+
+        expect(asFragment()).toMatchSnapshot();
     });
 
     it('should handle API errors gracefully when adding a category', async () => {
@@ -96,7 +102,7 @@ describe('ManageCategoriesDialog', () => {
             json: () => Promise.resolve({ message: 'Failed to add category' }),
         }));
 
-        render(<ManageCategoriesDialog />);
+        const { asFragment } = render(<ManageCategoriesDialog />);
 
         fireEvent.click(screen.getByText(/Manage Categories/i));
 
@@ -110,6 +116,8 @@ describe('ManageCategoriesDialog', () => {
         await waitFor(() => {
             expect(screen.getByText(/Failed to add category/i)).toBeInTheDocument();
         });
+
+        expect(asFragment()).toMatchSnapshot();
     });
 
     it('should handle API errors gracefully when deleting a category', async () => {
@@ -118,7 +126,7 @@ describe('ManageCategoriesDialog', () => {
             json: () => Promise.resolve({ message: 'Failed to delete category' }),
         }));
 
-        render(<ManageCategoriesDialog />);
+        const { asFragment } = render(<ManageCategoriesDialog />);
 
         fireEvent.click(screen.getByText(/Manage Categories/i));
 
@@ -137,5 +145,7 @@ describe('ManageCategoriesDialog', () => {
         await waitFor(() => {
             expect(screen.getByText(/Failed to delete category/i)).toBeInTheDocument();
         });
+
+        expect(asFragment()).toMatchSnapshot();
     });
 });

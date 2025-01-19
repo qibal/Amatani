@@ -44,12 +44,14 @@ describe('CustomersPage', () => {
     });
 
     it('should render the CustomersPage and display users', async () => {
-        render(<CustomersPage />);
+        const { asFragment } = render(<CustomersPage />);
 
         await waitFor(() => {
             expect(screen.getByText('John Doe')).toBeInTheDocument();
             expect(screen.getByText('jane.smith@example.com')).toBeInTheDocument();
         });
+
+        expect(asFragment()).toMatchSnapshot();
     });
 
     it('should delete a user', async () => {
@@ -74,6 +76,21 @@ describe('CustomersPage', () => {
 
         await waitFor(() => {
             expect(screen.getByText('Failed to fetch users')).toBeInTheDocument();
+        });
+    });
+
+    it('should handle invalid input gracefully', async () => {
+        render(<CustomersPage />);
+
+        await waitFor(() => {
+            expect(screen.getByText('John Doe')).toBeInTheDocument();
+        });
+
+        fireEvent.change(screen.getByLabelText('Search'), { target: { value: 'Invalid Input' } });
+
+        await waitFor(() => {
+            expect(screen.queryByText('John Doe')).not.toBeInTheDocument();
+            expect(screen.queryByText('Jane Smith')).not.toBeInTheDocument();
         });
     });
 });
