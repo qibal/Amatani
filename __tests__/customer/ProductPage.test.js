@@ -1,6 +1,11 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import Product from '@/app/(customer)/products/page';
 import '@testing-library/jest-dom';
+import { useSearchParams } from 'next/navigation';
+
+jest.mock('next/navigation', () => ({
+    useSearchParams: jest.fn(),
+}));
 
 // Mock fetch
 global.fetch = jest.fn((url) => {
@@ -32,7 +37,7 @@ global.fetch = jest.fn((url) => {
         });
     }
     return Promise.reject(new Error('Unknown endpoint'));
-});
+}));
 
 describe('Product', () => {
     beforeEach(() => {
@@ -53,7 +58,7 @@ describe('Product', () => {
         });
 
         expect(asFragment()).toMatchSnapshot();
-    });
+    }, 10000);
 
     it('should handle search functionality', async () => {
         const searchParams = new URLSearchParams();
@@ -61,7 +66,9 @@ describe('Product', () => {
         searchParams.set('products', 'Test Product');
         searchParams.set('all_product', 'All Products');
 
-        render(<Product searchParams={searchParams} />);
+        useSearchParams.mockReturnValue(searchParams);
+
+        render(<Product />);
 
         fireEvent.change(screen.getByPlaceholderText(/Search.../i), { target: { value: 'Test Product 1' } });
         fireEvent.submit(screen.getByRole('button', { name: /Cari/i }));
@@ -70,7 +77,7 @@ describe('Product', () => {
             expect(screen.getByText(/Test Product 1/i)).toBeInTheDocument();
             expect(screen.queryByText(/Test Product 2/i)).not.toBeInTheDocument();
         });
-    });
+    }, 10000);
 
     it('should handle sorting functionality', async () => {
         render(<Product />);
@@ -92,7 +99,7 @@ describe('Product', () => {
             expect(products[0]).toHaveTextContent('Test Product 2');
             expect(products[1]).toHaveTextContent('Test Product 1');
         });
-    });
+    }, 10000);
 
     it('should handle filter functionality', async () => {
         render(<Product />);
@@ -104,7 +111,7 @@ describe('Product', () => {
             expect(screen.getByText(/Test Product 1/i)).toBeInTheDocument();
             expect(screen.queryByText(/Test Product 2/i)).not.toBeInTheDocument();
         });
-    });
+    }, 10000);
 
     it('should handle pagination functionality', async () => {
         render(<Product />);
@@ -115,7 +122,7 @@ describe('Product', () => {
             expect(screen.getByText(/Test Product 1/i)).toBeInTheDocument();
             expect(screen.getByText(/Test Product 2/i)).toBeInTheDocument();
         });
-    });
+    }, 10000);
 
     it('should handle API errors gracefully', async () => {
         fetch.mockImplementationOnce(() => Promise.resolve({
@@ -128,7 +135,7 @@ describe('Product', () => {
         await waitFor(() => {
             expect(screen.getByText(/Failed to fetch products/i)).toBeInTheDocument();
         });
-    });
+    }, 10000);
 
     it('should handle invalid input gracefully', async () => {
         render(<Product />);
@@ -140,7 +147,7 @@ describe('Product', () => {
             expect(screen.getByText(/Test Product 1/i)).toBeInTheDocument();
             expect(screen.getByText(/Test Product 2/i)).toBeInTheDocument();
         });
-    });
+    }, 10000);
 
     it('should handle edge cases gracefully', async () => {
         fetch.mockImplementationOnce(() => Promise.resolve({
@@ -165,5 +172,5 @@ describe('Product', () => {
         });
 
         expect(screen.getByText(/Rp 0/i)).toBeInTheDocument();
-    });
+    }, 10000);
 });

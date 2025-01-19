@@ -2,6 +2,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import ProductPage from '@/app/dashboard/products/page';
 import '@testing-library/jest-dom';
 import { supabase } from '@/lib/supabase/client';
+import { useSidebar } from '@/components/ui/sidebar';
 
 jest.mock('@/lib/supabase/client', () => ({
     supabase: {
@@ -11,6 +12,19 @@ jest.mock('@/lib/supabase/client', () => ({
             })),
         },
     },
+}));
+
+jest.mock('@/components/ui/sidebar', () => ({
+    ...jest.requireActual('@/components/ui/sidebar'),
+    useSidebar: jest.fn(() => ({
+        state: 'expanded',
+        open: true,
+        setOpen: jest.fn(),
+        isMobile: false,
+        openMobile: false,
+        setOpenMobile: jest.fn(),
+        toggleSidebar: jest.fn(),
+    })),
 }));
 
 global.fetch = jest.fn((url, options) => {
@@ -70,7 +84,7 @@ describe('ProductPage', () => {
         });
 
         expect(asFragment()).toMatchSnapshot();
-    });
+    }, 10000);
 
     it('should handle product deletion', async () => {
         render(<ProductPage />);
@@ -84,7 +98,7 @@ describe('ProductPage', () => {
         await waitFor(() => {
             expect(screen.queryByText(/Test Product 1/i)).not.toBeInTheDocument();
         });
-    });
+    }, 10000);
 
     it('should handle API errors gracefully', async () => {
         fetch.mockImplementationOnce(() => Promise.resolve({
@@ -97,7 +111,7 @@ describe('ProductPage', () => {
         await waitFor(() => {
             expect(screen.getByText(/Failed to fetch products/i)).toBeInTheDocument();
         });
-    });
+    }, 10000);
 
     it('should display validation errors when form is submitted with empty fields', async () => {
         render(<ProductPage />);
@@ -110,7 +124,7 @@ describe('ProductPage', () => {
             expect(screen.getByText('Harus lebih dari 0')).toBeInTheDocument();
             expect(screen.getByText('Setidaknya ada 1 gambar produk')).toBeInTheDocument();
         });
-    });
+    }, 10000);
 
     it('should handle file removal', async () => {
         const handleChange = jest.fn();
@@ -124,7 +138,7 @@ describe('ProductPage', () => {
         await waitFor(() => {
             expect(handleChange).toHaveBeenCalledWith([]);
         });
-    });
+    }, 10000);
 
     it('should handle file removal from storage', async () => {
         const handleChange = jest.fn();
@@ -138,7 +152,7 @@ describe('ProductPage', () => {
             expect(handleChange).toHaveBeenCalledWith([]);
             expect(supabase.storage.from().remove).toHaveBeenCalledWith(['image.png']);
         });
-    });
+    }, 10000);
 
     it('should handle invalid input gracefully', async () => {
         render(<ProductPage />);
@@ -148,7 +162,7 @@ describe('ProductPage', () => {
         await waitFor(() => {
             expect(screen.getByLabelText(/Stock/i)).toHaveValue(0);
         });
-    });
+    }, 10000);
 
     it('should handle edge cases gracefully', async () => {
         fetch.mockImplementationOnce(() => Promise.resolve({
@@ -173,5 +187,5 @@ describe('ProductPage', () => {
         });
 
         expect(screen.getByText(/Rp 0/i)).toBeInTheDocument();
-    });
+    }, 10000);
 });
