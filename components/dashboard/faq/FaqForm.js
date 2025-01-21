@@ -79,6 +79,7 @@ export default function FAQForm({ mode, faq, onSubmit }) {
         startTransition(async () => {
             try {
                 await onSubmit(data);
+                toast.success(`FAQ ${mode === 'add' ? 'added' : 'updated'} successfully!`);
                 if (mode === 'add') {
                     form.reset();
                 }

@@ -50,7 +50,7 @@ export default function EditFaqPage() {
                 const data = await result.json();
                 console.log('result =', data);
                 console.log('FAQ berhasil diupdate');
-                toast.success("FAQ updated successfully");
+                // toast.success("FAQ updated successfully");
             } else {
                 const errorData = await result.json();
                 console.error('Error:', errorData);
