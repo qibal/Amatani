@@ -7,7 +7,6 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import ProductForm from "@/components/dashboard/product/ProductForm";
-import { toast, Toaster } from "sonner";
 
 export default function EditProductPage({ params }) {
     const router = useRouter();
@@ -53,15 +52,15 @@ export default function EditProductPage({ params }) {
                 const data = await result.json();
                 console.log('result =', data);
                 console.log('berhasil di update');
-                toast.success("Product updated successfully");
+
             } else {
                 const errorData = await result.json();
                 console.error('Error:', errorData);
-                toast.error("Failed to update product");
+
             }
         } catch (error) {
             console.error('Error:', error);
-            toast.error("Failed to update product");
+
         }
     };
 
@@ -84,7 +83,7 @@ export default function EditProductPage({ params }) {
                     </Breadcrumb>
                 </div>
             </header>
-            <Toaster position="top-right" />
+
             <div className="mx-auto px-12 pb-10">
                 <div className="lg:flex justify-between sm:gap-x-12 xl:gap-x-20">
                     {product && product.length > 0 ? (
