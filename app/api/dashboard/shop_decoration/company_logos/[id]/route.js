@@ -1,7 +1,8 @@
 //delete data gambar di storage dan di tabel
 import { DeleteCompanyLogoAction } from "@/app/api/server_actions/dashboard/shop_decoration/company_logos/CL_actions";
 
-export async function DELETE(req, { params }) {
+export async function DELETE(req, props) {
+    const params = await props.params;
     try {
         const { id } = params;
 
