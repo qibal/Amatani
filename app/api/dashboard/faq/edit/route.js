@@ -1,22 +1,16 @@
 import { UpdateFaqAction } from "@/app/api/server_actions/dashboard/faq/FaqActions";
 
-export async function POST(req) {
+export async function POST(req, { params }) {
     try {
         const formData = await req.formData();
         const faq_id = formData.get('faq_id');
+        console.log("🚀 ~ POST ~ faq_id:", faq_id)
         const title = formData.get('title');
+        console.log("🚀 ~ POST ~ title:", title)
         const content = formData.get('content');
+        console.log("🚀 ~ POST ~ content:", content)
         const category_id = formData.get('category_id');
-
-        // Input validation
-        if (!faq_id || !title || !content || !category_id) {
-            console.error('Missing required fields:', { faq_id, title, content, category_id });
-            return new Response(JSON.stringify({ message: "Missing required fields" }), {
-                status: 400,
-                headers: { "Content-Type": "application/json" }
-            });
-        }
-
+        console.log("🚀 ~ POST ~ category_id:", category_id)
         const data = await UpdateFaqAction(faq_id, title, content, category_id);
         if (data) {
             console.log('FAQ updated successfully:', data);

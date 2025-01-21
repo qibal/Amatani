@@ -49,6 +49,12 @@ export async function DeleteFaqAction(params) {
 }
 
 export async function UpdateFaqAction(faq_id, title, content, category_id) {
+    console.log("🚀 ~ UpdateFaqAction ~ faq_id:", faq_id);
+
+    if (!faq_id || !title || !content || !category_id) {
+        throw new Error('Invalid input: all fields are required');
+    }
+
     try {
         console.log('Updating FAQ:', { faq_id, title, content, category_id });
         const result = await sql.begin(async (sql) => {

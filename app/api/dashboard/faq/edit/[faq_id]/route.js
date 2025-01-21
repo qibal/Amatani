@@ -1,6 +1,8 @@
 import { GetFaqForEditAction } from "@/app/api/server_actions/dashboard/faq/FaqActions";
 
 export async function GET(req, { params }) {
+    console.log("🚀 ~ GET ~ params:", params.faq_id)
+
     try {
         const data = await GetFaqForEditAction(params.faq_id);
         if (data) {

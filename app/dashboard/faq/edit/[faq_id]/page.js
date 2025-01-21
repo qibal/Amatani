@@ -7,6 +7,7 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import FAQForm from "@/components/dashboard/faq/FaqForm";
+import { toast, Toaster } from "sonner";
 
 export default function EditFaqPage() {
     const router = useRouter();
@@ -34,13 +35,13 @@ export default function EditFaqPage() {
         console.log('Editing FAQ:', params);
 
         const formData = new FormData();
-        formData.append('faq_id', params.faq_id);
+        formData.append('faq_id', faq_id);
         formData.append('title', params.title);
         formData.append('content', params.content);
         formData.append('category_id', params.category.category_id);
 
         try {
-            const result = await fetch('/api/dashboard/faq/edit', {
+            const result = await fetch(`/api/dashboard/faq/edit/`, {
                 method: 'POST',
                 body: formData
             });
@@ -80,6 +81,7 @@ export default function EditFaqPage() {
                     </Breadcrumb>
                 </div>
             </header>
+            <Toaster position="top-right" />
             <div className="mx-auto px-12 pb-10">
                 <div className="lg:flex justify-between sm:gap-x-12 xl:gap-x-20">
                     {faq ? (
