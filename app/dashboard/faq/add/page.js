@@ -27,7 +27,6 @@ export default function AddFaqPage() {
                 const data = await result.json();
                 console.log('result =', data);
                 console.log('FAQ berhasil ditambahkan');
-                toast.success("FAQ added successfully");
             } else {
                 const errorData = await result.json();
                 console.error('Error:', errorData);
