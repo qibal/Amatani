@@ -1,9 +1,8 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import AddProductPage from '@/app/dashboard/products/add/page';
 import '@testing-library/jest-dom';
-import { SidebarProvider } from '@/components/ui/sidebar'; // P243a
+import { SidebarProvider } from '@/components/ui/sidebar';
 
-// Mock fetch
 global.fetch = jest.fn((url, options) => {
     if (url.endsWith('/api/dashboard/products/insert')) {
         return Promise.resolve({
@@ -136,6 +135,36 @@ describe('AddProductPage', () => {
             expect(screen.getByText(/Edge Case Description/i)).toBeInTheDocument();
             expect(screen.getByText(/Category 2/i)).toBeInTheDocument();
             expect(screen.getByText(/Rp 80 - Rp 70/i)).toBeInTheDocument();
+        });
+    });
+
+    it('should handle intermittent 404 errors and retry', async () => {
+        fetch.mockImplementationOnce(() => Promise.resolve({
+            ok: false,
+            status: 404,
+            json: () => Promise.resolve({ message: 'Not Found' }),
+        })).mockImplementationOnce(() => Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ message: 'Product added successfully' }),
+        }));
+
+        render(
+            <SidebarProvider>
+                <AddProductPage />
+            </SidebarProvider>
+        );
+
+        fireEvent.change(screen.getByLabelText(/Nama Produk/i), { target: { value: 'Test Product' } });
+        fireEvent.change(screen.getByLabelText(/Kategori Produk/i), { target: { value: '1' } });
+        fireEvent.change(screen.getByLabelText(/Stock/i), { target: { value: '10' } });
+        fireEvent.change(screen.getByLabelText(/Deskripsi Produk/i), { target: { value: 'Test Description' } });
+        fireEvent.change(screen.getByLabelText(/Harga Tetap/i), { target: { value: '100' } });
+        fireEvent.change(screen.getByLabelText(/Product Images/i), { target: { files: [new File(['image'], 'image.png', { type: 'image/png' })] } });
+
+        fireEvent.submit(screen.getByRole('button', { name: /Tambah/i }));
+
+        await waitFor(() => {
+            expect(screen.getByText(/berhasil di upload/i)).toBeInTheDocument();
         });
     });
 });

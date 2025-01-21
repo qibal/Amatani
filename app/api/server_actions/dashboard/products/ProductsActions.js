@@ -1,13 +1,8 @@
-
-
 import sql from "@/lib/postgres";
 import { supabase } from "@/lib/supabase/client";
 import { v4 as uuidv4 } from 'uuid';
 
-
-// http://localhost:3000/api/dashboard/products
 export async function GetProductAction({ searchQuery, sort, limit, offset } = {}) {
-    // Query untuk mendapatkan semua data produk beserta harga tetap, harga grosir, dan gambar produk
     const result = await sql.begin(async sql => {
         const products = await sql`
         SELECT 
@@ -49,22 +44,14 @@ export async function GetProductAction({ searchQuery, sort, limit, offset } = {}
         return products;
     });
 
-    // Mengembalikan hasil query
     return result;
 }
 
-
-
-
-// path terakhir nu id acak etateh id productna
-// http://localhost:3000/api/dashboard/products/delete/c1aefa4b-7feb-4d2e-ad97-e3a396145c87
-//query untuk HAPUS  produk
 export async function DeleteProductAction(params) {
     const productId = params.product_id;
 
     try {
         const result = await sql.begin(async sql => {
-            // Get price type
             const [product] = await sql`
                 SELECT price_type FROM products WHERE product_id = ${productId}
             `;
@@ -73,12 +60,10 @@ export async function DeleteProductAction(params) {
                 throw new Error("Product not found");
             }
 
-            // Get image paths
             const product_images = await sql`
                 SELECT image_path FROM product_images WHERE product_id = ${productId}
             `;
 
-            // Delete related data based on price type
             let fixed_products = null;
             let whole_sales = null;
             if (product.price_type === 'fixed') {
@@ -87,7 +72,6 @@ export async function DeleteProductAction(params) {
                 [whole_sales] = await sql`DELETE FROM wholesale_prices WHERE product_id = ${productId} RETURNING *`;
             }
 
-            // Delete product images from Supabase storage
             const imagePaths = product_images.map(img => img.image_path.split('/').pop());
             console.log("🚀 ~ result ~  imagePaths:", imagePaths);
 
@@ -98,10 +82,8 @@ export async function DeleteProductAction(params) {
                 throw new Error(`Failed to remove images: ${error.message}`);
             }
 
-            // Delete product images from database
             const [del_product_images] = await sql`DELETE FROM product_images WHERE product_id = ${productId} RETURNING *`;
 
-            // Delete product and return the deleted product
             const [deletedProduct] = await sql`
                 DELETE FROM products WHERE product_id = ${productId}
                 RETURNING *;
@@ -116,8 +98,6 @@ export async function DeleteProductAction(params) {
     }
 }
 
-
-// /api/dashboard / products / insert
 export async function InsertProductAction(req) {
     const formData = await req.formData();
     const products_name = formData.get('products_name');
@@ -127,91 +107,95 @@ export async function InsertProductAction(req) {
     const price_type = formData.get('price_type');
     const category = JSON.parse(formData.get('category'));
     const categories_id = category.categories_id;
-    const product_images = formData.getAll('product_images'); // Use getAll to get all images
+    const product_images = formData.getAll('product_images');
     const wholesalePrices = JSON.parse(formData.get('wholesalePrices'));
 
-    try {
-        const result = await sql.begin(async sql => {
-            // Insert into products table
-            const [product] = await sql`
-                INSERT INTO products (
-                    products_name, 
-                    products_description, 
-                    stock, 
-                    categories_id, 
-                    price_type
-                ) VALUES (
-                    ${products_name}, 
-                    ${products_description}, 
-                    ${stock}, 
-                    ${categories_id}, 
-                    ${price_type}
-                )
-                RETURNING *;
-            `;
+    const maxRetries = 3;
+    let attempt = 0;
+    let result;
 
-            // Insert into fixed_prices or wholesale_prices based on price_type
-            if (price_type === 'fixed') {
-                await sql`
-                    INSERT INTO fixed_prices (
-                        product_id, 
-                        price
+    while (attempt < maxRetries) {
+        try {
+            result = await sql.begin(async sql => {
+                const [product] = await sql`
+                    INSERT INTO products (
+                        products_name, 
+                        products_description, 
+                        stock, 
+                        categories_id, 
+                        price_type
                     ) VALUES (
-                        ${product.product_id}, 
-                        ${fixed_price}
-                    );
+                        ${products_name}, 
+                        ${products_description}, 
+                        ${stock}, 
+                        ${categories_id}, 
+                        ${price_type}
+                    )
+                    RETURNING *;
                 `;
-            } else if (price_type === 'wholesale') {
-                for (const wholesalePrice of wholesalePrices) {
+
+                if (price_type === 'fixed') {
                     await sql`
-                        INSERT INTO wholesale_prices (
+                        INSERT INTO fixed_prices (
                             product_id, 
-                            min_quantity, 
-                            max_quantity, 
                             price
                         ) VALUES (
                             ${product.product_id}, 
-                            ${wholesalePrice.min_quantity}, 
-                            ${wholesalePrice.max_quantity}, 
-                            ${wholesalePrice.price}
+                            ${fixed_price}
+                        );
+                    `;
+                } else if (price_type === 'wholesale') {
+                    for (const wholesalePrice of wholesalePrices) {
+                        await sql`
+                            INSERT INTO wholesale_prices (
+                                product_id, 
+                                min_quantity, 
+                                max_quantity, 
+                                price
+                            ) VALUES (
+                                ${product.product_id}, 
+                                ${wholesalePrice.min_quantity}, 
+                                ${wholesalePrice.max_quantity}, 
+                                ${wholesalePrice.price}
+                            );
+                        `;
+                    }
+                }
+
+                for (const image of product_images) {
+                    const fileName = `${uuidv4()}.${image.name.split('.').pop()}`;
+                    const { error } = await supabase.storage.from('product_images').upload(fileName, image);
+
+                    if (error) {
+                        throw new Error(`Failed to upload image: ${error.message}`);
+                    }
+
+                    const imagePath = `product_images/${fileName}`;
+                    await sql`
+                        INSERT INTO product_images (
+                            product_id, 
+                            image_path
+                        ) VALUES (
+                            ${product.product_id}, 
+                            ${imagePath}
                         );
                     `;
                 }
-            }
 
-            // Upload images to Supabase storage and insert into product_images table
-            for (const image of product_images) {
-                const fileName = `${uuidv4()}.${image.name.split('.').pop()}`;
-                const { error } = await supabase.storage.from('product_images').upload(fileName, image);
+                return product;
+            });
 
-                if (error) {
-                    throw new Error(`Failed to upload image: ${error.message}`);
-                }
-
-                const imagePath = `product_images/${fileName}`;
-                await sql`
-                    INSERT INTO product_images (
-                        product_id, 
-                        image_path
-                    ) VALUES (
-                        ${product.product_id}, 
-                        ${imagePath}
-                    );
-                `;
-            }
-
-            return product;
-        });
-
-        return result;
-    } catch (error) {
-        console.log(error);
+            return result;
+        } catch (error) {
+            console.error(`Attempt ${attempt + 1}: ${error.message}`);
+            attempt++;
+        }
     }
+
+    throw new Error("Failed to insert product after multiple attempts");
 }
 
-
 export async function GetForEditProductAction(params) {
-    // Query untuk mendapatkan semua data produk beserta harga tetap, harga grosir, dan gambar produk
     const result = await sql.begin(async sql => {
         const products = await sql`
         SELECT 
@@ -246,15 +230,12 @@ export async function GetForEditProductAction(params) {
         return products;
     });
 
-
-    // Mengembalikan hasil query
     return result;
 }
 
-
 export async function UpdateProductAction(req) {
     const formData = await req.formData();
-    const product_id = formData.get('product_id'); // Perbaiki key menjadi 'product_id'
+    const product_id = formData.get('product_id');
     console.log("🚀 ~ UpdateProductAction server actions ~ product_id:", product_id)
     const products_name = formData.get('products_name');
     const products_description = formData.get('products_description');
@@ -263,12 +244,11 @@ export async function UpdateProductAction(req) {
     const price_type = formData.get('price_type');
     const category = JSON.parse(formData.get('category'));
     const categories_id = category.categories_id;
-    const product_images = formData.getAll('product_images'); // Use getAll to get all images
+    const product_images = formData.getAll('product_images');
     const wholesalePrices = JSON.parse(formData.get('wholesalePrices'));
 
     try {
         const result = await sql.begin(async sql => {
-            // Update products table
             const [product] = await sql`
                 UPDATE products
                 SET 
@@ -281,7 +261,6 @@ export async function UpdateProductAction(req) {
                 RETURNING *;
             `;
 
-            // Update fixed_prices or wholesale_prices based on price_type
             if (price_type === 'fixed') {
                 await sql`
                     DELETE FROM wholesale_prices
@@ -300,12 +279,10 @@ export async function UpdateProductAction(req) {
                         price = ${fixed_price};
                 `;
             } else if (price_type === 'wholesale') {
-                // Delete existing wholesale prices
                 await sql`
                     DELETE FROM wholesale_prices
                     WHERE product_id = ${product_id};
                 `;
-                // Insert new wholesale prices
                 for (const wholesalePrice of wholesalePrices) {
                     await sql`
                         INSERT INTO wholesale_prices (
@@ -323,10 +300,8 @@ export async function UpdateProductAction(req) {
                 }
             }
 
-            // Upload new images to Supabase storage and insert into product_images table
             for (const image of product_images) {
                 if (typeof image === 'string') {
-                    // Skip strings, only process files
                     continue;
                 }
                 const fileName = `${uuidv4()}.${image.name.split('.').pop()}`;
