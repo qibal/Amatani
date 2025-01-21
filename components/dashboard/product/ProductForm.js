@@ -170,7 +170,7 @@ export default function ProductForm({ mode, product, onSubmit }) {
                     <div className="sticky top-0 py-6 bg-white z-10 flex justify-between items-center pb-4">
                         <h1 className="text-xl font-semibold">{mode === 'add' ? 'Tambah Produk' : 'Edit Produk'}</h1>
                         <div className="flex gap-3">
-                            <Button variant="outline" onClick={() => router.back()}>Cancel</Button>
+                            <Button type="button" variant="outline" onClick={() => router.back()}>Cancel</Button>
                             <Button
                                 variant="default"
                                 type="submit"
