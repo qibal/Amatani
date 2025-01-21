@@ -36,7 +36,7 @@ const ActionButtons = ({ product_id, onDelete }) => {
         startTransition(async () => {
             try {
                 await onDelete(product_id);
-                // toast.success("Product deleted successfully"); di hurungkeun muncul error
+                toast.success("Product deleted successfully");
             } catch (error) {
                 console.error("Gagal menghapus produk:", error);
             }
@@ -255,7 +255,7 @@ export default function ProductPage() {
 
     return (
         <div>
-            <Toaster position="top-right" />
+            
             <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
                 <div className="flex items-center gap-2 px-4">
                     <SidebarTrigger className="-ml-1" />
@@ -275,6 +275,7 @@ export default function ProductPage() {
                     </Breadcrumb>
                 </div>
             </header>
+            <Toaster position="top-right" />
             <div className="p-4 sm:p-6 space-y-6">
                 <div className="space-y-2">
                     <h1 className="text-lg sm:text-xl font-semibold">Semua produk</h1>
