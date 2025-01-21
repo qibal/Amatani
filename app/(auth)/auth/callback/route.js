@@ -18,16 +18,19 @@ export async function GET(request) {
             const { error } = await supabase.auth.exchangeCodeForSession(code);
             if (!error) {
                 const forwardedHost = request.headers.get('x-forwarded-host');
+                const forwardedProto = request.headers.get('x-forwarded-proto');
                 const isLocalEnv = process.env.NODE_ENV === 'development';
                 console.log('forwardedHost:', forwardedHost);
+                console.log('forwardedProto:', forwardedProto);
                 console.log('isLocalEnv:', isLocalEnv);
 
                 if (isLocalEnv) {
                     console.log('Redirecting to:', `${origin}${next}`);
                     return NextResponse.redirect(`${origin}${next}`);
                 } else if (forwardedHost) {
-                    console.log('Redirecting to:', `https://${forwardedHost}${next}`);
-                    return NextResponse.redirect(`https://${forwardedHost}${next}`);
+                    const protocol = forwardedProto === 'https' ? 'https' : 'http';
+                    console.log('Redirecting to:', `${protocol}://${forwardedHost}${next}`);
+                    return NextResponse.redirect(`${protocol}://${forwardedHost}${next}`);
                 } else {
                     console.log('Redirecting to:', `${origin}${next}`);
                     return NextResponse.redirect(`${origin}${next}`);

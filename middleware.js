@@ -51,6 +51,10 @@ export async function middleware(request) {
         console.log("User_role:", user_role);
         // console.log("Get user:", user.user);
 
+        // Check for x-forwarded-proto header
+        const forwardedProto = request.headers.get('x-forwarded-proto');
+        console.log('forwardedProto:', forwardedProto);
+
         //router admin
         if (url.pathname.startsWith('/dashboard')) {
             console.log('masuk halamanan dashboard');
