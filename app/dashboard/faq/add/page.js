@@ -5,6 +5,8 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbP
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner';
+
 export default function AddFaqPage() {
     const router = useRouter()
     const handleAddFaq = async (params) => {
@@ -15,16 +17,27 @@ export default function AddFaqPage() {
         formData.append('content', params.content);
         formData.append('category_id', params.category.category_id);
 
-        const result = await fetch('/api/dashboard/faq/insert', {
-            method: 'POST',
-            body: formData
-        });
+        try {
+            const result = await fetch('/api/dashboard/faq/insert', {
+                method: 'POST',
+                body: formData
+            });
 
-        const data = await result.json();
-        console.log('result =', data);
-        console.log('FAQ berhasil ditambahkan');
+            if (result.ok) {
+                const data = await result.json();
+                console.log('result =', data);
+                console.log('FAQ berhasil ditambahkan');
+                toast.success("FAQ added successfully");
+            } else {
+                const errorData = await result.json();
+                console.error('Error:', errorData);
+                toast.error("Failed to add FAQ");
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            toast.error("Failed to add FAQ");
+        }
     };
-
 
     return (
         <div>

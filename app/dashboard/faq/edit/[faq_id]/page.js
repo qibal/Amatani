@@ -30,30 +30,34 @@ export default function EditFaqPage() {
         fetchFaq();
     }, [faq_id]);
 
-    const handleEditFaq = async (faqData) => {
-        try {
-            const formData = new FormData();
-            formData.append('faq_id', faq_id);
-            formData.append('title', faqData.title);
-            formData.append('content', faqData.content);
-            formData.append('category_id', faqData.category.category_id);
-            formData.append('category_name', faqData.category.category_name);
+    const handleEditFaq = async (params) => {
+        console.log('Editing FAQ:', params);
 
-            const response = await fetch('/api/dashboard/faq/edit', {
+        const formData = new FormData();
+        formData.append('faq_id', params.faq_id);
+        formData.append('title', params.title);
+        formData.append('content', params.content);
+        formData.append('category_id', params.category.category_id);
+
+        try {
+            const result = await fetch('/api/dashboard/faq/edit', {
                 method: 'POST',
                 body: formData
             });
 
-            if (!response.ok) {
-                throw new Error('Failed to update FAQ');
+            if (result.ok) {
+                const data = await result.json();
+                console.log('result =', data);
+                console.log('FAQ berhasil diupdate');
+                toast.success("FAQ updated successfully");
+            } else {
+                const errorData = await result.json();
+                console.error('Error:', errorData);
+                toast.error("Failed to update FAQ");
             }
-
-            const result = await response.json();
-            console.log('FAQ updated successfully:', result);
-            router.back();
         } catch (error) {
-            console.error('Error updating FAQ:', error);
-            alert('Failed to update FAQ');
+            console.error('Error:', error);
+            toast.error("Failed to update FAQ");
         }
     };
 

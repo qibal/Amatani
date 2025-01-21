@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
-import jwtDecode from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import chalk from 'chalk';
 
 export async function middleware(request) {

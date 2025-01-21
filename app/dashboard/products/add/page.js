@@ -5,8 +5,9 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbP
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
-export default function AddProductPage() {
+import { toast, Toaster } from "sonner"; // P9260
 
+export default function AddProductPage() {
 
     const handleAddProduct = async (params) => {
         console.log('Adding product:', params);
@@ -24,17 +25,27 @@ export default function AddProductPage() {
             formData.append(`product_images`, image);
         });
 
-        const result = await fetch('/api/dashboard/products/insert', {
-            method: 'POST',
-            body: formData
-        });
+        try {
+            const result = await fetch('/api/dashboard/products/insert', {
+                method: 'POST',
+                body: formData
+            });
 
-        const data = await result.json();
-        console.log('result =', data);
-        console.log('berhasil di upload');
-
+            if (result.ok) {
+                const data = await result.json();
+                console.log('result =', data);
+                console.log('berhasil di upload');
+                toast.success("Product added successfully"); // Pa5f2
+            } else {
+                const errorData = await result.json();
+                console.error('Error:', errorData);
+                toast.error("Failed to add product"); // Pe1df
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            toast.error("Failed to add product"); // Pe1df
+        }
     };
-
 
     return (
         <div>
@@ -55,6 +66,7 @@ export default function AddProductPage() {
                     </Breadcrumb>
                 </div>
             </header>
+            <Toaster position="top-right" />
             <div className="mx-auto px-12 py-6">
                 <div className="lg:flex justify-between sm:gap-x-12 xl:gap-x-20">
                     <ProductForm mode="add" onSubmit={handleAddProduct} />

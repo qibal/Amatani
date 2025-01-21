@@ -7,7 +7,7 @@ export async function POST(req,) {
     try {
         const data = await InsertProductAction(req)
         if (data) {
-            consoke.log('berhasil query');
+            console.log('berhasil query');
             return new Response(JSON.stringify(data), {
                 status: 200,
                 headers: {
