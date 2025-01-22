@@ -14,6 +14,7 @@ import { Trash2, Loader2, ChevronRight } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 const formSchema = z.object({
     products_name: z.string().min(1, { message: "Tidak boleh kosong" }),
@@ -21,15 +22,15 @@ const formSchema = z.object({
         categories_id: z.string().min(1, { message: "Kategori produk harus dipilih" }),
         categories_name: z.string().min(1, { message: "Kategori produk harus dipilih" }),
     }),
-    stock: z.number().min(1, { message: "Harus lebih dari 0" }),
+    stock: z.coerce.number().min(1, { message: "Harus lebih dari 0" }),
     product_id: z.string().min(0, { message: "Product Id tidak di temukan" }),
     products_description: z.string().min(1, { message: "Tidak boleh kosong" }),
     price_type: z.enum(["fixed", "wholesale"]),
-    fixed_price: z.number().optional(),
+    fixed_price: z.coerce.number().min(1, { message: "Harus lebih dari 0" }),
     wholesalePrices: z.array(z.object({
-        min_quantity: z.number().min(1, { message: "Harus lebih dari 0" }),
-        max_quantity: z.number().nullable(), // Allow null for max_quantity
-        price: z.number().min(1, { message: "harus lebih dari 0" })
+        min_quantity: z.number(),
+        max_quantity: z.number().nullable(),
+        price: z.number()
     })).optional(),
     product_images: z.array(z.any()).min(1, { message: "Setidaknya ada 1 gambar produk" }),
 }).superRefine((data, ctx) => {
@@ -54,22 +55,37 @@ const formSchema = z.object({
 
 export default function ProductForm({ mode, product, onSubmit }) {
     const router = useRouter();
+    const [isPending, startTransition] = useTransition();
+
+    // Log untuk debugging
+    console.log('Mode:', mode);
+    console.log('Product data:', product);
+
     const form = useForm({
         resolver: zodResolver(formSchema),
-        defaultValues: {
-            products_name: "",
+        defaultValues: mode === 'edit' ? {
+            product_id: product?.product_id || '',
+            products_name: product?.products_name || '',
+            products_description: product?.products_description || '',
+            stock: product?.stock || 0,
             category: {
-                categories_id: "",
-                categories_name: "",
+                categories_id: product?.categories_id || '',
+                categories_name: product?.categories_name || ''
             },
+            price_type: product?.price_type || 'fixed',
+            fixed_price: product?.fixed_price || 0,
+            wholesalePrices: product?.wholesale_prices || [],
+            product_images: product?.images || []
+        } : {
+            products_name: '',
+            products_description: '',
             stock: 0,
-            products_description: "",
-            price_type: "wholesale",
+            category: { categories_id: '', categories_name: '' },
+            price_type: 'fixed',
             fixed_price: 0,
-            wholesalePrices: [{ min_quantity: 0, max_quantity: 0, price: 0 }],
-            product_images: [],
-            product_id: "",
-        },
+            wholesalePrices: [],
+            product_images: []
+        }
     });
 
     const price_type = useWatch({
@@ -77,7 +93,6 @@ export default function ProductForm({ mode, product, onSubmit }) {
         name: "price_type",
     });
 
-    const [isPending, startTransition] = useTransition();
     const [categories, setCategories] = useState([]);
 
     useEffect(() => {
@@ -147,14 +162,24 @@ export default function ProductForm({ mode, product, onSubmit }) {
         }
     };
 
-    const handleSubmit = (data) => {
-        console.log('Submitting form with data:', data); // Tambahkan log ini
+    const handleSubmit = async (data) => {
         startTransition(async () => {
             try {
-                await onSubmit(data);
-                // Tambahkan ini untuk kembali ke halaman sebelumnya
+                if (mode === 'edit') {
+                    data.product_id = product.product_id;
+                }
+
+                const result = await onSubmit(data);
+
+                if (result?.success) {
+                    toast.success(mode === 'add' ? "Produk berhasil ditambahkan" : "Produk berhasil diperbarui");
+                    router.push('/dashboard/products');
+                } else {
+                    throw new Error(result?.message || "Gagal memproses produk");
+                }
             } catch (error) {
                 console.error('Error submitting form:', error);
+                toast.error(error.message);
             }
         });
     };
@@ -172,8 +197,8 @@ export default function ProductForm({ mode, product, onSubmit }) {
                         <div className="flex gap-3">
                             <Button type="button" variant="outline" onClick={() => router.back()}>Cancel</Button>
                             <Button
-                                variant="default"
                                 type="submit"
+                                variant="default"
                                 className="bg-rose-600 hover:bg-rose-700"
                                 disabled={isPending}
                             >

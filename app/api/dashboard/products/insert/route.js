@@ -1,37 +1,35 @@
 import { InsertProductAction } from "@/app/api/server_actions/dashboard/products/ProductsActions";
 
-export async function POST(req,) {
-    console.log('masuk ke route insert');
-
+export async function POST(req) {
     const maxRetries = 3;
     let attempt = 0;
-    let data;
+    const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
     while (attempt < maxRetries) {
         try {
-            data = await InsertProductAction(req);
+            const data = await InsertProductAction(req);
             if (data) {
-                console.log('berhasil query');
-                return new Response(JSON.stringify(data), {
+                return new Response(JSON.stringify({ success: true, data }), {
                     status: 200,
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
+                    headers: { "Content-Type": "application/json" }
                 });
-            } else {
-                console.error(`Attempt ${attempt + 1}: No data found`);
-                attempt++;
             }
+            throw new Error("No data returned from insert action");
         } catch (error) {
-            console.error(`Attempt ${attempt + 1}: ${error.message}`);
             attempt++;
+            console.error(`Attempt ${attempt}:`, error);
+
+            if (attempt === maxRetries) {
+                return new Response(JSON.stringify({
+                    success: false,
+                    message: error.message
+                }), {
+                    status: 500,
+                    headers: { "Content-Type": "application/json" }
+                });
+            }
+
+            await delay(1000 * attempt);
         }
     }
-
-    return new Response(JSON.stringify({ message: "No data found after multiple attempts" }), {
-        status: 404,
-        headers: {
-            "Content-Type": "application/json"
-        }
-    });
 }

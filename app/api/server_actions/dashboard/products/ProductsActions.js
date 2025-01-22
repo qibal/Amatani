@@ -52,6 +52,7 @@ export async function DeleteProductAction(params) {
 
     try {
         const result = await sql.begin(async sql => {
+            // 1. Get product info first
             const [product] = await sql`
                 SELECT price_type FROM products WHERE product_id = ${productId}
             `;
@@ -60,41 +61,51 @@ export async function DeleteProductAction(params) {
                 throw new Error("Product not found");
             }
 
+            // 2. Get and handle images
             const product_images = await sql`
                 SELECT image_path FROM product_images WHERE product_id = ${productId}
             `;
 
-            let fixed_products = null;
-            let whole_sales = null;
+            // 3. Delete from storage if there are images
+            if (product_images && product_images.length > 0) {
+                const imagePaths = product_images.map(img => img.image_path.split('/').pop());
+                console.log("Images to delete:", imagePaths);
+
+                if (imagePaths.length > 0) {
+                    const { error } = await supabase.storage
+                        .from('product_images')
+                        .remove(imagePaths);
+
+                    if (error && error.message !== 'Not found') {
+                        console.error('Error removing images:', error);
+                        throw new Error(`Failed to remove images: ${error.message}`);
+                    }
+                }
+            }
+
+            // 4. Delete related data in correct order
+            await sql`DELETE FROM product_images WHERE product_id = ${productId}`;
+
             if (product.price_type === 'fixed') {
-                [fixed_products] = await sql`DELETE FROM fixed_prices WHERE product_id = ${productId} RETURNING *`;
-            } else if (product.price_type === 'wholesale') {
-                [whole_sales] = await sql`DELETE FROM wholesale_prices WHERE product_id = ${productId} RETURNING *`;
+                await sql`DELETE FROM fixed_prices WHERE product_id = ${productId}`;
+            } else {
+                await sql`DELETE FROM wholesale_prices WHERE product_id = ${productId}`;
             }
 
-            const imagePaths = product_images.map(img => img.image_path.split('/').pop());
-            console.log("🚀 ~ result ~  imagePaths:", imagePaths);
-
-            const { error } = await supabase.storage.from('product_images').remove(imagePaths);
-            if (error) {
-                console.error('Error removing images:', error.message);
-                console.error('Error details:', error);
-                throw new Error(`Failed to remove images: ${error.message}`);
-            }
-
-            const [del_product_images] = await sql`DELETE FROM product_images WHERE product_id = ${productId} RETURNING *`;
-
+            // 5. Finally delete the product
             const [deletedProduct] = await sql`
-                DELETE FROM products WHERE product_id = ${productId}
-                RETURNING *;
+                DELETE FROM products 
+                WHERE product_id = ${productId} 
+                RETURNING *
             `;
 
-            return { deletedProduct, fixed_products, whole_sales, product_images, del_product_images };
+            return deletedProduct;
         });
 
-        return result;
+        return { success: true, data: result };
     } catch (error) {
-        console.log('catch', error);
+        console.error('Error deleting product:', error);
+        throw new Error(`Failed to delete product: ${error.message}`);
     }
 }
 
@@ -236,7 +247,6 @@ export async function GetForEditProductAction(params) {
 export async function UpdateProductAction(req) {
     const formData = await req.formData();
     const product_id = formData.get('product_id');
-    console.log("🚀 ~ UpdateProductAction server actions ~ product_id:", product_id)
     const products_name = formData.get('products_name');
     const products_description = formData.get('products_description');
     const stock = formData.get('stock');
@@ -245,11 +255,13 @@ export async function UpdateProductAction(req) {
     const category = JSON.parse(formData.get('category'));
     const categories_id = category.categories_id;
     const product_images = formData.getAll('product_images');
+    const existing_images = formData.getAll('existing_images');
     const wholesalePrices = JSON.parse(formData.get('wholesalePrices'));
 
     try {
         const result = await sql.begin(async sql => {
-            const [product] = await sql`
+            // 1. Update produk dasar
+            const [updatedProduct] = await sql`
                 UPDATE products
                 SET 
                     products_name = ${products_name}, 
@@ -261,74 +273,75 @@ export async function UpdateProductAction(req) {
                 RETURNING *;
             `;
 
+            // 2. Handle price updates
             if (price_type === 'fixed') {
+                await sql`DELETE FROM wholesale_prices WHERE product_id = ${product_id}`;
+                await sql`DELETE FROM fixed_prices WHERE product_id = ${product_id}`;
                 await sql`
-                    DELETE FROM wholesale_prices
-                    WHERE product_id = ${product_id};
-                `;
-                await sql`
-                    INSERT INTO fixed_prices (
-                        product_id, 
-                        price
-                    ) VALUES (
-                        ${product_id}, 
-                        ${fixed_price}
-                    )
-                    ON CONFLICT (product_id) 
-                    DO UPDATE SET 
-                        price = ${fixed_price};
+                    INSERT INTO fixed_prices (product_id, price)
+                    VALUES (${product_id}, ${fixed_price});
                 `;
             } else if (price_type === 'wholesale') {
-                await sql`
-                    DELETE FROM wholesale_prices
-                    WHERE product_id = ${product_id};
-                `;
-                for (const wholesalePrice of wholesalePrices) {
+                await sql`DELETE FROM fixed_prices WHERE product_id = ${product_id}`;
+                await sql`DELETE FROM wholesale_prices WHERE product_id = ${product_id}`;
+
+                for (const wp of wholesalePrices) {
                     await sql`
                         INSERT INTO wholesale_prices (
-                            product_id, 
-                            min_quantity, 
-                            max_quantity, 
-                            price
+                            product_id, min_quantity, max_quantity, price
                         ) VALUES (
-                            ${product_id}, 
-                            ${wholesalePrice.min_quantity}, 
-                            ${wholesalePrice.max_quantity}, 
-                            ${wholesalePrice.price}
+                            ${product_id}, ${wp.min_quantity}, ${wp.max_quantity}, ${wp.price}
                         );
                     `;
                 }
             }
 
-            for (const image of product_images) {
-                if (typeof image === 'string') {
-                    continue;
-                }
-                const fileName = `${uuidv4()}.${image.name.split('.').pop()}`;
-                const { error } = await supabase.storage.from('product_images').upload(fileName, image);
+            // 3. Handle image updates
+            const currentImages = await sql`
+                SELECT image_path FROM product_images WHERE product_id = ${product_id}
+            `;
 
-                if (error) {
-                    throw new Error(`Failed to upload image: ${error.message}`);
-                }
+            // Hapus gambar yang tidak ada dalam existing_images
+            const imagesToDelete = currentImages.filter(
+                img => !existing_images.includes(img.image_path)
+            );
 
-                const imagePath = `product_images/${fileName}`;
+            if (imagesToDelete.length > 0) {
+                const pathsToDelete = imagesToDelete.map(img => img.image_path.split('/').pop());
+                await supabase.storage.from('product_images').remove(pathsToDelete);
                 await sql`
-                    INSERT INTO product_images (
-                        product_id, 
-                        image_path
-                    ) VALUES (
-                        ${product_id}, 
-                        ${imagePath}
-                    );
+                    DELETE FROM product_images 
+                    WHERE product_id = ${product_id} 
+                    AND image_path = ANY(${imagesToDelete.map(img => img.image_path)});
                 `;
             }
 
-            return product;
+            // Upload gambar baru
+            for (const image of product_images) {
+                if (typeof image !== 'string') {
+                    const fileName = `${uuidv4()}.${image.name.split('.').pop()}`;
+                    const { error: uploadError } = await supabase.storage
+                        .from('product_images')
+                        .upload(fileName, image);
+
+                    if (uploadError) {
+                        throw new Error(`Gagal mengupload gambar: ${uploadError.message}`);
+                    }
+
+                    const imagePath = `product_images/${fileName}`;
+                    await sql`
+                        INSERT INTO product_images (product_id, image_path)
+                        VALUES (${product_id}, ${imagePath});
+                    `;
+                }
+            }
+
+            return updatedProduct;
         });
 
-        return result;
+        return { success: true, data: result };
     } catch (error) {
-        console.log(error);
-        throw new Error(error.message);
+        console.error('Error updating product:', error);
+        throw new Error(`Gagal memperbarui produk: ${error.message}`);
     }
 }

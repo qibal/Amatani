@@ -1,30 +1,24 @@
 import { UpdateProductAction } from "@/app/api/server_actions/dashboard/products/ProductsActions";
 
 // http://localhost:3000/api/dashboard/products/edit
-export async function POST(req,) {
+export async function POST(req) {
     try {
-        const data = await UpdateProductAction(req);
-        if (data) {
-            return new Response(JSON.stringify(data), {
-                status: 200,
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            });
-        } else {
-            return new Response(JSON.stringify({ message: "No data found" }), {
-                status: 404,
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            });
+        const result = await UpdateProductAction(req);
+        if (!result) {
+            throw new Error("Gagal memperbarui produk");
         }
+        return new Response(JSON.stringify({ success: true, data: result }), {
+            status: 200,
+            headers: { "Content-Type": "application/json" }
+        });
     } catch (error) {
-        return new Response(JSON.stringify({ error: error.message }), {
+        console.error('Error in edit route:', error);
+        return new Response(JSON.stringify({
+            success: false,
+            message: error.message
+        }), {
             status: 500,
-            headers: {
-                "Content-Type": "application/json"
-            }
+            headers: { "Content-Type": "application/json" }
         });
     }
 }

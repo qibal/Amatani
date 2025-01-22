@@ -24,26 +24,36 @@ export default function AddProductPage() {
         params.product_images.forEach((image) => {
             formData.append(`product_images`, image);
         });
+        const maxRetries = 3;
+        let attempt = 0;
+        const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-        try {
-            const result = await fetch('/api/dashboard/products/insert', {
-                method: 'POST',
-                body: formData
-            });
+        while (attempt < maxRetries) {
+            try {
+                const result = await fetch('/api/dashboard/products/insert', {
+                    method: 'POST',
+                    body: formData
+                });
 
-            if (result.ok) {
                 const data = await result.json();
-                console.log('result =', data);
-                console.log('berhasil di upload');
-                toast.success("Product added successfully"); // Pa5f2
-            } else {
-                const errorData = await result.json();
-                console.error('Error:', errorData);
-                toast.error("Failed to add product"); // Pe1df
+
+                if (result.ok) {
+                    toast.success("Produk berhasil ditambahkan");
+                    return { success: true, data };
+                }
+
+                throw new Error(data.message || "Gagal menambahkan produk");
+            } catch (error) {
+                attempt++;
+                console.error(`Attempt ${attempt} failed:`, error);
+
+                if (attempt === maxRetries) {
+                    toast.error("Gagal menambahkan produk setelah beberapa percobaan");
+                    return { success: false, message: error.message };
+                }
+
+                await delay(1000 * attempt); // Exponential backoff
             }
-        } catch (error) {
-            console.error('Error:', error);
-            toast.error("Failed to add product"); // Pe1df
         }
     };
 
