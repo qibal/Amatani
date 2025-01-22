@@ -246,93 +246,73 @@ export async function GetForEditProductAction(params) {
 }
 
 export async function UpdateProductAction(req) {
-    const formData = await req.formData();
-    const product_id = formData.get('product_id');
-    const products_name = formData.get('products_name');
-    const products_description = formData.get('products_description');
-    const stock = formData.get('stock');
-    const fixed_price = formData.get('fixed_price');
-    const price_type = formData.get('price_type');
-    const category = JSON.parse(formData.get('category'));
-    const categories_id = category.categories_id;
-    const product_images = formData.getAll('product_images');
-    const existing_images = formData.getAll('existing_images');
-    const wholesalePrices = JSON.parse(formData.get('wholesalePrices'));
-
     try {
-        const result = await sql.begin(async sql => {
-            // 1. Update produk dasar
-            const [updatedProduct] = await sql`
-                UPDATE products
+        const formData = await req.formData();
+        const product_id = formData.get('product_id');
+        const products_name = formData.get('products_name');
+        const products_description = formData.get('products_description');
+        const stock = formData.get('stock');
+        const price_type = formData.get('price_type');
+        const fixed_price = formData.get('fixed_price');
+        const category = JSON.parse(formData.get('category'));
+        const wholesalePrices = JSON.parse(formData.get('wholesalePrices') || '[]');
+
+        // Begin transaction
+        const result = await sql.begin(async (sql) => {
+            // Update products table
+            const updatedProduct = await sql`
+                UPDATE products 
                 SET 
-                    products_name = ${products_name}, 
-                    products_description = ${products_description}, 
-                    stock = ${stock}, 
-                    categories_id = ${categories_id}, 
+                    products_name = ${products_name},
+                    products_description = ${products_description},
+                    stock = ${stock},
+                    categories_id = ${category.categories_id},
                     price_type = ${price_type}
                 WHERE product_id = ${product_id}
                 RETURNING *;
             `;
 
-            // 2. Handle price updates
+            // Handle fixed price
             if (price_type === 'fixed') {
-                await sql`DELETE FROM wholesale_prices WHERE product_id = ${product_id}`;
-                await sql`DELETE FROM fixed_prices WHERE product_id = ${product_id}`;
+                // Delete any existing wholesale prices
+                await sql`
+                    DELETE FROM wholesale_prices 
+                    WHERE product_id = ${product_id};
+                `;
+
+                // Update or insert fixed price
                 await sql`
                     INSERT INTO fixed_prices (product_id, price)
-                    VALUES (${product_id}, ${fixed_price});
+                    VALUES (${product_id}, ${fixed_price})
+                    ON CONFLICT (product_id) 
+                    DO UPDATE SET price = ${fixed_price};
                 `;
-            } else if (price_type === 'wholesale') {
-                await sql`DELETE FROM fixed_prices WHERE product_id = ${product_id}`;
-                await sql`DELETE FROM wholesale_prices WHERE product_id = ${product_id}`;
-
-                for (const wp of wholesalePrices) {
-                    await sql`
-                        INSERT INTO wholesale_prices (
-                            product_id, min_quantity, max_quantity, price
-                        ) VALUES (
-                            ${product_id}, ${wp.min_quantity}, ${wp.max_quantity}, ${wp.price}
-                        );
-                    `;
-                }
             }
-
-            // 3. Handle image updates
-            const currentImages = await sql`
-                SELECT image_path FROM product_images WHERE product_id = ${product_id}
-            `;
-
-            // Hapus gambar yang tidak ada dalam existing_images
-            const imagesToDelete = currentImages.filter(
-                img => !existing_images.includes(img.image_path)
-            );
-
-            if (imagesToDelete.length > 0) {
-                const pathsToDelete = imagesToDelete.map(img => img.image_path.split('/').pop());
-                await supabase.storage.from('product_images').remove(pathsToDelete);
+            // Handle wholesale prices
+            else if (price_type === 'wholesale') {
+                // Delete existing fixed price
                 await sql`
-                    DELETE FROM product_images 
-                    WHERE product_id = ${product_id} 
-                    AND image_path = ANY(${imagesToDelete.map(img => img.image_path)});
+                    DELETE FROM fixed_prices 
+                    WHERE product_id = ${product_id};
                 `;
-            }
 
-            // Upload gambar baru
-            for (const image of product_images) {
-                if (typeof image !== 'string') {
-                    const fileName = `${uuidv4()}.${image.name.split('.').pop()}`;
-                    const { error: uploadError } = await supabase.storage
-                        .from('product_images')
-                        .upload(fileName, image);
+                // Delete existing wholesale prices
+                await sql`
+                    DELETE FROM wholesale_prices 
+                    WHERE product_id = ${product_id};
+                `;
 
-                    if (uploadError) {
-                        throw new Error(`Gagal mengupload gambar: ${uploadError.message}`);
-                    }
+                // Insert new wholesale prices
+                if (wholesalePrices.length > 0) {
+                    const wholesaleValues = wholesalePrices.map(wp => ({
+                        product_id,
+                        min_quantity: wp.min_quantity,
+                        max_quantity: wp.max_quantity,
+                        price: wp.price
+                    }));
 
-                    const imagePath = `product_images/${fileName}`;
                     await sql`
-                        INSERT INTO product_images (product_id, image_path)
-                        VALUES (${product_id}, ${imagePath});
+                        INSERT INTO wholesale_prices ${sql(wholesaleValues)}
                     `;
                 }
             }

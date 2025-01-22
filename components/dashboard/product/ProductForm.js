@@ -26,7 +26,7 @@ const formSchema = z.object({
     product_id: z.string().min(0, { message: "Product Id tidak di temukan" }),
     products_description: z.string().min(1, { message: "Tidak boleh kosong" }),
     price_type: z.enum(["fixed", "wholesale"]),
-    fixed_price: z.coerce.number().min(1, { message: "Harus lebih dari 0" }),
+    fixed_price: z.coerce.number().min(1, { message: "Harus lebih dari 0" }).optional(),
     wholesalePrices: z.array(z.object({
         min_quantity: z.number(),
         max_quantity: z.number().nullable(),
@@ -35,7 +35,7 @@ const formSchema = z.object({
     product_images: z.array(z.any()).min(1, { message: "Setidaknya ada 1 gambar produk" }),
 }).superRefine((data, ctx) => {
     if (data.price_type === 'fixed') {
-        if (data.fixed_price === undefined || data.fixed_price <= 0) {
+        if (!data.fixed_price || data.fixed_price <= 0) {
             ctx.addIssue({
                 code: z.ZodIssueCode.custom,
                 message: "Harga tetap harus diisi dan lebih besar dari 0",
@@ -48,6 +48,25 @@ const formSchema = z.object({
                 code: z.ZodIssueCode.custom,
                 message: "Harga grosir harus diisi",
                 path: ["wholesalePrices"],
+            });
+        }
+
+        if (data.wholesalePrices) {
+            data.wholesalePrices.forEach((price, index) => {
+                if (!price.price || price.price <= 0) {
+                    ctx.addIssue({
+                        code: z.ZodIssueCode.custom,
+                        message: "Harga harus lebih besar dari 0",
+                        path: ["wholesalePrices", index, "price"],
+                    });
+                }
+                if (!price.min_quantity || price.min_quantity < 0) {
+                    ctx.addIssue({
+                        code: z.ZodIssueCode.custom,
+                        message: "Kuantitas minimum tidak boleh negatif",
+                        path: ["wholesalePrices", index, "min_quantity"],
+                    });
+                }
             });
         }
     }
@@ -141,7 +160,7 @@ export default function ProductForm({ mode, product, onSubmit }) {
             form.setValue("wholesalePrices", []);
             form.clearErrors("wholesalePrices");
         } else if (price_type === 'wholesale') {
-            form.setValue("fixed_price", 0);
+            form.setValue("fixed_price", undefined);
             form.clearErrors("fixed_price");
         }
     }, [price_type, form]);
