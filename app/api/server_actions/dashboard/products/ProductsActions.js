@@ -41,6 +41,7 @@ export async function GetProductAction({ searchQuery, sort, limit, offset } = {}
         LIMIT ${limit} OFFSET ${offset}
     `;
 
+        console.log("Query result:", products);
         return products;
     });
 
@@ -343,5 +344,17 @@ export async function UpdateProductAction(req) {
     } catch (error) {
         console.error('Error updating product:', error);
         throw new Error(`Gagal memperbarui produk: ${error.message}`);
+    }
+}
+
+export async function GetProductActionCustomers({ query, type }) {
+    try {
+        // Your existing query logic
+        const result = await sql`...`;
+        console.log("Query result:", result);
+        return result;
+    } catch (error) {
+        console.error("Database error:", error);
+        throw new Error(`Failed to fetch products: ${error.message}`);
     }
 }

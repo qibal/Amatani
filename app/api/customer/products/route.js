@@ -13,8 +13,7 @@ export async function GET(request) {
 
     try {
         const data = await GetProductActionCustomers({ query, type });
-        console.log("🚀 ~ GET ~ data:", data[0].wholesale_prices[0])
-        if (data) {
+        if (data && Array.isArray(data)) {
             return new Response(JSON.stringify(data), {
                 status: 200,
                 headers: {
@@ -30,6 +29,7 @@ export async function GET(request) {
             });
         }
     } catch (error) {
+        console.error("Error in products route:", error);
         return new Response(JSON.stringify({ error: error.message }), {
             status: 500,
             headers: {
