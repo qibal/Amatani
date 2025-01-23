@@ -171,35 +171,76 @@ export default function ProductPage() {
     const observer = useRef();
 
     const fetchProducts = useCallback(async (query = "", sort = "", limit = 10, offset = 0) => {
-        try {
-            setLoading(true); // Set loading state to true
-            const url = new URL('/api/dashboard/products', window.location.origin);
-            if (query) url.searchParams.append('search', query);
-            if (sort) url.searchParams.append('sort', sort);
-            url.searchParams.append('limit', limit);
-            url.searchParams.append('offset', offset);
-            const response = await fetch(url.toString());
-            if (!response.ok) {
-                throw new Error('Failed to fetch products');
+        const maxRetries = 3;
+        let currentRetry = 0;
+
+        while (currentRetry < maxRetries) {
+            try {
+                setLoading(true);
+                const url = new URL('/api/dashboard/products', window.location.origin);
+                if (query) url.searchParams.append('search', query);
+                if (sort) url.searchParams.append('sort', sort);
+                url.searchParams.append('limit', limit.toString());
+                url.searchParams.append('offset', offset.toString());
+
+                const response = await fetch(url.toString());
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || `HTTP error! status: ${response.status}`);
+                }
+
+                // Pastikan data adalah array
+                const productsArray = Array.isArray(data) ? data : [];
+
+                if (offset === 0) {
+                    setProducts(productsArray);
+                } else {
+                    setProducts(prevProducts => [...prevProducts, ...productsArray]);
+                }
+
+                setHasMore(productsArray.length === limit);
+                return;
+
+            } catch (error) {
+                currentRetry++;
+                console.error(`Attempt ${currentRetry} failed:`, error);
+
+                if (currentRetry === maxRetries) {
+                    toast.error(`Gagal memuat produk: ${error.message}`);
+                    setProducts([]);
+                    setHasMore(false);
+                    return; // Hindari throw error agar UI tetap berjalan
+                }
+
+                await new Promise(resolve => setTimeout(resolve, 1000 * currentRetry));
+            } finally {
+                setLoading(false);
             }
-            const data = await response.json();
-            if (offset === 0) {
-                setProducts(data);
-            } else {
-                setProducts(prevProducts => [...prevProducts, ...data]);
-            }
-            setHasMore(data.length === limit);
-        } catch (error) {
-            console.error("Failed to fetch products:", error);
-        } finally {
-            setLoading(false); // Set loading state to false
         }
     }, []);
 
+    // Update useEffect to handle errors
     useEffect(() => {
+        let isMounted = true;
+
+        const loadProducts = async () => {
+            try {
+                await fetchProducts("", currentSort, 10, 0);
+            } catch (error) {
+                if (isMounted) {
+                    console.error("Failed to load products:", error);
+                }
+            }
+        };
+
         startTransition(() => {
-            fetchProducts("", currentSort, 10, 0);
+            loadProducts();
         });
+
+        return () => {
+            isMounted = false;
+        };
     }, [fetchProducts, currentSort]);
 
     const handleSearch = (e) => {
@@ -255,7 +296,7 @@ export default function ProductPage() {
 
     return (
         <div>
-            
+
             <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
                 <div className="flex items-center gap-2 px-4">
                     <SidebarTrigger className="-ml-1" />
