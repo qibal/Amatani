@@ -18,7 +18,13 @@ export async function GetProductActionCustomers({ query, type }) {
                 p.price_type,
                 f.price AS fixed_price,
                 (
-                    SELECT json_agg(json_build_object('min_quantity', w.min_quantity, 'max_quantity',w.max_quantity,'price', w.price))
+                    SELECT json_agg(
+                        json_build_object(
+                            'min_quantity', w.min_quantity, 
+                            'max_quantity', w.max_quantity,
+                            'price', w.price
+                        )
+                    )
                     FROM wholesale_prices w
                     WHERE w.product_id = p.product_id
                 ) AS wholesale_prices,
@@ -49,7 +55,13 @@ export async function GetProductActionCustomers({ query, type }) {
                 p.price_type,
                 f.price AS fixed_price,
                 (
-                    SELECT json_agg(json_build_object('min_quantity', w.min_quantity, 'max_quantity',w.max_quantity,'price', w.price))
+                    SELECT json_agg(
+                        json_build_object(
+                            'min_quantity', w.min_quantity, 
+                            'max_quantity', w.max_quantity,
+                            'price', w.price
+                        )
+                    )
                     FROM wholesale_prices w
                     WHERE w.product_id = p.product_id
                 ) AS wholesale_prices,
@@ -80,7 +92,13 @@ export async function GetProductActionCustomers({ query, type }) {
                 p.price_type,
                 f.price AS fixed_price,
                 (
-                    SELECT json_agg(json_build_object('min_quantity', w.min_quantity, 'max_quantity', w.price))
+                    SELECT json_agg(
+                        json_build_object(
+                            'min_quantity', w.min_quantity, 
+                            'max_quantity', w.max_quantity,
+                            'price', w.price
+                        )
+                    )
                     FROM wholesale_prices w
                     WHERE w.product_id = p.product_id
                 ) AS wholesale_prices,
@@ -94,7 +112,8 @@ export async function GetProductActionCustomers({ query, type }) {
             LEFT JOIN 
                 fixed_prices f ON p.product_id = f.product_id AND p.price_type = 'fixed'
             LEFT JOIN 
-                categories c ON p.categories_id = c.categories_id;
+                categories c ON p.categories_id = c.categories_id
+            WHERE 1=1;
         `;
     }
 
