@@ -10,20 +10,56 @@ import Image from "next/image";
 
 export default function HomeBuah() {
     const [categories, setCategories] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const maxRetries = 3;
 
     useEffect(() => {
-        async function fetchProducts() {
+        async function fetchProducts(retryCount = 0) {
             try {
+                setIsLoading(true);
                 const result = await fetch('/api/customer/home/home_buah');
+                if (!result.ok) {
+                    throw new Error(`HTTP error! status: ${result.status}`);
+                }
                 const data = await result.json();
-                setCategories(data); // Simpan data kategori di state
+                console.log("Data Kategori:", data);
+                console.log("Jumlah Kategori:", data.length);
+                setCategories(data);
+                setError(null);
             } catch (error) {
                 console.error("Error fetching products:", error);
+                if (retryCount < maxRetries) {
+                    // Tunggu sebentar sebelum mencoba lagi
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    return fetchProducts(retryCount + 1);
+                }
+                setError(error.message);
+            } finally {
+                setIsLoading(false);
             }
         }
 
         fetchProducts();
     }, []);
+
+    if (isLoading) {
+        return <div>Loading...</div>;
+    }
+
+    if (error) {
+        return (
+            <div className="text-center py-8">
+                <p className="text-red-500">Error: {error}</p>
+                <button
+                    onClick={() => window.location.reload()}
+                    className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
+                >
+                    Coba Lagi
+                </button>
+            </div>
+        );
+    }
 
     return (
         <section className="py-8 px-16 bg-white">
@@ -35,20 +71,14 @@ export default function HomeBuah() {
                 <div className="flex flex-col gap-y-8">
 
                     {Array.isArray(categories) && categories.map((category, index) => (
-                        <div
-                            key={category.categories_id}
-                            className={index > 0 ? "gap-y-4" : "gap-y-0"} // Atur jarak berdasarkan indeks
-                        >
-                            {/* Nama Kategori */}
-                            {category.products && category.products.length > 0 && (
-                                <h2 className="text-2xl font-semibold mb-6 text-gray-800">
-                                    {category.categories_name}
-                                </h2>
-                            )}
+                        <div key={category.categories_id} className={index > 0 ? "gap-y-4" : "gap-y-0"}>
+                            {/* Tambahkan judul kategori */}
+                            <h2 className="text-2xl font-semibold mb-6 text-gray-800">
+                                {category.categories_name}
+                            </h2>
 
-                            <ScrollArea className="pb-4">
-                                {/* Produk dalam kategori */}
-                                {category.products && category.products.length > 0 ? (
+                            {category.products && category.products.length > 0 && (
+                                <ScrollArea>
                                     <div className="flex gap-4">
                                         {category.products.map((product) => (
                                             <ProductCard
@@ -56,17 +86,15 @@ export default function HomeBuah() {
                                                 imageSrc={product.images?.[0] || "/placeholder-image.png"}
                                                 name={product.products_name || "Nama tidak tersedia"}
                                                 category={category.categories_name}
-                                                priceRange={
-                                                    product.wholesale_prices?.length > 0
-                                                        ? `Rp ${product.wholesale_prices[0].price.toLocaleString()}`
-                                                        : "Harga tidak tersedia"
-                                                }
+                                                priceType={product.price_type}
+                                                fixedPrice={product.fixed_price}
+                                                wholesalePrices={product.wholesale_prices || []}
                                             />
                                         ))}
                                     </div>
-                                ) : null}
-                                <ScrollBar orientation="horizontal" />
-                            </ScrollArea>
+                                    <ScrollBar orientation="horizontal" />
+                                </ScrollArea>
+                            )}
                         </div>
                     ))}
                 </div>
@@ -75,18 +103,35 @@ export default function HomeBuah() {
     );
 }
 
-function ProductCard({ imageSrc, name, category, priceRange }) {
+function ProductCard({ imageSrc, name, category, priceType, fixedPrice, wholesalePrices }) {
+    let priceRange;
+
+    if (priceType === 'wholesale' && wholesalePrices && wholesalePrices.length > 0) {
+        const prices = wholesalePrices.map(price => price.price);
+        const minPrice = Math.min(...prices);
+        const maxPrice = Math.max(...prices);
+
+        if (minPrice === maxPrice) {
+            priceRange = `Rp ${minPrice.toLocaleString()}`;
+        } else {
+            priceRange = `Rp ${minPrice.toLocaleString()} - Rp ${maxPrice.toLocaleString()}`;
+        }
+    } else if (priceType === 'fixed' && fixedPrice !== null) {
+        priceRange = `Rp ${Number(fixedPrice).toLocaleString()}`;
+    } else {
+        priceRange = "Harga tidak tersedia";
+    }
+
     return (
         <Card className="flex-shrink-0 w-80">
             <CardHeader className="p-0">
-                {/* Komponen Aspect Ratio dari ShadCN */}
                 <AspectRatio ratio={1}>
                     <Image
                         src={`https://xmlmcdfzbwjljhaebzna.supabase.co/storage/v1/object/public/${imageSrc}`}
                         alt={name}
-                        width={300}
-                        height={300}
                         className="object-cover w-full h-full"
+                        width={200}
+                        height={200}
                     />
                 </AspectRatio>
             </CardHeader>
