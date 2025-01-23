@@ -26,12 +26,12 @@ const formSchema = z.object({
     product_id: z.string().min(0, { message: "Product Id tidak di temukan" }),
     products_description: z.string().min(1, { message: "Tidak boleh kosong" }),
     price_type: z.enum(["fixed", "wholesale"]),
-    fixed_price: z.coerce.number().min(1, { message: "Harus lebih dari 0" }).optional(),
+    fixed_price: z.coerce.number().nullable(),
     wholesalePrices: z.array(z.object({
         min_quantity: z.number(),
         max_quantity: z.number().nullable(),
         price: z.number()
-    })).optional(),
+    })).nullable(),
     product_images: z.array(z.any()).min(1, { message: "Setidaknya ada 1 gambar produk" }),
 }).superRefine((data, ctx) => {
     if (data.price_type === 'fixed') {
@@ -60,7 +60,7 @@ const formSchema = z.object({
                         path: ["wholesalePrices", index, "price"],
                     });
                 }
-                if (!price.min_quantity || price.min_quantity < 0) {
+                if (price.min_quantity < 0) {
                     ctx.addIssue({
                         code: z.ZodIssueCode.custom,
                         message: "Kuantitas minimum tidak boleh negatif",
@@ -157,11 +157,14 @@ export default function ProductForm({ mode, product, onSubmit }) {
 
     useEffect(() => {
         if (price_type === 'fixed') {
-            form.setValue("wholesalePrices", []);
-            form.clearErrors("wholesalePrices");
+            form.setValue("wholesalePrices", null);
+            form.setValue("fixed_price", form.getValues("fixed_price") || 0);
         } else if (price_type === 'wholesale') {
-            form.setValue("fixed_price", undefined);
-            form.clearErrors("fixed_price");
+            form.setValue("fixed_price", null);
+            const currentWholesalePrices = form.getValues("wholesalePrices");
+            if (!currentWholesalePrices || !Array.isArray(currentWholesalePrices) || currentWholesalePrices.length === 0) {
+                form.setValue("wholesalePrices", [{ min_quantity: 0, max_quantity: 0, price: 0 }]);
+            }
         }
     }, [price_type, form]);
 
@@ -385,14 +388,14 @@ export default function ProductForm({ mode, product, onSubmit }) {
                                                 </div>
                                             </RadioGroup>
                                         </FormControl>
-                                        {form.watch("wholesalePrices").length === 0 && (
-                                            <FormDescription> Minimal ada 1 variant harga</FormDescription>
+                                        {price_type === "wholesale" && form.watch("wholesalePrices")?.length === 0 && (
+                                            <FormDescription>Minimal ada 1 variant harga</FormDescription>
                                         )}
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
-                            {price_type === "wholesale" && (
+                            {price_type === "wholesale" && form.watch("wholesalePrices") && (
                                 <div className="space-y-2">
                                     {form.watch("wholesalePrices").map((price, index) => (
                                         <div key={index} className="flex gap-2 items-end">

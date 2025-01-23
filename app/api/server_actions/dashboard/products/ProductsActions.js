@@ -1,3 +1,5 @@
+'use server'
+
 import sql from "@/lib/postgres";
 import { supabase } from "@/lib/supabase/client";
 import { v4 as uuidv4 } from 'uuid';
@@ -255,72 +257,64 @@ export async function UpdateProductAction(req) {
         const price_type = formData.get('price_type');
         const fixed_price = formData.get('fixed_price');
         const category = JSON.parse(formData.get('category'));
-        const wholesalePrices = JSON.parse(formData.get('wholesalePrices') || '[]');
+        const wholesalePrices = JSON.parse(formData.get('wholesalePrices'));
 
-        // Begin transaction
-        const result = await sql.begin(async (sql) => {
-            // Update products table
-            const updatedProduct = await sql`
-                UPDATE products 
-                SET 
-                    products_name = ${products_name},
-                    products_description = ${products_description},
-                    stock = ${stock},
-                    categories_id = ${category.categories_id},
-                    price_type = ${price_type}
-                WHERE product_id = ${product_id}
-                RETURNING *;
+        // Update produk utama
+        await sql`
+            UPDATE products 
+            SET 
+                products_name = ${products_name},
+                products_description = ${products_description},
+                stock = ${stock},
+                price_type = ${price_type},
+                categories_id = ${category.categories_id}
+            WHERE product_id = ${product_id}
+        `;
+
+        // Handle harga berdasarkan price_type
+        if (price_type === 'fixed') {
+            // Hapus harga grosir jika ada
+            await sql`DELETE FROM wholesale_prices WHERE product_id = ${product_id}`;
+
+            // Update atau insert harga tetap
+            await sql`
+                INSERT INTO fixed_prices (product_id, price)
+                VALUES (${product_id}, ${fixed_price})
+                ON CONFLICT (product_id) 
+                DO UPDATE SET price = ${fixed_price}
             `;
+        } else if (price_type === 'wholesale') {
+            // Hapus harga tetap jika ada
+            await sql`DELETE FROM fixed_prices WHERE product_id = ${product_id}`;
 
-            // Handle fixed price
-            if (price_type === 'fixed') {
-                // Delete any existing wholesale prices
-                await sql`
-                    DELETE FROM wholesale_prices 
-                    WHERE product_id = ${product_id};
-                `;
+            // Hapus harga grosir yang lama
+            await sql`DELETE FROM wholesale_prices WHERE product_id = ${product_id}`;
 
-                // Update or insert fixed price
-                await sql`
-                    INSERT INTO fixed_prices (product_id, price)
-                    VALUES (${product_id}, ${fixed_price})
-                    ON CONFLICT (product_id) 
-                    DO UPDATE SET price = ${fixed_price};
-                `;
-            }
-            // Handle wholesale prices
-            else if (price_type === 'wholesale') {
-                // Delete existing fixed price
-                await sql`
-                    DELETE FROM fixed_prices 
-                    WHERE product_id = ${product_id};
-                `;
-
-                // Delete existing wholesale prices
-                await sql`
-                    DELETE FROM wholesale_prices 
-                    WHERE product_id = ${product_id};
-                `;
-
-                // Insert new wholesale prices
-                if (wholesalePrices.length > 0) {
-                    const wholesaleValues = wholesalePrices.map(wp => ({
-                        product_id,
-                        min_quantity: wp.min_quantity,
-                        max_quantity: wp.max_quantity,
-                        price: wp.price
-                    }));
-
+            // Insert harga grosir baru
+            if (wholesalePrices && wholesalePrices.length > 0) {
+                for (const price of wholesalePrices) {
                     await sql`
-                        INSERT INTO wholesale_prices ${sql(wholesaleValues)}
+                        INSERT INTO wholesale_prices (
+                            product_id, 
+                            min_quantity, 
+                            max_quantity, 
+                            price
+                        ) VALUES (
+                            ${product_id}, 
+                            ${price.min_quantity}, 
+                            ${price.max_quantity}, 
+                            ${price.price}
+                        )
                     `;
                 }
             }
+        }
 
-            return updatedProduct;
-        });
+        const result = await sql`
+            SELECT * FROM products WHERE product_id = ${product_id}
+        `;
 
-        return { success: true, data: result };
+        return { success: true, data: result[0] };
     } catch (error) {
         console.error('Error updating product:', error);
         throw new Error(`Gagal memperbarui produk: ${error.message}`);
