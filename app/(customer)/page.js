@@ -62,7 +62,7 @@ export default function CustomerPage() {
 
             {/* Testimoni dan Footer */}
             <main>
-                <HomeTestimoni />
+                {/* <HomeTestimoni /> */}
                 <Footer />
             </main>
         </div>
