@@ -266,8 +266,7 @@ function ProductInfoCard({ productsData }) {
                             wholesalePrices.map((price, index) => (
                                 <div key={index}>
                                     <div className="text-sm text-muted-foreground">
-                                        {price.min_quantity} - {price.max_quantity === Infinity ? '∞' : price.max_quantity} kg
-                                    </div>
+                                        {price.max_quantity === null ? `> ${price.min_quantity} kg` : `${price.min_quantity} - ${price.max_quantity === Infinity ? '∞' : price.max_quantity} kg`}                                    </div>
                                     <div className="font-semibold">
                                         Rp {price.price}
                                     </div>
