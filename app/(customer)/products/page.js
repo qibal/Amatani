@@ -22,7 +22,7 @@ export default function Product() {
     const allProductsQuery = searchParams.get('all_product');
     const query = categoriesQuery || productsQuery || '';
     const type = categoriesQuery ? 'categories' : (productsQuery ? 'products' : 'all');
-    const formattedQuery = categoriesQuery ? categoriesQuery.replace(/-/g, ' - ') : '';
+    const formattedQuery = categoriesQuery;  // Hapus formatting tambahan
 
     console.log('Formatted Query:', formattedQuery);
     console.log('Query:', query);
@@ -184,7 +184,7 @@ function ProductCard({ imageSrc, name, category, priceType, fixedPrice, wholesal
         const prices = wholesalePrices.map(price => price.price);
         const minPrice = Math.min(...prices);
         const maxPrice = Math.max(...prices);
-        
+
         if (minPrice === maxPrice) {
             priceRange = `Rp ${minPrice.toLocaleString()}`;
         } else {

@@ -32,11 +32,7 @@ export default function CategoryMenu({ isRootPath }) {
             <HoverCardContent className="p-3 w-56 bg-white rounded-md shadow-md translate-x-7">
                 {Categories.length > 0 ? (
                     Categories.map((category) => {
-                        const formattedCategoryName = category.categories_name
-                            .toLowerCase()
-                            .replace(/[\s-]+/g, '-') // Replace spaces and hyphens with a single hyphen
-                            .replace(/-+/g, '-') // Replace multiple hyphens with a single hyphen
-                            .replace(/^-+|-+$/g, ''); // Remove leading and trailing hyphens
+                        const formattedCategoryName = category.categories_name.toLowerCase();
                         return (
                             <Button
                                 key={category.categories_id}
