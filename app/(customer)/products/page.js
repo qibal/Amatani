@@ -91,7 +91,7 @@ export default function Product() {
                     <p className="text-xl font-semibold text-gray-800">
                         {allProductsQuery ? 'Semua Produk' : (categoryName ? categoryName : (formattedQuery ? formattedQuery : 'Kategori tidak tersedia'))} ({productsData.length})
                     </p>
-                    <div className="flex items-center gap-4">
+                    {/* <div className="flex items-center gap-4">
                         <Button className="flex items-center gap-2 bg-gray-50 hover:bg-gray-100">
                             <Filter className="w-4 h-4 text-gray-950" />
                             <span className="text-gray-950">Filter</span>
@@ -100,7 +100,7 @@ export default function Product() {
                             <span className="text-gray-950">Short By</span>
                             <ChevronDown className="w-4 h-4 text-gray-950" />
                         </Button>
-                    </div>
+                    </div> */}
                 </div>
             </div>
 
@@ -140,7 +140,7 @@ export default function Product() {
                         </Button>
                     </form>
                     {/* Filter dan Sort By Buttons */}
-                    <div className="flex items-center gap-2">
+                    {/* <div className="flex items-center gap-2">
                         <Button className="flex items-center gap-2 bg-gray-50 hover:bg-gray-100">
                             <Filter className="w-4 h-4 text-gray-950" />
                             <span className="text-gray-950">Filter</span>
@@ -149,7 +149,7 @@ export default function Product() {
                             <span className="text-gray-950">Sort By</span>
                             <ChevronDown className="w-4 h-4 text-gray-950" />
                         </Button>
-                    </div>
+                    </div> */}
                 </div>
             </div>
 
