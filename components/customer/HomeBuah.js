@@ -7,6 +7,7 @@ import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { AlertCircle } from "lucide-react"; // Ikon untuk fallback
 import Image from "next/image";
+import Link from "next/link";
 
 export default function HomeBuah() {
     const [categories, setCategories] = useState([]);
@@ -83,6 +84,7 @@ export default function HomeBuah() {
                                         {category.products.map((product) => (
                                             <ProductCard
                                                 key={product.product_id}
+                                                product_id={product.product_id}
                                                 imageSrc={product.images?.[0] || "/placeholder-image.png"}
                                                 name={product.products_name || "Nama tidak tersedia"}
                                                 category={category.categories_name}
@@ -103,7 +105,7 @@ export default function HomeBuah() {
     );
 }
 
-function ProductCard({ imageSrc, name, category, priceType, fixedPrice, wholesalePrices }) {
+function ProductCard({ product_id, imageSrc, name, category, priceType, fixedPrice, wholesalePrices }) {
     let priceRange;
 
     if (priceType === 'wholesale' && wholesalePrices && wholesalePrices.length > 0) {
@@ -123,24 +125,26 @@ function ProductCard({ imageSrc, name, category, priceType, fixedPrice, wholesal
     }
 
     return (
-        <Card className="flex-shrink-0 w-80">
-            <CardHeader className="p-0">
-                <AspectRatio ratio={1}>
-                    <Image
-                        src={`https://xmlmcdfzbwjljhaebzna.supabase.co/storage/v1/object/public/${imageSrc}`}
-                        alt={name}
-                        className="object-cover w-full h-full"
-                        width={200}
-                        height={200}
-                    />
-                </AspectRatio>
-            </CardHeader>
-            <CardContent className="space-y-2 p-4">
-                <p className="text-lg font-semibold text-gray-800">{name}</p>
-                <p className="text-sm text-gray-500">{category}</p>
-                <p className="text-base font-bold text-rose-600">{priceRange}</p>
-            </CardContent>
-        </Card>
+        <Link href={`/products/${product_id}`}>
+            <Card className="flex-shrink-0 w-80">
+                <CardHeader className="p-0">
+                    <AspectRatio ratio={1}>
+                        <Image
+                            src={`https://xmlmcdfzbwjljhaebzna.supabase.co/storage/v1/object/public/${imageSrc}`}
+                            alt={name}
+                            className="object-cover w-full h-full"
+                            width={200}
+                            height={200}
+                        />
+                    </AspectRatio>
+                </CardHeader>
+                <CardContent className="space-y-2 p-4">
+                    <p className="text-lg font-semibold text-gray-800">{name}</p>
+                    <p className="text-sm text-gray-500">{category}</p>
+                    <p className="text-base font-bold text-rose-600">{priceRange}</p>
+                </CardContent>
+            </Card>
+        </Link>
     );
 }
 
