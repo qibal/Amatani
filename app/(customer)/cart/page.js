@@ -16,9 +16,8 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 export default function CartPage() {
     const [cartData, setCartData] = useState(null)
     const [cartItems, setCartItems] = useState([])
-    const { userId } = useCart()
     const [debounceTimeout, setDebounceTimeout] = useState(null)
-
+    const { userId, setUserId, fetchCartCount } = useCart()
     useEffect(() => {
         async function fetchCart() {
             try {
@@ -48,6 +47,7 @@ export default function CartPage() {
                 // Jika berhasil dihapus, update state lokal
                 setCartItems(cartItems.filter(item => item.cart_items_id !== cart_items_id));
                 toast.success("Item removed successfully");
+                fetchCartCount(userId)
             } else {
                 console.error('Failed to delete item');
                 toast.error("Failed to remove item");
