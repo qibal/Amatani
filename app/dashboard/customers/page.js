@@ -44,13 +44,13 @@ export default function CustomersPage() {
                         <BreadcrumbList>
                             <BreadcrumbItem className="hidden md:block">
                                 <BreadcrumbLink href="#">
-                                    Building Your Application
+                                    Customers
                                 </BreadcrumbLink>
                             </BreadcrumbItem>
-                            <BreadcrumbSeparator className="hidden md:block" />
+                            {/* <BreadcrumbSeparator className="hidden md:block" />
                             <BreadcrumbItem>
                                 <BreadcrumbPage>Data Fetching</BreadcrumbPage>
-                            </BreadcrumbItem>
+                            </BreadcrumbItem> */}
                         </BreadcrumbList>
                     </Breadcrumb>
                 </div>

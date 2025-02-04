@@ -118,7 +118,7 @@ export function UserTable({ users, onDelete, onEdit }) {
                                     )}
                                 </TableHead>
                             ))}
-                            <TableHead>Actions</TableHead>
+                            {/* <TableHead>Actions</TableHead> */}
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -163,7 +163,7 @@ export function UserTable({ users, onDelete, onEdit }) {
                                 {columns.find(col => col.key === 'last_sign_in_at')?.isVisible && (
                                     <TableCell>{user.last_sign_in_at ? formatDate(user.last_sign_in_at) : 'Never'}</TableCell>
                                 )}
-                                <TableCell>
+                                {/* <TableCell>
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
                                             <Button variant="outline" className="h-8 w-8 p-0">
@@ -184,7 +184,7 @@ export function UserTable({ users, onDelete, onEdit }) {
                                             <DropdownMenuItem onClick={() => openDialog(user.id)}>Delete</DropdownMenuItem>
                                         </DropdownMenuContent>
                                     </DropdownMenu>
-                                </TableCell>
+                                </TableCell> */}
                             </TableRow>
                         ))}
                     </TableBody>
