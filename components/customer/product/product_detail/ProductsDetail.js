@@ -7,7 +7,7 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion"
-import { Minus, Plus, Star, Truck } from 'lucide-react'
+import { Minus, Plus, Search, Star, Truck, X } from 'lucide-react'
 import { useEffect, useState } from "react"
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
@@ -226,6 +226,12 @@ function ProductInfoCard({ productsData }) {
             }
         }
     }
+    const handleSearch = (e) => {
+        e.preventDefault();
+        if (searchQuery.trim()) {
+            window.location.href = `/products?products=${encodeURIComponent(searchQuery)}`;
+        }
+    };
     const wholesalePrices = Array.isArray(productsData?.wholesale_prices)
         ? productsData.wholesale_prices
         : []
@@ -233,22 +239,28 @@ function ProductInfoCard({ productsData }) {
     return (
         <div className="w-full max-w-lg mx-auto p-4">
             {/* Search Section */}
-            <div className="flex justify-start items-center w-full h-90 gap-2 mb-6">
-                <Input
-                    type="text"
-                    placeholder="Cari produk"
-                    className="rounded-full bg-gray-50"
-                // value={search}
-                // onChange={(e) => setSearch(e.target.value)}
-                />
-                <Button
-                    variant="secondary"
-                    className="h-9 px-4 rounded-full bg-rose-100 hover:bg-rose-200 text-rose-600"
-                    onClick={() => console.log('Searching for:', search)}
-                >
+            <form onSubmit={handleSearch} className="flex items-center gap-2 flex-grow lg:flex-grow-0 w-full lg:w-auto">
+                <div className="relative flex items-center w-full lg:w-[300px]">
+                    <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 transform text-muted-foreground pointer-events-none" />
+                    <Input
+                        type="text"
+                        placeholder="Search..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full pl-8 pr-8 rounded-full"
+                    />
+                    <Button
+                        size="icon"
+                        className="bg-transparent hover:bg-transparent hover:text-gray-800 shadow-none absolute right-1 top-1/2 -translate-y-1/2 transform"
+                    >
+                        <X className="h-4 w-4 text-gray-950" />
+                    </Button>
+                </div>
+                <Button type="submit" className="bg-rose-100 text-rose-600 hover:bg-rose-200 rounded-full">
+                    <Search className="w-4 h-4 mr-2" />
                     Cari
                 </Button>
-            </div>
+            </form>
             <div className="flex flex-col justify-start items-center w-full gap-10 bg-white rounded-lg">
                 {/* Price Tiers */}
                 <div className="flex flex-col justify-start items-center w-full gap-6">
