@@ -257,12 +257,12 @@ function ProductInfoCard({ productsData }) {
                         <X className="h-4 w-4 text-gray-950" />
                     </Button>
                 </div>
+                <Separator className="w-full" />
                 <Button type="submit" className="bg-rose-100 text-rose-600 hover:bg-rose-200 rounded-full">
                     <Search className="w-4 h-4 mr-2" />
                     Cari
                 </Button>
             </form>
-            <Separator className="w-full my-8" />
             <div className="flex flex-col justify-start items-center w-full gap-10 bg-white rounded-lg">
                 {/* Price Tiers */}
                 <div className="flex flex-col justify-start items-center w-full gap-6">
