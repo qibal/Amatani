@@ -43,3 +43,14 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - **Technology Minimization**
   - Supabase: Covers database, OAuth, and cloud file storage, everything needed for this project.
   - Vercel: Used for hosting the Next.js application.
+
+- ENV EXAMPLE
+```
+NODE_ENV =development
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+DATABASE_URL=
+# DOMAIN_URL =yourdomain.vercel.app
+DOMAIN_URL=http://localhost:3000/
+NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY=
+```
