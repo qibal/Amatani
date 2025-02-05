@@ -59,7 +59,7 @@ export default function Product() {
     };
 
     return (
-        <div className="mt-4 px-4 container mx-auto">
+        <div className="mt-4 px-16 container mx-auto">
             {/* Mobile & Medium Layout */}
             <div className="flex flex-col gap-2 py-2 lg:hidden">
 

@@ -50,7 +50,7 @@ export default function ProductDetailComponent({ product_id }) {
         : [];
 
     return (
-        <div className="container mx-auto px-8 py-6">
+        <div className="container mx-auto px-16 py-6">
             <div className="grid gap-4 lg:grid-cols-3 ">
                 {/* Image Gallery and Main Image */}
                 <div className="lg:col-span-2 space-y-4">
@@ -160,6 +160,7 @@ const formSchema = z.object({
 function ProductInfoCard({ productsData }) {
     const [isPending, startTransition] = useTransition()
     const { userId, setUserId, fetchCartCount } = useCart()
+    const [searchQuery, setSearchQuery] = useState('');
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -237,7 +238,7 @@ function ProductInfoCard({ productsData }) {
         : []
 
     return (
-        <div className="w-full max-w-lg mx-auto p-4">
+        <div className="w-full max-w-lg mx-auto p-4 ">
             {/* Search Section */}
             <form onSubmit={handleSearch} className="flex items-center gap-2 flex-grow lg:flex-grow-0 w-full lg:w-auto">
                 <div className="relative flex items-center w-full lg:w-[300px]">
@@ -261,6 +262,7 @@ function ProductInfoCard({ productsData }) {
                     Cari
                 </Button>
             </form>
+            <Separator className="w-full my-8" />
             <div className="flex flex-col justify-start items-center w-full gap-10 bg-white rounded-lg">
                 {/* Price Tiers */}
                 <div className="flex flex-col justify-start items-center w-full gap-6">
