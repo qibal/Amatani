@@ -240,7 +240,7 @@ function ProductInfoCard({ productsData }) {
     return (
         <div className="w-full max-w-lg mx-auto p-4 ">
             {/* Search Section */}
-            <form onSubmit={handleSearch} className="flex items-center gap-2 flex-grow lg:flex-grow-0 w-full lg:w-auto">
+            <form onSubmit={handleSearch} className="flex items-center gap-2 flex-grow lg:flex-grow-0 w-full lg:w-auto mb-12">
                 <div className="relative flex items-center w-full lg:w-[300px]">
                     <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 transform text-muted-foreground pointer-events-none" />
                     <Input
@@ -257,7 +257,7 @@ function ProductInfoCard({ productsData }) {
                         <X className="h-4 w-4 text-gray-950" />
                     </Button>
                 </div>
-                <Separator className="w-full" />
+                
                 <Button type="submit" className="bg-rose-100 text-rose-600 hover:bg-rose-200 rounded-full">
                     <Search className="w-4 h-4 mr-2" />
                     Cari
