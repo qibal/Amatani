@@ -556,11 +556,10 @@ export default function ProductForm({ mode, product, onSubmit }) {
                     </form>
                 </Form>
             </div>
-            <div className="w-2/4">
+            {/* <div className="w-2/4">
                 <div className="sticky top-4">
                     <h2 className="text-lg font-semibold mb-2">Preview Produk</h2>
                     <div className="border-2 border-dashed rounded-lg p-4">
-                        {/* <p className="text-sm text-muted-foreground">{productPreview.products_description}</p> */}
                         {productPreview.product_images && productPreview.product_images.length > 0 ? (
                             <CarouselWithThumbnails images={productPreview.product_images.map((img) => ({
                                 src: URL.createObjectURL(img),
@@ -572,7 +571,7 @@ export default function ProductForm({ mode, product, onSubmit }) {
                         <h3 className="m-4 text-xl font-bold">{productPreview.products_name}</h3>
                     </div>
                 </div>
-            </div>
+            </div> */}
         </>
 
     );
