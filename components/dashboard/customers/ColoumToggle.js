@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/shadcnUi/button"
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
@@ -6,7 +6,7 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/shadcnUi/dropdown-menu"
 import { SlidersHorizontal } from 'lucide-react'
 
 export function ColumnToggle({ columns, toggleColumn }) {

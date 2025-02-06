@@ -4,11 +4,11 @@ import { useEffect, useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectItem, SelectTrigger, SelectContent, SelectValue } from "@/components/ui/select";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/shadcnUi/input";
+import { Button } from "@/components/shadcnUi/button";
+import { Textarea } from "@/components/shadcnUi/textarea";
+import { Select, SelectItem, SelectTrigger, SelectContent, SelectValue } from "@/components/shadcnUi/select";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/shadcnUi/form";
 import { Loader2 } from 'lucide-react';
 import { Toaster, toast } from "sonner";
 import { useRouter } from 'next/navigation'

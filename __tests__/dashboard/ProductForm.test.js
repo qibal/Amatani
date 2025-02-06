@@ -4,7 +4,7 @@ import '@testing-library/jest-dom';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, FormProvider } from 'react-hook-form';
 import { z } from 'zod';
-import { SidebarProvider } from '@/components/ui/sidebar';
+import { SidebarProvider } from '@/components/shadcnUi/sidebar';
 
 const formSchema = z.object({
     products_name: z.string().min(1, { message: "Tidak boleh kosong" }),
@@ -61,7 +61,7 @@ const ProductFormWrapper = (props) => {
 
 describe('ProductForm', () => {
     beforeEach(() => {
-        jest.spyOn(console, 'log').mockImplementation(() => {}); // Suppress console.log
+        jest.spyOn(console, 'log').mockImplementation(() => { }); // Suppress console.log
     });
 
     afterEach(() => {

@@ -1,8 +1,8 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import ProductPage from '@/app/dashboard/products/page';
+import ProductPage from '@/app/(dashboard)/admin/products/page';
 import '@testing-library/jest-dom';
 import { supabase } from '@/lib/supabase/client';
-import { useSidebar } from '@/components/ui/sidebar';
+import { useSidebar } from '@/components/shadcnUi/sidebar';
 
 jest.mock('@/lib/supabase/client', () => ({
     supabase: {
@@ -68,7 +68,7 @@ global.fetch = jest.fn((url, options) => {
 describe('ProductPage', () => {
     beforeEach(() => {
         fetch.mockClear();
-        jest.spyOn(console, 'log').mockImplementation(() => {}); // Suppress console.log
+        jest.spyOn(console, 'log').mockImplementation(() => { }); // Suppress console.log
     });
 
     afterEach(() => {

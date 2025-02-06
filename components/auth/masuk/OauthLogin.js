@@ -2,8 +2,8 @@
 'use client'
 
 
-import { signInWithGoogle } from "@/app/api/server_actions/Auth";
-import { Button } from "@/components/ui/button";
+import { signInWithGoogle } from "@/app/actions/v1/Auth";
+import { Button } from "@/components/shadcnUi/button";
 
 
 

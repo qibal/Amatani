@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import Product from '@/app/(customer)/products/page';
+import Product from '@/app/(public)/products/page';
 import '@testing-library/jest-dom';
 import { useSearchParams } from 'next/navigation';
 

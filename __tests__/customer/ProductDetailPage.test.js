@@ -1,8 +1,8 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import ProductDetailComponent from '@/components/customer/product/product_detail/ProductsDetail';
+import ProductDetailComponent from '@/components/customers/product/product_detail/ProductsDetail';
 import '@testing-library/jest-dom';
 import { useRouter } from 'next/router';
-import { useCart } from '@/components/customer/Navbar/CartContext';
+import { useCart } from '@/components/customers/Navbar/CartContext';
 
 // Mock fetch
 global.fetch = jest.fn((url) => {
@@ -45,7 +45,7 @@ describe('ProductDetailComponent', () => {
         fetch.mockClear();
         useRouter.mockReturnValue({ push: jest.fn() });
         useCart.mockReturnValue({ userId: 'test-user-id', setUserId: jest.fn(), fetchCartCount: jest.fn() });
-        jest.spyOn(console, 'log').mockImplementation(() => {}); // Suppress console.log
+        jest.spyOn(console, 'log').mockImplementation(() => { }); // Suppress console.log
     });
 
     afterEach(() => {

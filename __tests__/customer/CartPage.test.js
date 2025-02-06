@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import CartPage from '@/app/(customer)/cart/page';
+import CartPage from '@/app/(public)/(customer)/cart/page';
 import '@testing-library/jest-dom';
-import { CartProvider } from '@/components/customer/Navbar/CartContext';
+import { CartProvider } from '@/components/customers/Navbar/CartContext';
 
 // Mock fetch
 global.fetch = jest.fn((url, options) => {
@@ -57,7 +57,7 @@ global.fetch = jest.fn((url, options) => {
 describe('CartPage', () => {
     beforeEach(() => {
         fetch.mockClear();
-        jest.spyOn(console, 'log').mockImplementation(() => {}); // Suppress console.log
+        jest.spyOn(console, 'log').mockImplementation(() => { }); // Suppress console.log
     });
 
     afterEach(() => {

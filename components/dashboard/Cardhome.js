@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/shadcnUi/card";
 
 export default function Cardhome({ title, value, change, icon }) {
     return (

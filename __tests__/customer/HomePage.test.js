@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import CustomerPage from '@/app/(customer)/page';
+import CustomerPage from '@/app/(public)/page';
 import '@testing-library/jest-dom';
 
 // Mock fetch
@@ -34,7 +34,7 @@ global.fetch = jest.fn((url) => {
 describe('CustomerPage', () => {
     beforeEach(() => {
         fetch.mockClear();
-        jest.spyOn(console, 'log').mockImplementation(() => {}); // Suppress console.log
+        jest.spyOn(console, 'log').mockImplementation(() => { }); // Suppress console.log
     });
 
     afterEach(() => {

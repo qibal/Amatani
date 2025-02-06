@@ -5,15 +5,15 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-} from "@/components/ui/table";
+} from "@/components/shadcnUi/table";
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuLabel,
     DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
+} from "@/components/shadcnUi/dropdown-menu";
+import { Button } from "@/components/shadcnUi/button";
 import { MoreHorizontal } from "lucide-react";
 
 export function OrderTable({ orders, onDelete, getUserEmail }) {
@@ -59,11 +59,10 @@ export function OrderTable({ orders, onDelete, getUserEmail }) {
                             <TableCell>{formatDate(order.order_date)}</TableCell>
                             <TableCell>
                                 <span
-                                    className={`text-sm ${
-                                        order.payment.payment_status === "completed"
+                                    className={`text-sm ${order.payment.payment_status === "completed"
                                             ? "text-green-600"
                                             : "text-yellow-600"
-                                    }`}
+                                        }`}
                                 >
                                     {order.payment.payment_status}
                                 </span>

@@ -1,14 +1,14 @@
 'use client'
 
 import React, { useCallback, useRef, useState } from 'react'
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { AspectRatio } from "@/components/ui/aspect-ratio"
+import { Input } from "@/components/shadcnUi/input"
+import { Label } from "@/components/shadcnUi/label"
+import { AspectRatio } from "@/components/shadcnUi/aspect-ratio"
 import { AlertCircle } from 'lucide-react'
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Progress } from '@/components/ui/progress'
+import { Alert, AlertDescription } from "@/components/shadcnUi/alert"
+import { Progress } from '@/components/shadcnUi/progress'
 import Image from 'next/image'
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog'
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/shadcnUi/alert-dialog'
 import { supabase } from "@/lib/supabase/client";
 const MAX_FILE_SIZE = 4 * 1024 * 1024; // 4MB
 const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];

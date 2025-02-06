@@ -6,13 +6,13 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
+} from "@/components/shadcnUi/table";
+import { Button } from "@/components/shadcnUi/button";
 import { MoreHorizontal, ArrowUpDown, Check, X, Loader2 } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/shadcnUi/avatar";
+import { Badge } from "@/components/shadcnUi/badge";
 import { ColumnToggle } from './ColoumToggle';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/shadcnUi/alert-dialog";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -20,7 +20,7 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@/components/shadcnUi/dropdown-menu";
 
 export function UserTable({ users, onDelete, onEdit }) {
     const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });

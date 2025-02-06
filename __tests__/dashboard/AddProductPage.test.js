@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import AddProductPage from '@/app/dashboard/products/add/page';
+import AddProductPage from '@/app/(dashboard)/admin/products/add/page';
 import '@testing-library/jest-dom';
-import { SidebarProvider } from '@/components/ui/sidebar';
+import { SidebarProvider } from '@/components/shadcnUi/sidebar';
 
 global.fetch = jest.fn((url, options) => {
     if (url.endsWith('/api/dashboard/products/insert')) {
@@ -16,7 +16,7 @@ global.fetch = jest.fn((url, options) => {
 describe('AddProductPage', () => {
     beforeEach(() => {
         fetch.mockClear();
-        jest.spyOn(console, 'log').mockImplementation(() => {}); // Suppress console.log
+        jest.spyOn(console, 'log').mockImplementation(() => { }); // Suppress console.log
     });
 
     afterEach(() => {

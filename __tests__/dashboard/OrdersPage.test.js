@@ -1,8 +1,8 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import OrdersPage from '@/app/dashboard/orders/page';
+import OrdersPage from '@/app/(dashboard)/admin/orders/page';
 import '@testing-library/jest-dom';
 import { supabase } from '@/lib/supabase/client';
-import { SidebarProvider } from '@/components/ui/sidebar';
+import { SidebarProvider } from '@/components/shadcnUi/sidebar';
 
 jest.mock('@/lib/supabase/client', () => ({
     supabase: {

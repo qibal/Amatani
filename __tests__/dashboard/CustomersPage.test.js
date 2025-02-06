@@ -1,8 +1,8 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import CustomersPage from '@/app/dashboard/customers/page';
+import CustomersPage from '@/app/(dashboard)/admin/customers/page';
 import '@testing-library/jest-dom';
 import supabaseAuthAdmin from '@/lib/supabase/client_admin';
-import { SidebarProvider } from '@/components/ui/sidebar';
+import { SidebarProvider } from '@/components/shadcnUi/sidebar';
 
 jest.mock('@/lib/supabase/client_admin', () => ({
     __esModule: true,

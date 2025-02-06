@@ -1,6 +1,6 @@
 import { OauthRegisternButton } from '@/components/auth/masuk/OauthLogin';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Button } from '@/components/shadcnUi/button';
+import { Input } from '@/components/shadcnUi/input';
 import Image from 'next/image';
 import Link from 'next/link';
 

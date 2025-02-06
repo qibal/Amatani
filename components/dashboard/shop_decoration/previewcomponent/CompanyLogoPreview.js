@@ -1,8 +1,8 @@
 'use client'
 
-import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
-import { Card, CardContent } from "@/components/ui/card";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { Carousel, CarouselContent, CarouselItem } from "@/components/shadcnUi/carousel";
+import { Card, CardContent } from "@/components/shadcnUi/card";
+import { AspectRatio } from "@/components/shadcnUi/aspect-ratio";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 

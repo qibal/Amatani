@@ -1,6 +1,6 @@
 // File: pages/404.js
 'use client'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/components/shadcnUi/button'
 import Image from 'next/image'
 import Link from 'next/link'
 

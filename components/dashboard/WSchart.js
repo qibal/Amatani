@@ -10,12 +10,12 @@ import {
     CardFooter,
     CardHeader,
     CardTitle,
-} from "@/components/ui/card"
+} from "@/components/shadcnUi/card"
 import {
     ChartContainer,
     ChartTooltip,
     ChartTooltipContent,
-} from "@/components/ui/chart"
+} from "@/components/shadcnUi/chart"
 
 // Data penjualan harian dari Senin hingga Minggu
 const chartData = [
