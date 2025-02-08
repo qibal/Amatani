@@ -61,8 +61,8 @@ export function AppSidebar({ user }) {
             {/* Home */}
             <SidebarMenu>
               <SidebarMenuItem >
-                <SidebarMenuButton asChild isActive={pathname === "/dashboard"}>
-                  <a href="/dashboard">
+                <SidebarMenuButton asChild isActive={pathname === "/admin"}>
+                  <a href="/admin">
                     <Home />
                     <span>Home</span>
                   </a>
@@ -78,8 +78,8 @@ export function AppSidebar({ user }) {
             {/* Home */}
             <SidebarMenu>
               <SidebarMenuItem >
-                <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/products')}>
-                  <a href="/dashboard/products">
+                <SidebarMenuButton asChild isActive={pathname.startsWith('/admin/products')}>
+                  <a href="/admin/products">
                     <Package2 />
                     <span>Produk</span>
                   </a>
@@ -92,8 +92,8 @@ export function AppSidebar({ user }) {
             {/* Home */}
             <SidebarMenu>
               <SidebarMenuItem >
-                <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/orders')}>
-                  <a href="/dashboard/orders">
+                <SidebarMenuButton asChild isActive={pathname.startsWith('/admin/orders')}>
+                  <a href="/admin/orders">
                     <ShoppingCart />
                     <span>Pesanan</span>
                   </a>
@@ -106,8 +106,8 @@ export function AppSidebar({ user }) {
             {/* Home */}
             <SidebarMenu>
               <SidebarMenuItem >
-                <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/penilaian')}>
-                  <a href="/dashboard/penilaian">
+                <SidebarMenuButton asChild isActive={pathname.startsWith('/admin/penilaian')}>
+                  <a href="/admin/penilaian">
                     <Star />
                     <span>Penilaian</span>
                   </a>
@@ -124,8 +124,8 @@ export function AppSidebar({ user }) {
             {/* Home */}
             <SidebarMenu>
               <SidebarMenuItem >
-                <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/wallet')}>
-                  <a href="/dashboard/wallet">
+                <SidebarMenuButton asChild isActive={pathname.startsWith('/admin/wallet')}>
+                  <a href="/admin/wallet">
                     <WalletMinimal />
                     <span>Dompet</span>
                   </a>
@@ -142,8 +142,8 @@ export function AppSidebar({ user }) {
             {/* Home */}
             <SidebarMenu>
               <SidebarMenuItem >
-                <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/customers')}>
-                  <a href="/dashboard/customers">
+                <SidebarMenuButton asChild isActive={pathname.startsWith('/admin/customers')}>
+                  <a href="/admin/customers">
                     <UsersRound />
                     <span>Customers</span>
                   </a>
@@ -154,8 +154,8 @@ export function AppSidebar({ user }) {
             {/* Home */}
             <SidebarMenu>
               <SidebarMenuItem >
-                <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/faq')}>
-                  <a href="/dashboard/faq">
+                <SidebarMenuButton asChild isActive={pathname.startsWith('/admin/faq')}>
+                  <a href="/admin/faq">
                     <FileQuestion />
                     <span>FAQ</span>
                   </a>
@@ -172,8 +172,8 @@ export function AppSidebar({ user }) {
             {/* Home */}
             <SidebarMenu>
               <SidebarMenuItem >
-                <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/report')}>
-                  <a href="/dashboard/report">
+                <SidebarMenuButton asChild isActive={pathname.startsWith('/admin/report')}>
+                  <a href="/admin/report">
                     <ChartColumnIncreasing />
                     <span>Reports</span>
                   </a>
@@ -186,8 +186,8 @@ export function AppSidebar({ user }) {
             {/* Home */}
             <SidebarMenu>
               <SidebarMenuItem >
-                <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/shop_decoration')}>
-                  <a href="/dashboard/shop_decoration">
+                <SidebarMenuButton asChild isActive={pathname.startsWith('/admin/shop_decoration')}>
+                  <a href="/admin/shop_decoration">
                     <ShoppingCart />
                     <span>Dekorasi Toko</span>
                   </a>
