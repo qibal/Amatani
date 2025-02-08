@@ -378,20 +378,19 @@ create table public.lp_company_logos (
   created_at timestamp with time zone not null default now(),
   constraint lp_company_logos_pkey primary key (cp_id)
 ) TABLESPACE pg_default;
-create table public.lp_categories_pangan (
-  id_categories_pangan uuid not null default gen_random_uuid (),
+create table public.lp_food_categories (
+  food_categories_id uuid not null default gen_random_uuid (),
   created_at timestamp with time zone not null default now(),
   image_path character varying not null,
   categories_id uuid not null,
-  constraint lp_categories_pangan_pkey primary key (id_categories_pangan),
-  constraint lp_categories_categories_id_fkey foreign KEY (categories_id) references categories (categories_id) on update CASCADE on delete CASCADE
+  constraint lp_food_categories_categories_id_fkey foreign KEY (categories_id) references categories (categories_id) on update CASCADE on delete set null
 ) TABLESPACE pg_default;
-create table public.lp_jasa (
-  id_jasa uuid not null default gen_random_uuid (),
-  jasa_name character varying not null,
+create table public.lp_service (
+  service_id uuid not null default gen_random_uuid (),
+  service_name character varying not null,
   image_path character varying not null,
   created_at timestamp with time zone not null default now(),
-  constraint lp_jasa_pkey primary key (id_jasa)
+  constraint lp_service_pkey primary key (service_id)
 ) TABLESPACE pg_default;
 create table public.lp_experience (
   experience_id uuid not null default gen_random_uuid (),

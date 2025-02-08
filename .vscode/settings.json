@@ -12,7 +12,11 @@
             "color": "foldercolorizer.color_996666"
         },
         {
-            "folderPath": "Amatani\\app\\api\\v2\\(dashboard)\\admin\\sd\\experience\\",
+            "folderPath": "Amatani\\app\\api\\v2\\(dashboard)\\admin\\sd\\company_logos\\",
+            "color": "foldercolorizer.color_996666"
+        },
+        {
+            "folderPath": "Amatani\\app\\api\\v2\\(dashboard)\\admin\\sd\\",
             "color": "foldercolorizer.color_996666"
         }
     ],

@@ -2,19 +2,36 @@ import sql from "@/lib/postgres";
 import { supabase } from "@/lib/supabase/client";
 import { v4 as uuidv4 } from 'uuid';
 
-export async function InsertKategoriPanganAction(categoryId, categoryImage) {
+export async function GetFoodCategoriesAction() {
     try {
+        const result = await sql`
+            SELECT lp_food_categories.*, categories.categories_name
+            FROM lp_food_categories
+            JOIN categories ON lp_food_categories.categories_id = categories.categories_id;
+        `;
+        return { success: true, data: result };
+    } catch (error) {
+        console.error('Error getting food categories:', error);
+        return { success: false, error: error.message };
+    }
+}
+export async function InsertFoodCategoriesAction(categories_id, category_image) {
+    try {
+        if (!categories_id || !category_image) {
+            throw new Error("Category ID and category image are required");
+        }
+
         // Generate a unique filename using UUID
-        const fileName = `${uuidv4()}.${categoryImage.name.split('.').pop()}`;
+        const fileName = `${uuidv4()}.${category_image.name.split('.').pop()}`;
 
         // Convert the file to a ReadableStream
-        const stream = categoryImage.stream();
+        const stream = category_image.stream();
 
         // Upload the file to Supabase storage
         const { data, error } = await supabase.storage
             .from('lp')
             .upload(fileName, stream, {
-                contentType: categoryImage.type,
+                contentType: category_image.type,
                 duplex: 'half',
             });
 
@@ -25,43 +42,32 @@ export async function InsertKategoriPanganAction(categoryId, categoryImage) {
         const imagePath = `lp/${fileName}`;
 
         // Insert the image path and category id into the database
-        const result = await sql`
-            INSERT INTO lp_categories_pangan (categories_id, image_path)
-            VALUES (${categoryId}, ${imagePath})
+        const [result] = await sql`
+            INSERT INTO lp_food_categories (categories_id, image_path)
+            VALUES (${categories_id}, ${imagePath})
             RETURNING *;
         `;
 
-        return result[0];
+        return { success: true, data: result };
     } catch (error) {
-        console.error('Error inserting category:', error);
-        throw error;
+        console.error('Error inserting food category:', error);
+        return { success: false, error: error.message };
     }
 }
-
-export async function GetKategoriPanganAction() {
+export async function DeleteFoodCategoriesAction(fc_id) {
     try {
-        const result = await sql`
-            SELECT lp_categories_pangan.*, categories.categories_name
-            FROM lp_categories_pangan
-            JOIN categories ON lp_categories_pangan.categories_id = categories.categories_id;
-        `;
-        return result;
-    } catch (error) {
-        console.error('Error getting categories:', error);
-        throw error;
-    }
-}
+        if (!fc_id) {
+            throw new Error("Food category ID is required");
+        }
 
-export async function DeleteKategoriPanganAction(id) {
-    try {
         // Get the image path from the database
         const [category] = await sql`
-            SELECT image_path FROM lp_categories_pangan
-            WHERE id_categories_pangan = ${id};
+            SELECT image_path FROM lp_food_categories
+            WHERE food_categories_id = ${fc_id};
         `;
 
         if (!category) {
-            throw new Error('Category not found');
+            throw new Error('Food category not found');
         }
 
         // Extract the file name from the image path
@@ -78,14 +84,14 @@ export async function DeleteKategoriPanganAction(id) {
 
         // Delete the image path from the database
         const result = await sql`
-            DELETE FROM lp_categories_pangan
-            WHERE id_categories_pangan = ${id}
+            DELETE FROM lp_food_categories
+            WHERE food_categories_id = ${fc_id}
             RETURNING *;
         `;
 
-        return result[0];
+        return { success: true, data: result };
     } catch (error) {
-        console.error('Error deleting category:', error);
-        throw error;
+        console.error('Error deleting food category:', error);
+        return { success: false, error: error.message };
     }
 }

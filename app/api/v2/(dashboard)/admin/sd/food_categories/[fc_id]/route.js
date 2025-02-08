@@ -1,9 +1,9 @@
-import { DeleteCompanyLogoAction } from "@/app/actions/v2/dashboard/admin/sd/companyLogosActions";
+import { DeleteFoodCategoriesAction } from "@/app/actions/v2/dashboard/admin/sd/foodCategories";
 
 export async function DELETE(req, { params }) {
     try {
-        const { cp_id } = params;
-        const { success, data, error, message } = await DeleteCompanyLogoAction(cp_id);
+        const { fc_id } = params;
+        const { success, data, error, message } = await DeleteFoodCategoriesAction(fc_id);
 
         if (success) {
             return new Response(JSON.stringify({ success: true, data }), {
@@ -11,8 +11,8 @@ export async function DELETE(req, { params }) {
                 headers: { "Content-Type": "application/json" },
             });
         } else {
-            console.error("DELETE company logos failed:", error);
-            const status = message === "Logo not found" ? 404 : 500;
+            console.error("DELETE food categories failed:", error);
+            const status = message === "Food category not found" ? 404 : 500;
             return new Response(
                 JSON.stringify({ success: false, error: error || message }),
                 {

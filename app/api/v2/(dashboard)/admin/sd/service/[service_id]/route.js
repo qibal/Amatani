@@ -1,9 +1,10 @@
-import { DeleteCompanyLogoAction } from "@/app/actions/v2/dashboard/admin/sd/companyLogosActions";
+//untuk delete route api by id
+import { DeleteServiceAction } from "@/app/actions/v2/dashboard/admin/sd/serviceActions";
 
 export async function DELETE(req, { params }) {
     try {
-        const { cp_id } = params;
-        const { success, data, error, message } = await DeleteCompanyLogoAction(cp_id);
+        const { service_id } = params;
+        const { success, data, error, message } = await DeleteServiceAction(service_id);
 
         if (success) {
             return new Response(JSON.stringify({ success: true, data }), {
@@ -11,8 +12,8 @@ export async function DELETE(req, { params }) {
                 headers: { "Content-Type": "application/json" },
             });
         } else {
-            console.error("DELETE company logos failed:", error);
-            const status = message === "Logo not found" ? 404 : 500;
+            console.error("DELETE services failed:", error);
+            const status = message === "Service not found" ? 404 : 500;
             return new Response(
                 JSON.stringify({ success: false, error: error || message }),
                 {
