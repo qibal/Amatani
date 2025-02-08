@@ -106,8 +106,8 @@ export function AppSidebar({ user }) {
             {/* Home */}
             <SidebarMenu>
               <SidebarMenuItem >
-                <SidebarMenuButton asChild isActive={pathname.startsWith('/admin/penilaian')}>
-                  <a href="/admin/penilaian">
+                <SidebarMenuButton asChild isActive={pathname.startsWith('/admin/reviews')}>
+                  <a href="/admin/reviews">
                     <Star />
                     <span>Penilaian</span>
                   </a>
