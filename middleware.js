@@ -56,8 +56,8 @@ export async function middleware(request) {
         console.log('forwardedProto:', forwardedProto);
 
         //router admin
-        if (url.pathname.startsWith('/dashboard')) {
-            console.log('masuk halamanan dashboard');
+        if (url.pathname.startsWith('/admin')) {
+            console.log('masuk halamanan admin');
             if (user.user == null) {
                 console.log('user belum login, tidak boleh masuk, arahkan ke /');
                 url.pathname = '/';
@@ -84,8 +84,8 @@ export async function middleware(request) {
             } else if (user.user != null) {
                 console.log('user sudah login');
                 if (user_role === 'admin') {
-                    console.log('user adalan admin, pindahkan ke /dashboard');
-                    url.pathname = '/dashboard';
+                    console.log('user adalan admin, pindahkan ke /admin');
+                    url.pathname = '/admin';
                     return NextResponse.redirect(url);
                 } else if (user_role === 'customer') {
                     console.log('user adalah customer, masuk halaman /');
@@ -104,8 +104,8 @@ export async function middleware(request) {
             } else if (user.user != null) {
                 console.log('user sudah login');
                 if (user_role === 'admin') {
-                    console.log('user adalan admin,tidak boleh masuk, pindahkan ke /dashboard');
-                    url.pathname = '/dashboard';
+                    console.log('user adalan admin,tidak boleh masuk, pindahkan ke /admin');
+                    url.pathname = '/admin';
                     return NextResponse.redirect(url);
                 } else if (user_role === 'customer') {
                     console.log('user adalah customer, boleh masuk, arahkan ke /profile');
@@ -123,8 +123,8 @@ export async function middleware(request) {
             } else if (user.user != null) {
                 console.log('user sudah login');
                 if (user_role === 'admin') {
-                    console.log('user adalan admin,tidak boleh masuk, pindahkan ke /dashboard');
-                    url.pathname = '/dashboard';
+                    console.log('user adalan admin,tidak boleh masuk, pindahkan ke /admin');
+                    url.pathname = '/admin';
                     return NextResponse.redirect(url);
                 } else if (user_role === 'customer') {
                     console.log('user adalah customer, boleh masuk, arahkan ke /profile');
@@ -142,8 +142,8 @@ export async function middleware(request) {
             } else if (user.user != null) {
                 console.log('user sudah login');
                 if (user_role === 'admin') {
-                    console.log('user adalan admin,tidak boleh masuk, pindahkan ke /dashboard');
-                    url.pathname = '/dashboard';
+                    console.log('user adalan admin,tidak boleh masuk, pindahkan ke /admin');
+                    url.pathname = '/admin';
                     return NextResponse.redirect(url);
                 } else if (user_role === 'customer') {
                     console.log('user adalah customer, boleh masuk, arahkan ke /profile');
@@ -160,7 +160,7 @@ export async function middleware(request) {
 export const config = {
     matcher: [
         // admin
-        '/dashboard/:path*',
+        '/admin/:path*',
         //customer
         '/profile/:path*',
         '/orders/:path*',

@@ -8,7 +8,7 @@ export default async function DashboardLayout({ children }) {
 
     return (
         <SidebarProvider>
-            <appSidebar user={auth.user} />
+            <AppSidebar user={auth.user} />
             <SidebarInset>
                 {children}
             </SidebarInset>

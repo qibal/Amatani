@@ -11,7 +11,6 @@ export default function AddFaqPage() {
     const router = useRouter()
     const handleAddFaq = async (params) => {
         console.log('Adding FAQ:', params);
-
         const formData = new FormData();
         formData.append('title', params.title);
         formData.append('content', params.content);
