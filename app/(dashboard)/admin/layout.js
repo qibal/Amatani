@@ -1,6 +1,6 @@
 import { AppSidebar } from "@/components/dashboard/appSidebar"
 import { SidebarInset, SidebarProvider } from "@/components/shadcnUi/sidebar"
-import GetUserDashboard from "../../actions/v1/admin/GetUserDashboard";
+import GetUserDashboard from "../../../api v1/actions v1/v1/admin/GetUserDashboard";
 
 export default async function DashboardLayout({ children }) {
     const auth = await GetUserDashboard()

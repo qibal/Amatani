@@ -1,6 +1,8 @@
+import { DeleteProductAction, GetProductByIdAction, UpdateProductAction } from "@/app/actions/v2/dashboard/admin/products/productsActions";
+
 export async function GET(req, { params }) {
     try {
-        const result = await GetProductAction(req, params);
+        const result = await GetProductByIdAction(req, { params });
 
         if (result) {
             return new Response(JSON.stringify({
@@ -38,7 +40,7 @@ export async function GET(req, { params }) {
 }
 export async function PUT(req, { params }) {
     try {
-        const result = await GetProductAction(req, params);
+        const result = await UpdateProductAction(req, { params });
 
         if (result) {
             return new Response(JSON.stringify({
@@ -76,7 +78,7 @@ export async function PUT(req, { params }) {
 }
 export async function DELETE(req, { params }) {
     try {
-        const result = await GetProductAction(req, params);
+        const result = await DeleteProductAction(req, { params });
 
         if (result) {
             return new Response(JSON.stringify({

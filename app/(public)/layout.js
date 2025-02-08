@@ -1,8 +1,8 @@
-import Navbar from "@/components/customers/Navbar/Navbar";
+import Navbar from "@/components/public/customers/Navbar/Navbar";
 import { Suspense } from "react";
 
-import { CartProvider } from "@/components/customers/Navbar/CartContext";
-import { GetUserCustomers } from "@/components/customers/GetUser";
+import { CartProvider } from "@/components/public/customers/Navbar/CartContext";
+import { GetUserCustomers } from "@/components/public/customers/GetUser";
 
 
 

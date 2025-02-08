@@ -8,7 +8,7 @@ import { Button } from "@/components/shadcnUi/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/shadcnUi/card"
 import { Separator } from "@/components/shadcnUi/separator"
 import Link from 'next/link'
-import { useCart } from '@/components/customers/Navbar/CartContext'
+import { useCart } from '@/components/public/customers/Navbar/CartContext'
 import { Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/shadcnUi/alert-dialog'

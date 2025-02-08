@@ -30,7 +30,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Avatar, AvatarFallback, AvatarImage } from "../shadcnUi/avatar"
 import { usePathname, useRouter } from "next/navigation";
 import { Button } from "../shadcnUi/button"
-import { Logout } from "@/app/actions/v1/Auth"
+import { Logout } from "@/api v1/actions v1/v1/Auth"
 
 export function AppSidebar({ user }) {
   const pathname = usePathname();

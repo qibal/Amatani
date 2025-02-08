@@ -1,8 +1,8 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import ProductDetailComponent from '@/components/customers/product/product_detail/ProductsDetail';
+import ProductDetailComponent from '@/components/public/customers/product/product_detail/ProductsDetail';
 import '@testing-library/jest-dom';
 import { useRouter } from 'next/router';
-import { useCart } from '@/components/customers/Navbar/CartContext';
+import { useCart } from '@/components/public/customers/Navbar/CartContext';
 
 // Mock fetch
 global.fetch = jest.fn((url) => {

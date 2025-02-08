@@ -1,5 +1,5 @@
 
-import { login, signup } from '@/app/actions/v1/Auth';
+import { login, signup } from '@/api v1/actions v1/v1/Auth';
 
 import { Button } from '@/components/shadcnUi/button';
 import Link from 'next/link';

@@ -2,7 +2,7 @@ import { GetFaqAction, InsertFaqAction } from "@/app/actions/v2/dashboard/admin/
 
 export async function GET(req, { params }) {
     try {
-        const result = await GetFaqAction(req, params);
+        const result = await GetFaqAction(req, { params });
 
         if (result) {
             return new Response(JSON.stringify({

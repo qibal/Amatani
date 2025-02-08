@@ -1,9 +1,9 @@
 "use client"
 
-import FaqAccordion from '@/components/customers/faq/Faq_accordion'
-import FaqCategories from '@/components/customers/faq/Faq_categories'
-import FaqSearch from '@/components/customers/faq/Faq_search'
-import WhatsappCards from '@/components/customers/faq/Whatssap_card'
+import FaqAccordion from '@/components/public/customers/faq/Faq_accordion'
+import FaqCategories from '@/components/public/customers/faq/Faq_categories'
+import FaqSearch from '@/components/public/customers/faq/Faq_search'
+import WhatsappCards from '@/components/public/customers/faq/Whatssap_card'
 import { useState } from 'react'
 
 export default function FaqPage() {

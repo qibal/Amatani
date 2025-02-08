@@ -1,12 +1,12 @@
-import HomeBuah from "@/components/customers/HomeBuah";
-import HomeKPangan from "@/components/customers/HomeKPangan";
-import HomeTestimoni from "@/components/customers/HomeTestimoni";
-import Footer from "@/components/customers/Footer";
+import HomeBuah from "@/components/public/customers/HomeBuah";
+import HomeKPangan from "@/components/public/customers/HomeKPangan";
+import HomeTestimoni from "@/components/public/customers/HomeTestimoni";
+import Footer from "@/components/public/customers/Footer";
 import Image from "next/image";
-import CompanyLogosCarousel from "@/components/customers/CarouselCompanyLogos";
-import SearchHomeCustomer from "@/components/customers/SearchProduct";
-import Statistics from "@/components/customers/Statistics";
-import FeatureGrid from "@/components/customers/FeatureGrid";
+import CompanyLogosCarousel from "@/components/public/customers/CarouselCompanyLogos";
+import SearchHomeCustomer from "@/components/public/customers/SearchProduct";
+import Statistics from "@/components/public/customers/Statistics";
+import FeatureGrid from "@/components/public/customers/FeatureGrid";
 
 export default function CustomerPage() {
     return (

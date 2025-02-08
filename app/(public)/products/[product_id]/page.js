@@ -1,4 +1,4 @@
-import ProductDetailComponent from "@/components/customers/product/product_detail/ProductsDetail";
+import ProductDetailComponent from "@/components/public/customers/product/product_detail/ProductsDetail";
 
 export default async function ProductDetail({ params }) {
     const { product_id } = await params;
