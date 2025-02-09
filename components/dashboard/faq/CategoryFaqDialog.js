@@ -32,12 +32,12 @@ export default function ManageCategoryFaqDialog() {
 
     const fetchCategories = async () => {
         try {
-            const response = await fetch('/api/dashboard/faq/categories');
-            const data = await response.json();
-            if (Array.isArray(data)) {
-                setCategories(data);
+            const response = await fetch('/api/v2/admin/faq/categories');
+            const result = await response.json();
+            if (result.success && Array.isArray(result.data)) {
+                setCategories(result.data);
             } else {
-                console.error("Categories data is not an array:", data);
+                console.error("Categories data is not an array:", result);
                 setCategories([]);
             }
         } catch (error) {
@@ -51,7 +51,7 @@ export default function ManageCategoryFaqDialog() {
                 const formData = new FormData();
                 formData.append('name', params.name);
 
-                const result = await fetch('/api/dashboard/faq/categories/insert', {
+                const result = await fetch('/api/v2/admin/faq/categories', {
                     method: 'POST',
                     body: formData,
                 });
@@ -81,7 +81,7 @@ export default function ManageCategoryFaqDialog() {
         setPendingCategoryId(categoryId);
         startDeleting(async () => {
             try {
-                const response = await fetch(`/api/dashboard/faq/categories/delete/${categoryId}`, {
+                const response = await fetch(`/api/v2/admin/faq/categories/${categoryId}`, {
                     method: 'DELETE',
                 });
 
@@ -166,7 +166,7 @@ export default function ManageCategoryFaqDialog() {
                                     key={category.category_id}
                                     className="flex items-center justify-between p-2 border rounded-md"
                                 >
-                                    <p className="text-sm">{category.name}</p>
+                                    <p className="text-sm">{category.category_name}</p>
                                     <AlertDialog>
                                         <AlertDialogTrigger asChild>
                                             <Button
@@ -191,7 +191,7 @@ export default function ManageCategoryFaqDialog() {
                                             <AlertDialogFooter>
                                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                                                 <AlertDialogAction
-                                                    onClick={() => handleDeleteCategory(category.category_id, category.name)}
+                                                    onClick={() => handleDeleteCategory(category.category_id, category.category_name)}
                                                 >
                                                     Delete
                                                 </AlertDialogAction>

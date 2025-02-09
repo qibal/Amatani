@@ -46,23 +46,23 @@ export default function CompanyLogo() {
 
     const fetchCompanyLogos = async () => {
         try {
-            const response = await fetch('/api/dashboard/shop_decoration/company_logos');
+            const response = await fetch('/api/v2/admin/sd/company_logos');
             if (!response.ok) {
                 throw new Error('Failed to fetch company logos');
             }
             const data = await response.json();
-            setLogos(data);
+            setLogos(data.data);
         } catch (error) {
             console.error('Error fetching company logos:', error);
         }
     };
 
-    const handleDelete = async (id) => {
+    const handleDelete = async (cp_id) => {
         const toastId = "delete-logo-toast"; // ID unik untuk toast ini
 
         startDeleteTransition(async () => {
             try {
-                const response = await fetch(`/api/dashboard/shop_decoration/company_logos/${id}`, {
+                const response = await fetch(`/api/v2/admin/sd/company_logos/${cp_id}`, {
                     method: 'DELETE',
                 });
 
@@ -113,7 +113,7 @@ export default function CompanyLogo() {
                 setProgress(0);
 
                 // Mengirim data ke API
-                const response = await fetch('/api/dashboard/shop_decoration/company_logos', {
+                const response = await fetch('/api/v2/admin/sd/company_logos', {
                     method: 'POST',
                     body: formData,
                     duplex: 'half', // Add duplex option
@@ -195,7 +195,7 @@ export default function CompanyLogo() {
                                                     <div className="p-4">
                                                         <div className="grid grid-cols-1 gap-4">
                                                             {logos.map((logo) => (
-                                                                <div key={logo.id} className="flex items-center justify-between p-2 border rounded-lg">
+                                                                <div key={logo.cp_id} className="flex items-center justify-between p-2 border rounded-lg">
                                                                     <div className="flex items-center">
                                                                         <Image
                                                                             src={`https://xmlmcdfzbwjljhaebzna.supabase.co/storage/v1/object/public/${logo.image_path}`}
@@ -224,7 +224,7 @@ export default function CompanyLogo() {
                                                                             </AlertDialogHeader>
                                                                             <AlertDialogFooter>
                                                                                 <AlertDialogCancel>Batal</AlertDialogCancel>
-                                                                                <AlertDialogAction onClick={() => handleDelete(logo.id)} disabled={isDeleting}>
+                                                                                <AlertDialogAction onClick={() => handleDelete(logo.cp_id)} disabled={isDeleting}>
                                                                                     {isDeleting ? 'Menghapus...' : 'Hapus'}
                                                                                 </AlertDialogAction>
                                                                             </AlertDialogFooter>

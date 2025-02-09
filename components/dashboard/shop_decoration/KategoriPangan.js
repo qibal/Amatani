@@ -49,12 +49,12 @@ export default function KategoriPangan() {
 
     const fetchCategories = async () => {
         try {
-            const response = await fetch('/api/dashboard/products/categories');
+            const response = await fetch('/api/v2/admin/products/categories');
             if (!response.ok) {
                 throw new Error('Failed to fetch categories');
             }
             const data = await response.json();
-            setCategories(data);
+            setCategories(data.data);
         } catch (error) {
             console.error('Error fetching categories:', error);
         }
@@ -62,12 +62,12 @@ export default function KategoriPangan() {
 
     const fetchLpCategoriesPangan = async () => {
         try {
-            const response = await fetch('/api/dashboard/shop_decoration/kategori_pangan');
+            const response = await fetch('/api/v2/admin/sd/food_categories');
             if (!response.ok) {
                 throw new Error('Failed to fetch lp categories pangan');
             }
             const data = await response.json();
-            setLpCategoriesPangan(data);
+            setLpCategoriesPangan(data.data);
         } catch (error) {
             console.error('Error fetching lp categories pangan:', error);
         }
@@ -76,7 +76,7 @@ export default function KategoriPangan() {
     const handleDelete = async (id) => {
         startDeleteTransition(async () => {
             try {
-                const response = await fetch(`/api/dashboard/shop_decoration/kategori_pangan/${id}`, {
+                const response = await fetch(`/api/v2/admin/sd/food_categories/${id}`, {
                     method: 'DELETE',
                 });
 
@@ -115,13 +115,13 @@ export default function KategoriPangan() {
         startTransition(async () => {
             try {
                 const formData = new FormData();
-                formData.append('category', data.category);
-                formData.append('categoryImage', data.categoryImage[0]);
+                formData.append('categories_id', data.category);
+                formData.append('category_image', data.categoryImage[0]);
 
                 setIsLoading(true);
                 setProgress(0);
 
-                const response = await fetch('/api/dashboard/shop_decoration/kategori_pangan', {
+                const response = await fetch('/api/v2/admin/sd/food_categories', {
                     method: 'POST',
                     body: formData,
                     duplex: 'half', // Add duplex option
@@ -196,7 +196,7 @@ export default function KategoriPangan() {
                                                     <div className="p-4">
                                                         <div className="grid grid-cols-1 gap-4">
                                                             {lpCategoriesPangan.map((category) => (
-                                                                <div key={category.id_categories_pangan} className="grid grid-cols-3 items-center justify-between p-2 border rounded-lg">
+                                                                <div key={category.food_categories_id} className="grid grid-cols-3 items-center justify-between p-2 border rounded-lg">
                                                                     <div className="flex items-center">
                                                                         <Image
                                                                             src={`https://xmlmcdfzbwjljhaebzna.supabase.co/storage/v1/object/public/${category.image_path}`}
@@ -229,7 +229,7 @@ export default function KategoriPangan() {
                                                                                 </AlertDialogHeader>
                                                                                 <AlertDialogFooter>
                                                                                     <AlertDialogCancel>Batal</AlertDialogCancel>
-                                                                                    <AlertDialogAction onClick={() => handleDelete(category.id_categories_pangan)} disabled={isDeleting}>
+                                                                                    <AlertDialogAction onClick={() => handleDelete(category.food_categories_id)} disabled={isDeleting}>
                                                                                         {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Hapus'}
                                                                                     </AlertDialogAction>
                                                                                 </AlertDialogFooter>

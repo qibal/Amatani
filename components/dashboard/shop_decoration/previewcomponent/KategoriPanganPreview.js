@@ -8,12 +8,12 @@ export default function HomeKPanganPreview({ refresh }) {
 
     const fetchCategories = async () => {
         try {
-            const response = await fetch('/api/dashboard/shop_decoration/kategori_pangan');
+            const response = await fetch('/api/v2/admin/sd/food_categories');
             if (!response.ok) {
                 throw new Error('Failed to fetch categories');
             }
             const data = await response.json();
-            setCategories(data);
+            setCategories(data.data);
         } catch (error) {
             console.error('Error fetching categories:', error);
         }

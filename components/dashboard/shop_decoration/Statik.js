@@ -35,12 +35,12 @@ export default function Statik() {
 
     const fetchStatistics = async () => {
         try {
-            const response = await fetch('/api/dashboard/shop_decoration/statistics');
+            const response = await fetch('/api/v2/admin/sd/experience');
             if (!response.ok) {
                 throw new Error('Failed to fetch statistics');
             }
             const data = await response.json();
-            setStatistics(data);
+            setStatistics(data.data);
         } catch (error) {
             console.error('Error fetching statistics:', error);
         }
@@ -61,7 +61,7 @@ export default function Statik() {
                 formData.append('description', data.description);
 
                 // Mengirim data ke API
-                const response = await fetch('/api/dashboard/shop_decoration/statistics', {
+                const response = await fetch('/api/v2/admin/sd/experience', {
                     method: 'POST',
                     body: formData,
                 });
@@ -103,7 +103,7 @@ export default function Statik() {
 
         startDeleteTransition(async () => {
             try {
-                const response = await fetch(`/api/dashboard/shop_decoration/statistics/${id_statistic}`, {
+                const response = await fetch(`/api/v2/admin/sd/experience/${id_statistic}`, {
                     method: 'DELETE',
                 });
 
@@ -117,7 +117,7 @@ export default function Statik() {
                 // Tampilkan atau perbarui toast jika berhasil
                 toast.success("Data berhasil dihapus!", {
                     id: toastId,
-                    description: `Data Statistik  telah berhasil dihapus.`,
+                    description: `Data Statistik telah berhasil dihapus.`,
                     duration: 5000,
                 });
 
@@ -155,7 +155,7 @@ export default function Statik() {
                                                 </SheetHeader>
                                                 <div className="p-4">
                                                     {statistics.map(stat => (
-                                                        <div key={stat.id_statistic} className="flex justify-between items-center mb-4">
+                                                        <div key={stat.experience_id} className="flex justify-between items-center mb-4">
                                                             <div>
                                                                 <p>{stat.number}</p>
                                                                 <p>{stat.description}</p>
@@ -173,7 +173,7 @@ export default function Statik() {
                                                                     </AlertDialogHeader>
                                                                     <AlertDialogFooter>
                                                                         <AlertDialogCancel>Batal</AlertDialogCancel>
-                                                                        <AlertDialogAction onClick={() => handleDelete(stat.id_statistic)} disabled={isDeleting}>
+                                                                        <AlertDialogAction onClick={() => handleDelete(stat.experience_id)} disabled={isDeleting}>
                                                                             {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Hapus'}
                                                                         </AlertDialogAction>
                                                                     </AlertDialogFooter>

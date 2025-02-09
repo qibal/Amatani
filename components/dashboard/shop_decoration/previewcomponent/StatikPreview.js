@@ -3,23 +3,26 @@ import React, { useEffect, useState } from "react";
 export default function StatikPreview({ fetchStatistics }) {
     const [stats, setStats] = useState([]);
 
+    // Fungsi untuk mengambil data statistik dari API
     const fetchStatisticsInternal = async () => {
         try {
-            const response = await fetch('/api/dashboard/shop_decoration/statistics');
+            const response = await fetch('/api/v2/admin/sd/experience');
             if (!response.ok) {
                 throw new Error('Failed to fetch statistics');
             }
             const data = await response.json();
-            setStats(data);
+            setStats(data.data);
         } catch (error) {
             console.error('Error fetching statistics:', error);
         }
     };
 
+    // Mengambil data statistik saat komponen pertama kali dirender
     useEffect(() => {
         fetchStatisticsInternal();
     }, []);
 
+    // Mengambil data statistik setiap kali fetchStatistics berubah
     useEffect(() => {
         fetchStatisticsInternal();
     }, [fetchStatistics]);

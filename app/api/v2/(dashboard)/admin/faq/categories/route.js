@@ -38,6 +38,7 @@ export async function GET(req, { params }) {
         });
     }
 }
+
 export async function POST(req, { params }) {
     try {
         const result = await InsertCategoriesFaqAction(req, { params });
@@ -64,7 +65,7 @@ export async function POST(req, { params }) {
             });
         }
     } catch (error) {
-        console.error("Error in GET request:", error);
+        console.error("Error in POST request:", error);
         return new Response(JSON.stringify({
             success: false,
             error: error.message

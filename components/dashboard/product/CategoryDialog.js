@@ -32,12 +32,12 @@ export default function ManageCategoriesDialog() {
 
     const fetchCategories = async () => {
         try {
-            const response = await fetch('/api/dashboard/products/categories');
-            const data = await response.json();
-            if (Array.isArray(data)) {
-                setCategories(data);
+            const response = await fetch('/api/v2/admin/products/categories');
+            const result = await response.json();
+            if (result.success && Array.isArray(result.data)) {
+                setCategories(result.data);
             } else {
-                console.error("Categories data is not an array:", data);
+                console.error("Categories data is not an array:", result);
                 setCategories([]);
             }
         } catch (error) {
@@ -49,9 +49,9 @@ export default function ManageCategoriesDialog() {
         startAdding(async () => {
             try {
                 const formData = new FormData();
-                formData.append('category_name', params.categories_name);
+                formData.append('categories_name', params.categories_name);
 
-                const result = await fetch('/api/dashboard/products/categories/insert', {
+                const result = await fetch('/api/v2/admin/products/categories', {
                     method: 'POST',
                     body: formData,
                 });
@@ -73,7 +73,7 @@ export default function ManageCategoriesDialog() {
         setPendingCategoryId(categoryId);
         startDeleting(async () => {
             try {
-                const response = await fetch(`/api/dashboard/products/categories/delete/${categoryId}`, {
+                const response = await fetch(`/api/v2/admin/products/categories/${categoryId}`, {
                     method: 'DELETE',
                 });
 

@@ -45,25 +45,28 @@ export default function JasaGratis() {
     const [isLoading, setIsLoading] = useState(false);
     const [progress, setProgress] = useState(0);
     const [preview, setPreview] = useState(null);
+
+    // Fungsi untuk mengambil data jasa dari API
     const fetchJasaList = async () => {
         try {
-            const response = await fetch('/api/dashboard/shop_decoration/jasa');
+            const response = await fetch('/api/v2/admin/sd/service');
             if (!response.ok) {
                 throw new Error('Failed to fetch jasa list');
             }
             const data = await response.json();
-            setJasaList(data);
+            setJasaList(data.data);
         } catch (error) {
             console.error('Error fetching jasa list:', error);
         }
     };
 
-    const handleDelete = async (id) => {
+    // Fungsi untuk menghapus jasa
+    const handleDelete = async (service_id) => {
         const toastId = "delete-jasa-toast"; // ID unik untuk toast ini
 
         startDeleteTransition(async () => {
             try {
-                const response = await fetch(`/api/dashboard/shop_decoration/jasa/${id}`, {
+                const response = await fetch(`/api/v2/admin/sd/service/${service_id}`, {
                     method: 'DELETE',
                 });
 
@@ -101,19 +104,20 @@ export default function JasaGratis() {
         fetchJasaList();
     }, []);
 
+    // Fungsi untuk menambahkan jasa baru
     const onSubmit = async (data) => {
         const toastId = "jasa-toast"; // ID unik untuk toast ini
 
         startTransition(async () => {
             try {
                 const formData = new FormData();
-                formData.append('companyName', data.companyName);
-                formData.append('logo', data.logo[0]);
+                formData.append('service_name', data.companyName);
+                formData.append('image', data.logo[0]);
 
                 setIsLoading(true);
                 setProgress(0);
 
-                const response = await fetch('/api/dashboard/shop_decoration/jasa', {
+                const response = await fetch('/api/v2/admin/sd/service', {
                     method: 'POST',
                     body: formData,
                     duplex: 'half', // Add duplex option
@@ -152,6 +156,7 @@ export default function JasaGratis() {
             }
         });
     };
+
     const handleFileChange = useCallback((e) => {
         const file = e.target.files[0];
         if (file) {
@@ -163,6 +168,7 @@ export default function JasaGratis() {
             form.setValue('logo', e.target.files);
         }
     }, [form]);
+
     return (
         <div className="flex">
             {/* Combined Form and Preview Section */}
@@ -188,7 +194,7 @@ export default function JasaGratis() {
                                                     <div className="p-4">
                                                         <div className="grid grid-cols-1 gap-4">
                                                             {jasaList.map((jasa) => (
-                                                                <div key={jasa.id_jasa} className="grid grid-cols-3 items-center justify-between p-2 border rounded-lg">
+                                                                <div key={jasa.service_id} className="grid grid-cols-3 items-center justify-between p-2 border rounded-lg">
                                                                     <div className="flex items-center">
                                                                         <Image
                                                                             src={`https://xmlmcdfzbwjljhaebzna.supabase.co/storage/v1/object/public/${jasa.image_path}`}
@@ -199,7 +205,7 @@ export default function JasaGratis() {
                                                                         />
                                                                     </div>
                                                                     <div className="flex items-center">
-                                                                        <span className="ml-4">{jasa.jasa_name}</span>
+                                                                        <span className="ml-4">{jasa.service_name}</span>
                                                                     </div>
                                                                     <div className="flex items-center justify-end">
                                                                         <AlertDialog>
@@ -221,7 +227,7 @@ export default function JasaGratis() {
                                                                                 </AlertDialogHeader>
                                                                                 <AlertDialogFooter>
                                                                                     <AlertDialogCancel>Batal</AlertDialogCancel>
-                                                                                    <AlertDialogAction onClick={() => handleDelete(jasa.id_jasa)} disabled={isDeleting}>
+                                                                                    <AlertDialogAction onClick={() => handleDelete(jasa.service_id)} disabled={isDeleting}>
                                                                                         {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Hapus'}
                                                                                     </AlertDialogAction>
                                                                                 </AlertDialogFooter>

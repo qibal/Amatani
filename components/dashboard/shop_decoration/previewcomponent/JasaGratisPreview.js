@@ -4,19 +4,26 @@ import Image from "next/image";
 export default function JasaGratisPreview({ refresh }) {
     const [features, setFeatures] = useState([]);
 
+    // Fungsi untuk mengambil data jasa dari API
     const fetchJasaData = async () => {
         try {
-            const response = await fetch('/api/dashboard/shop_decoration/jasa');
+            const response = await fetch('/api/v2/admin/sd/service');
             if (!response.ok) {
                 throw new Error('Failed to fetch jasa data');
             }
             const data = await response.json();
-            setFeatures(data);
+            setFeatures(data.data);
         } catch (error) {
             console.error('Error fetching jasa data:', error);
         }
     };
 
+    // Mengambil data jasa saat komponen pertama kali dirender
+    useEffect(() => {
+        fetchJasaData();
+    }, []);
+
+    // Mengambil data jasa setiap kali refresh berubah
     useEffect(() => {
         fetchJasaData();
     }, [refresh]);
@@ -48,7 +55,7 @@ export default function JasaGratisPreview({ refresh }) {
                                 />
                             </div>
                             <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white text-gray-800 text-sm font-semibold py-1 px-4 rounded-full shadow-md">
-                                {feature.jasa_name}
+                                {feature.service_name}
                             </div>
                         </div>
                     ))}

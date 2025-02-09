@@ -12,6 +12,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Loader2 } from 'lucide-react';
 import { Toaster, toast } from "sonner";
 import { useRouter } from 'next/navigation'
+
 const formSchema = z.object({
     title: z.string().min(1, { message: "Tidak boleh kosong" }),
     content: z.string().min(1, { message: "Tidak boleh kosong" }),
@@ -37,10 +38,15 @@ export default function FAQForm({ mode, faq, onSubmit }) {
     useEffect(() => {
         async function fetchCategories() {
             try {
-                const response = await fetch('/api/dashboard/faq/categories');
-                const data = await response.json();
-                setCategories(data);
-                console.log("Fetched categories:", data);
+                const response = await fetch('/api/v2/admin/faq/categories');
+                const result = await response.json();
+                if (result.success && Array.isArray(result.data)) {
+                    setCategories(result.data);
+                    console.log("Fetched categories:", result.data);
+                } else {
+                    console.error("Categories data is not an array:", result);
+                    setCategories([]);
+                }
 
                 if (mode === 'edit' && faq) {
                     form.setValue("title", faq.title);
@@ -52,6 +58,7 @@ export default function FAQForm({ mode, faq, onSubmit }) {
                 }
             } catch (error) {
                 console.error("Failed to fetch FAQ categories:", error);
+                setCategories([]);
             }
         }
         fetchCategories();
@@ -163,7 +170,7 @@ export default function FAQForm({ mode, faq, onSubmit }) {
                                                 onValueChange={(value) => {
                                                     const selectedCategory = categories.find(category => category.category_id === value);
                                                     console.log("Selected category:", selectedCategory);
-                                                    field.onChange(selectedCategory ? { category_id: selectedCategory.category_id, category_name: selectedCategory.name } : { category_id: "", category_name: "" });
+                                                    field.onChange(selectedCategory ? { category_id: selectedCategory.category_id, category_name: selectedCategory.category_name } : { category_id: "", category_name: "" });
                                                 }}
                                                 value={field.value.category_id}
                                             >
@@ -173,7 +180,7 @@ export default function FAQForm({ mode, faq, onSubmit }) {
                                                 <SelectContent>
                                                     {categories.map(category => (
                                                         <SelectItem key={category.category_id} value={category.category_id.toString()}>
-                                                            {category.name}
+                                                            {category.category_name}
                                                         </SelectItem>
                                                     ))}
                                                 </SelectContent>

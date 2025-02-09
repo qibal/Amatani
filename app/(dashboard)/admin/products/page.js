@@ -46,7 +46,7 @@ const ActionButtons = ({ product_id, onDelete }) => {
     return (
         <div className="flex space-x-3">
             <Button asChild variant="outline" className="flex items-center justify-center px-3 py-2 sm:px-4 sm:py-2 rounded-md">
-                <Link href={`/dashboard/products/edit/${product_id}`} >
+                <Link href={`/admin/products/edit/${product_id}`} >
                     <Edit className="w-4 h-4 mr-2" />
                     Edit
                 </Link>
@@ -177,7 +177,7 @@ export default function ProductPage() {
         while (currentRetry < maxRetries) {
             try {
                 setLoading(true);
-                const url = new URL('/api/dashboard/products', window.location.origin);
+                const url = new URL('/api/v2/admin/products', window.location.origin);
                 if (query) url.searchParams.append('search', query);
                 if (sort) url.searchParams.append('sort', sort);
                 url.searchParams.append('limit', limit.toString());
@@ -191,7 +191,7 @@ export default function ProductPage() {
                 }
 
                 // Pastikan data adalah array
-                const productsArray = Array.isArray(data) ? data : [];
+                const productsArray = Array.isArray(data.data) ? data.data : [];
 
                 if (offset === 0) {
                     setProducts(productsArray);
@@ -253,7 +253,7 @@ export default function ProductPage() {
 
     const handleDeleteProduct = useCallback(async (productId) => {
         try {
-            const response = await fetch(`/api/dashboard/products/delete/${productId}`, {
+            const response = await fetch(`/api/v2/admin/products/${productId}`, {
                 method: 'DELETE',
             });
             if (!response.ok) {
@@ -354,7 +354,7 @@ export default function ProductPage() {
                                 </Button>
                             </div>
                         </form>
-                        <Link href="/dashboard/products/add" passHref>
+                        <Link href="/admin/products/add" passHref>
                             <Button variant="outline" className="w-full sm:w-auto">
                                 <Plus className="w-5 h-5 mr-2" />
                                 Add produk
@@ -410,7 +410,7 @@ export default function ProductPage() {
                                         stock: product.stock,
                                         images: product.images,
                                         price_type: product.price_type,
-                                        fixed_price: product.fixed_price,
+                                        fixed_price: product.price,
                                         wholesale_prices: product.wholesale_prices,
                                     }}
                                 />

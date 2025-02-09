@@ -27,9 +27,14 @@ export default function FaqPage() {
 
     const fetchFaqs = async (category = "", query = "") => {
         try {
-            const response = await fetch(`/api/dashboard/faq${category || query ? `?${category ? `category=${category}&` : ''}${query ? `query=${query}` : ''}` : ''}`);
-            const data = await response.json();
-            setFaqItems(data);
+            const response = await fetch(`/api/v2/admin/faq${category || query ? `?${category ? `category=${category}&` : ''}${query ? `query=${query}` : ''}` : ''}`);
+            const result = await response.json();
+            if (result.success && Array.isArray(result.data)) {
+                setFaqItems(result.data);
+            } else {
+                console.error("FAQs data is not an array:", result);
+                setFaqItems([]);
+            }
         } catch (error) {
             console.error('Error fetching FAQs:', error);
         } finally {
@@ -39,9 +44,14 @@ export default function FaqPage() {
 
     const fetchCategories = async () => {
         try {
-            const response = await fetch('/api/dashboard/faq/categories');
-            const data = await response.json();
-            setCategories(data);
+            const response = await fetch('/api/v2/admin/products/categories');
+            const result = await response.json();
+            if (result.success && Array.isArray(result.data)) {
+                setCategories(result.data);
+            } else {
+                console.error("Categories data is not an array:", result);
+                setCategories([]);
+            }
         } catch (error) {
             console.error('Error fetching categories:', error);
         }
@@ -56,11 +66,12 @@ export default function FaqPage() {
         setPendingDeleteId(faqId);
         startTransition(async () => {
             try {
-                const response = await fetch(`/api/dashboard/faq/delete/${faqId}`, {
+                const response = await fetch(`/api/v2/admin/faq/${faqId}`, {
                     method: 'DELETE',
                 });
                 if (!response.ok) {
-                    throw new Error('Failed to delete FAQ');
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to delete FAQ');
                 }
                 await response.json();
                 setFaqItems(prevFaqs => prevFaqs.filter(faq => faq.faq_id !== faqId));
@@ -68,7 +79,7 @@ export default function FaqPage() {
                 setLoading(true); // Start skeleton loading
                 fetchFaqs(selectedCategory, searchQuery); // Refresh FAQs
             } catch (error) {
-                toast.error('Failed to delete FAQ. Please try again.');
+                toast.error(`Failed to delete FAQ: ${error.message}`);
                 console.error('Failed to delete FAQ:', error);
             } finally {
                 setPendingDeleteId(null);
@@ -143,7 +154,7 @@ export default function FaqPage() {
                                 </Button>
                             </div>
                         </form>
-                        <Link href="/dashboard/faq/add" passHref>
+                        <Link href="/admin/faq/add" passHref>
                             <Button variant="outline" className="w-full sm:w-auto">
                                 <Plus className="w-5 h-5 mr-2" />
                                 Add FAQ
@@ -162,8 +173,8 @@ export default function FaqPage() {
                             </SelectTrigger>
                             <SelectContent>
                                 {categories.map(category => (
-                                    <SelectItem key={category.category_id} value={category.category_id}>
-                                        {category.name}
+                                    <SelectItem key={category.categories_id} value={category.categories_id}>
+                                        {category.categories_name}
                                     </SelectItem>
                                 ))}
                             </SelectContent>

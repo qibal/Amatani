@@ -11,14 +11,13 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { RadioGroup, RadioGroupItem } from "@/components/shadcnUi/radio-group";
 import { ProductImageUpload } from "@/components/dashboard/product/DropProductImage";
 import { Trash2, Loader2, ChevronRight, ChevronLeft } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/shadcnUi/card';
+import { Separator } from '@/components/shadcnUi/separator';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-
 import useEmblaCarousel from 'embla-carousel-react'
 import Image from 'next/image'
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { ScrollArea } from "@/components/shadcnUi/scroll-area"
 
 const formSchema = z.object({
     products_name: z.string().min(1, { message: "Tidak boleh kosong" }),
@@ -128,20 +127,28 @@ export default function ProductForm({ mode, product, onSubmit }) {
     });
 
     const [categories, setCategories] = useState([]);
+    
     useEffect(() => {
         const subscription = form.watch((value) => {
             setProductPreview(value);
         });
         return () => subscription.unsubscribe();
     }, [form]);
+    
     useEffect(() => {
         async function GetData() {
             try {
-                const response = await fetch(`/api/dashboard/products/categories`);
-                const data = await response.json();
-                setCategories(data);
+                const response = await fetch(`/api/v2/admin/products/categories`);
+                const result = await response.json();
+                if (result.success && Array.isArray(result.data)) {
+                    setCategories(result.data);
+                } else {
+                    console.error("Fetched data is not an array:", result);
+                    setCategories([]);
+                }
             } catch (error) {
                 console.error("Failed to fetch categories:", error);
+                setCategories([]);
             }
         }
         GetData();
@@ -215,7 +222,7 @@ export default function ProductForm({ mode, product, onSubmit }) {
 
                 if (result?.success) {
                     toast.success(mode === 'add' ? "Produk berhasil ditambahkan" : "Produk berhasil diperbarui");
-                    router.push('/dashboard/products');
+                    router.push('/admin/products');
                 } else {
                     throw new Error(result?.message || "Gagal memproses produk");
                 }

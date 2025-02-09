@@ -17,7 +17,7 @@ export default function AddFaqPage() {
         formData.append('category_id', params.category.category_id);
 
         try {
-            const result = await fetch('/api/dashboard/faq/insert', {
+            const result = await fetch('/api/v2/admin/faq', {
                 method: 'POST',
                 body: formData
             });

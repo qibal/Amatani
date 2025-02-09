@@ -12,12 +12,12 @@ export default function CompanyLogosPreview({ refresh }) {
 
     const fetchCompanyLogos = async () => {
         try {
-            const response = await fetch('/api/dashboard/shop_decoration/company_logos');
+            const response = await fetch('/api/v2/admin/sd/company_logos');
             if (!response.ok) {
                 throw new Error('Failed to fetch company logos');
             }
             const data = await response.json();
-            setLogos(data);
+            setLogos(data.data);
         } catch (error) {
             console.error('Error fetching company logos:', error);
         }
@@ -63,7 +63,7 @@ export default function CompanyLogosPreview({ refresh }) {
                 >
                     <CarouselContent className="-ml-2 md:-ml-4">
                         {logos.map((logo) => (
-                            <CarouselItem key={logo.id} className="pl-2 md:pl-4 basis-1/3">
+                            <CarouselItem key={logo.cp_id} className="pl-2 md:pl-4 basis-1/3">
                                 <Card className="border-none shadow-none">
                                     <CardContent className="p-2">
                                         <AspectRatio ratio={1 / 1} className="bg-white">
