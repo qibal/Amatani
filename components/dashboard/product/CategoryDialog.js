@@ -61,10 +61,10 @@ export default function ManageCategoriesDialog() {
 
                 fetchCategories();
                 form.reset();
-                toast.success("Category added successfully!", { duration: 5000 });
+                toast.success("Category added successfully!", { duration: 3000 });
             } catch (error) {
                 console.error('Error adding category:', error);
-                toast.error("Failed to add category.", { duration: 5000 });
+                toast.error("Failed to add category.", { duration: 3000 });
             }
         });
     };
@@ -81,10 +81,10 @@ export default function ManageCategoriesDialog() {
                 await response.json();
 
                 fetchCategories();
-                toast.success(`Category "${categoryName}" deleted successfully.`, { duration: 5000 });
+                toast.success(`Category "${categoryName}" deleted successfully.`, { duration: 3000 });
             } catch (error) {
                 console.error('Failed to delete category:', error);
-                toast.error("Failed to delete category.", { duration: 5000 });
+                toast.error("Failed to delete category.", { duration: 3000 });
             } finally {
                 setPendingCategoryId(null);
             }

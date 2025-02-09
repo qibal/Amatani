@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect, useState, useTransition, useRef, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -12,9 +11,11 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/shadcnUi/alert-dialog";
 import { ScrollArea } from "@/components/shadcnUi/scroll-area";
 import Image from "next/image";
-import CompanyLogosPreview from './previewcomponent/CompanyLogoPreview';
+import { useState, useTransition, useRef, useEffect, useCallback } from 'react';
 import { Loader2 } from 'lucide-react';
 import { Progress } from '@/components/shadcnUi/progress';
+import CompanyLogosPreview from './previewcomponent/CompanyLogoPreview';
+import { AspectRatio } from "@/components/shadcnUi/aspect-ratio";
 
 const formSchema = z.object({
     logo: z.any().refine((file) => {
@@ -35,30 +36,32 @@ export default function CompanyLogo() {
         },
     });
 
-    const [logos, setLogos] = useState([]);
     const [isPending, startTransition] = useTransition();
     const [isDeleting, startDeleteTransition] = useTransition();
     const [refreshPreview, setRefreshPreview] = useState(false);
+    const [companyLogoList, setCompanyLogoList] = useState([]);
+    const fileInputRef = useRef(null);
     const [isLoading, setIsLoading] = useState(false);
     const [progress, setProgress] = useState(0);
     const [preview, setPreview] = useState(null);
-    const fileInputRef = useRef(null);
 
-    const fetchCompanyLogos = async () => {
+    // Fungsi untuk mengambil data company logo dari API
+    const fetchCompanyLogoList = async () => {
         try {
             const response = await fetch('/api/v2/admin/sd/company_logos');
             if (!response.ok) {
-                throw new Error('Failed to fetch company logos');
+                throw new Error('Failed to fetch company logo list');
             }
             const data = await response.json();
-            setLogos(data.data);
+            setCompanyLogoList(data.data);
         } catch (error) {
-            console.error('Error fetching company logos:', error);
+            console.error('Error fetching company logo list:', error);
         }
     };
 
+    // Fungsi untuk menghapus company logo
     const handleDelete = async (cp_id) => {
-        const toastId = "delete-logo-toast"; // ID unik untuk toast ini
+        const toastId = "delete-company-logo-toast"; // ID unik untuk toast ini
 
         startDeleteTransition(async () => {
             try {
@@ -74,45 +77,44 @@ export default function CompanyLogo() {
                 console.log('Company logo deleted successfully:', result);
 
                 // Tampilkan atau perbarui toast jika berhasil
-                toast.success("Logo berhasil dihapus!", {
+                toast.success("Company logo berhasil dihapus!", {
                     id: toastId,
-                    description: "Logo perusahaan telah berhasil dihapus.",
-                    duration: 5000,
+                    description: "Company logo telah berhasil dihapus.",
+                    duration: 3000,
                 });
 
-                // Fetch logos again to update the list
-                fetchCompanyLogos();
+                // Fetch company logo list again to update the list
+                fetchCompanyLogoList();
                 setRefreshPreview(prev => !prev); // Trigger refresh for CompanyLogosPreview
             } catch (error) {
                 console.error('Error deleting company logo:', error);
 
                 // Tampilkan atau perbarui toast jika gagal
-                toast.error("Gagal menghapus logo", {
+                toast.error("Gagal menghapus company logo", {
                     id: toastId,
-                    description: "Terjadi kesalahan saat menghapus logo.",
-                    duration: 5000,
+                    description: "Terjadi kesalahan saat menghapus company logo.",
+                    duration: 3000,
                 });
             }
         });
     };
 
     useEffect(() => {
-        fetchCompanyLogos();
+        fetchCompanyLogoList();
     }, []);
 
+    // Fungsi untuk menambahkan company logo baru
     const onSubmit = async (data) => {
         const toastId = "company-logo-toast"; // ID unik untuk toast ini
 
         startTransition(async () => {
             try {
-                // Membuat FormData untuk data yang akan dikirim
                 const formData = new FormData();
                 formData.append('logo', data.logo[0]);
 
                 setIsLoading(true);
                 setProgress(0);
 
-                // Mengirim data ke API
                 const response = await fetch('/api/v2/admin/sd/company_logos', {
                     method: 'POST',
                     body: formData,
@@ -126,32 +128,27 @@ export default function CompanyLogo() {
                 const result = await response.json();
                 console.log('Company logo inserted successfully:', result);
 
-                // Tampilkan atau perbarui toast jika berhasil
                 toast.success("Data berhasil disimpan!", {
                     id: toastId,
-                    description: "Logo perusahaan telah berhasil ditambah",
-                    duration: 5000,
+                    description: "Company logo telah berhasil diperbarui.",
+                    duration: 3000,
                 });
 
-                // Reset form jika berhasil
                 form.reset();
                 if (fileInputRef.current) {
                     fileInputRef.current.value = null; // Reset file input
                 }
 
-                // Fetch logos again to update the list
-                fetchCompanyLogos();
+                fetchCompanyLogoList();
                 setRefreshPreview(prev => !prev); // Trigger refresh for CompanyLogosPreview
                 setPreview(null);
                 setIsLoading(false);
             } catch (error) {
                 console.error('Error submitting form:', error);
-
-                // Tampilkan atau perbarui toast jika gagal
                 toast.error("Gagal menyimpan data", {
                     id: toastId,
                     description: "Terjadi kesalahan saat menyimpan data.",
-                    duration: 5000,
+                    duration: 3000,
                 });
                 setIsLoading(false);
             }
@@ -171,31 +168,31 @@ export default function CompanyLogo() {
     }, [form]);
 
     return (
-        <div className="flex">
+        <div className="w-full">
             {/* Combined Form and Preview Section */}
-            <div className="flex gap-6 w-full rounded-lg overflow-hidden">
+            <div className="md:flex gap-6 rounded-lg overflow-hidden w-full">
                 {/* Form Section */}
-                <div className="w-2/5 p-6">
+                <div className="w-full md:w-2/5 p-6">
                     <Toaster position="top-right" />
                     <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)}>
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 w-full">
                             <div>
-                                <div className="flex justify-between items-center pb-4">
-                                    <h1 className="text-xl font-semibold">Company Logos</h1>
+                                <div className="flex justify-between items-center pb-4 w-full">
+                                    <h1 className="text-xl font-semibold">Company Logo</h1>
                                     <div className="flex gap-3">
                                         <Sheet>
                                             <SheetTrigger asChild>
-                                                <Button variant="outline">Kelola</Button>
+                                                <Button variant="outline" size="sm">Kelola</Button>
                                             </SheetTrigger>
-                                            <SheetContent>
+                                            <SheetContent className="w-full sm:max-w-[400px]">
                                                 <SheetHeader>
-                                                    <SheetTitle>Kelola Logo Perusahaan</SheetTitle>
+                                                    <SheetTitle>Kelola Company Logo</SheetTitle>
                                                 </SheetHeader>
-                                                <ScrollArea className="h-full">
-                                                    <div className="p-4">
-                                                        <div className="grid grid-cols-1 gap-4">
-                                                            {logos.map((logo) => (
-                                                                <div key={logo.cp_id} className="flex items-center justify-between p-2 border rounded-lg">
+                                                <ScrollArea className="h-full w-full">
+                                                    <div className="p-4 w-full">
+                                                        <div className="grid grid-cols-1 gap-4 w-full">
+                                                            {companyLogoList.map((logo) => (
+                                                                <div key={logo.cp_id} className="flex items-center justify-between p-2 border rounded-lg w-full">
                                                                     <div className="flex items-center">
                                                                         <Image
                                                                             src={`https://xmlmcdfzbwjljhaebzna.supabase.co/storage/v1/object/public/${logo.image_path}`}
@@ -205,31 +202,33 @@ export default function CompanyLogo() {
                                                                             className="object-cover rounded-lg"
                                                                         />
                                                                     </div>
-                                                                    <AlertDialog>
-                                                                        <AlertDialogTrigger asChild>
-                                                                            <Button
-                                                                                variant="outline"
-                                                                                className="ml-4"
-                                                                                disabled={isDeleting}
-                                                                            >
-                                                                                {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Hapus'}
-                                                                            </Button>
-                                                                        </AlertDialogTrigger>
-                                                                        <AlertDialogContent>
-                                                                            <AlertDialogHeader>
-                                                                                <AlertDialogTitle>Konfirmasi Hapus</AlertDialogTitle>
-                                                                                <AlertDialogDescription>
-                                                                                    Apakah Anda yakin ingin menghapus logo ini?
-                                                                                </AlertDialogDescription>
-                                                                            </AlertDialogHeader>
-                                                                            <AlertDialogFooter>
-                                                                                <AlertDialogCancel>Batal</AlertDialogCancel>
-                                                                                <AlertDialogAction onClick={() => handleDelete(logo.cp_id)} disabled={isDeleting}>
-                                                                                    {isDeleting ? 'Menghapus...' : 'Hapus'}
-                                                                                </AlertDialogAction>
-                                                                            </AlertDialogFooter>
-                                                                        </AlertDialogContent>
-                                                                    </AlertDialog>
+                                                                    <div className="flex items-center justify-end">
+                                                                        <AlertDialog>
+                                                                            <AlertDialogTrigger asChild>
+                                                                                <Button
+                                                                                    variant="outline"
+                                                                                    className="ml-4"
+                                                                                    disabled={isDeleting}
+                                                                                >
+                                                                                    {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Hapus'}
+                                                                                </Button>
+                                                                            </AlertDialogTrigger>
+                                                                            <AlertDialogContent>
+                                                                                <AlertDialogHeader>
+                                                                                    <AlertDialogTitle>Konfirmasi Hapus</AlertDialogTitle>
+                                                                                    <AlertDialogDescription>
+                                                                                        Apakah Anda yakin ingin menghapus company logo ini?
+                                                                                    </AlertDialogDescription>
+                                                                                </AlertDialogHeader>
+                                                                                <AlertDialogFooter>
+                                                                                    <AlertDialogCancel>Batal</AlertDialogCancel>
+                                                                                    <AlertDialogAction onClick={() => handleDelete(logo.cp_id)} disabled={isDeleting}>
+                                                                                        {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Hapus'}
+                                                                                    </AlertDialogAction>
+                                                                                </AlertDialogFooter>
+                                                                            </AlertDialogContent>
+                                                                        </AlertDialog>
+                                                                    </div>
                                                                 </div>
                                                             ))}
                                                         </div>
@@ -239,6 +238,7 @@ export default function CompanyLogo() {
                                         </Sheet>
                                         <Button
                                             type="submit"
+                                            size="sm"
                                             className={`bg-rose-600 hover:bg-rose-500 ${isPending ? 'cursor-not-allowed' : ''}`}
                                             disabled={isPending}
                                         >
@@ -246,51 +246,55 @@ export default function CompanyLogo() {
                                         </Button>
                                     </div>
                                 </div>
-                                <div className="space-y-6">
+                                <div className="space-y-4 w-full">
                                     <FormField
                                         control={form.control}
                                         name="logo"
                                         render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Logo</FormLabel>
-                                                <FormControl>
+                                            <FormItem className="w-full">
+                                                <FormLabel>Image</FormLabel>
+                                                <FormControl className="w-full">
                                                     <Input
                                                         type="file"
-                                                        accept="image/png, image/jpeg, image/jpg, image/webp"
+                                                        accept="image/*"
                                                         onChange={handleFileChange}
                                                         ref={fileInputRef}
+                                                        className="w-full"
                                                     />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
                                         )}
                                     />
+
+                                    {isLoading && (
+                                        <div className="mt-4 w-full">
+                                            <Progress value={progress} className="w-full" />
+                                            <p className="text-sm text-gray-500 mt-2">Mengunggah gambar: {Math.round(progress)}%</p>
+                                        </div>
+                                    )}
+                                    {preview && (
+                                        <div className="mt-4 w-full">
+                                            <AspectRatio ratio={1 / 1} className="w-24 sm:w-32">
+                                                <Image
+                                                    src={preview}
+                                                    alt="Preview"
+                                                    fill
+                                                    className="object-cover"
+                                                    style={{ position: 'absolute' }}
+                                                />
+                                            </AspectRatio>
+                                        </div>
+                                    )}
                                 </div>
-                                {isLoading && (
-                                    <div className="mt-4">
-                                        <Progress value={progress} className="w-full" />
-                                        <p className="text-sm text-gray-500 mt-2">Mengunggah gambar: {Math.round(progress)}%</p>
-                                    </div>
-                                )}
-                                {preview && (
-                                    <div className="mt-4">
-                                        <Image
-                                            src={preview}
-                                            alt="Preview"
-                                            width={200}
-                                            height={200}
-                                            className="object-cover rounded-lg"
-                                        />
-                                    </div>
-                                )}
                             </div>
                         </form>
                     </Form>
                 </div>
 
                 {/* Preview Section */}
-                <div className="w-3/5 flex justify-center items-center p-6">
-                    <div className="w-full max-w-4xl">
+                <div className="w-full md:w-3/5 flex justify-center items-center">
+                    <div className="w-full">
                         <CompanyLogosPreview refresh={refreshPreview} />
                     </div>
                 </div>

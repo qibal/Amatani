@@ -10,15 +10,28 @@ import { Toaster, toast } from "sonner";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/shadcnUi/sheet";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/shadcnUi/alert-dialog";
 import { ScrollArea } from "@/components/shadcnUi/scroll-area";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/shadcnUi/select';
 import Image from "next/image";
-import HomeKPanganPreview from './previewcomponent/KategoriPanganPreview';
 import { useState, useTransition, useRef, useEffect, useCallback } from 'react';
 import { Loader2 } from 'lucide-react';
 import { Progress } from '@/components/shadcnUi/progress';
+import FoodCategoryPreview from './previewcomponent/FoodCategoryPreview';
+import {
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandItem,
+    CommandList,
+} from "@/components/shadcnUi/command"
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/shadcnUi/popover"
+import { Check, ChevronsUpDown } from "lucide-react"
+import { AspectRatio } from "@/components/shadcnUi/aspect-ratio"
 
 const formSchema = z.object({
-    category: z.string().min(1, { message: "Tidak boleh kosong" }),
+    category_id: z.string().min(1, { message: "Tidak boleh kosong" }),
     categoryImage: z.any().refine((file) => {
         if (!file || file.length === 0) return false;
         const acceptedFormats = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
@@ -33,89 +46,107 @@ export default function KategoriPangan() {
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            category: "",
+            category_id: "",
             categoryImage: null,
         },
     });
-    const [isLoading, setIsLoading] = useState(false);
-    const [progress, setProgress] = useState(0);
-    const [preview, setPreview] = useState(null);
-    const [categories, setCategories] = useState([]);
-    const [lpCategoriesPangan, setLpCategoriesPangan] = useState([]);
+
     const [isPending, startTransition] = useTransition();
     const [isDeleting, startDeleteTransition] = useTransition();
     const [refreshPreview, setRefreshPreview] = useState(false);
+    const [foodCategoryList, setFoodCategoryList] = useState([]);
+    const [categories, setCategories] = useState([]); // State untuk menyimpan data kategori
+
     const fileInputRef = useRef(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [progress, setProgress] = useState(0);
+    const [preview, setPreview] = useState(null);
+    const [open, setOpen] = useState(false)
 
-    const fetchCategories = async () => {
-        try {
-            const response = await fetch('/api/v2/admin/products/categories');
-            if (!response.ok) {
-                throw new Error('Failed to fetch categories');
-            }
-            const data = await response.json();
-            setCategories(data.data);
-        } catch (error) {
-            console.error('Error fetching categories:', error);
-        }
-    };
-
-    const fetchLpCategoriesPangan = async () => {
+    // Fungsi untuk mengambil data food category dari API
+    const fetchFoodCategoryList = async () => {
         try {
             const response = await fetch('/api/v2/admin/sd/food_categories');
             if (!response.ok) {
-                throw new Error('Failed to fetch lp categories pangan');
+                throw new Error('Failed to fetch food category list');
             }
             const data = await response.json();
-            setLpCategoriesPangan(data.data);
+            setFoodCategoryList(data.data);
         } catch (error) {
-            console.error('Error fetching lp categories pangan:', error);
+            console.error('Error fetching food category list:', error);
         }
     };
 
-    const handleDelete = async (id) => {
+    // Fungsi untuk mengambil data kategori dari API
+    const fetchCategories = async () => {
+        try {
+            const response = await fetch('/api/v2/admin/products/categories');
+            const result = await response.json();
+            if (result.success && Array.isArray(result.data)) {
+                setCategories(result.data);
+            } else {
+                console.error("Categories data is not an array:", result);
+                setCategories([]);
+            }
+        } catch (error) {
+            console.error("Failed to fetch categories:", error);
+        }
+    };
+
+    // Fungsi untuk menghapus food category
+    const handleDelete = async (food_categories_id) => {
+        const toastId = "delete-food-category-toast"; // ID unik untuk toast ini
+
         startDeleteTransition(async () => {
             try {
-                const response = await fetch(`/api/v2/admin/sd/food_categories/${id}`, {
+                const response = await fetch(`/api/v2/admin/sd/food_categories/${food_categories_id}`, {
                     method: 'DELETE',
                 });
 
                 if (!response.ok) {
-                    throw new Error('Failed to delete category');
+                    throw new Error('Failed to delete food category');
                 }
 
                 const result = await response.json();
-                console.log('Category deleted successfully:', result);
+                console.log('Food category deleted successfully:', result);
 
-                toast.success("Kategori berhasil dihapus!", {
-                    description: "Kategori telah berhasil dihapus.",
-                    duration: 5000,
+                // Tampilkan atau perbarui toast jika berhasil
+                toast.success("Food category berhasil dihapus!", {
+                    id: toastId,
+                    description: "Food category telah berhasil dihapus.",
+                    duration: 3000,
                 });
 
-                fetchLpCategoriesPangan();
-                setRefreshPreview(prev => !prev); // Trigger refresh for HomeKPanganPreview
+                // Fetch food category list again to update the list
+                fetchFoodCategoryList();
+                setRefreshPreview(prev => !prev); // Trigger refresh for FoodCategoryPreview
             } catch (error) {
-                console.error('Error deleting category:', error);
-                toast.error("Gagal menghapus kategori", {
-                    description: "Terjadi kesalahan saat menghapus kategori.",
-                    duration: 5000,
+                console.error('Error deleting food category:', error);
+
+                // Tampilkan atau perbarui toast jika gagal
+                toast.error("Gagal menghapus food category", {
+                    id: toastId,
+                    description: "Terjadi kesalahan saat menghapus food category.",
+                    duration: 3000,
                 });
             }
         });
     };
 
     useEffect(() => {
-        fetchCategories();
-        fetchLpCategoriesPangan();
+        fetchFoodCategoryList();
+        fetchCategories(); // Panggil fungsi untuk mengambil data kategori
     }, []);
 
+    // Fungsi untuk menambahkan food category baru
     const onSubmit = async (data) => {
-        const toastId = "kategori-toast"; // ID unik untuk toast ini
+        console.log("🚀 ~ onSubmit ~ data:", data)
+        // ID unik untuk toast ini
 
         startTransition(async () => {
             try {
                 const formData = new FormData();
-                formData.append('categories_id', data.category);
+                formData.append('categories_id', data.category_id);
                 formData.append('category_image', data.categoryImage[0]);
 
                 setIsLoading(true);
@@ -128,16 +159,16 @@ export default function KategoriPangan() {
                 });
 
                 if (!response.ok) {
-                    throw new Error('Failed to insert category');
+                    throw new Error('Failed to insert food category');
                 }
 
                 const result = await response.json();
-                console.log('Category inserted successfully:', result);
+                console.log('Food category inserted successfully:', result);
 
                 toast.success("Data berhasil disimpan!", {
-                    id: toastId,
-                    description: "Kategori telah berhasil diperbarui.",
-                    duration: 5000,
+
+                    description: "Food category telah berhasil diperbarui.",
+                    duration: 3000,
                 });
 
                 form.reset();
@@ -145,21 +176,21 @@ export default function KategoriPangan() {
                     fileInputRef.current.value = null; // Reset file input
                 }
 
-                fetchLpCategoriesPangan();
-                setRefreshPreview(prev => !prev); // Trigger refresh for HomeKPanganPreview
+                fetchFoodCategoryList();
+                setRefreshPreview(prev => !prev); // Trigger refresh for FoodCategoryPreview
                 setPreview(null);
                 setIsLoading(false);
             } catch (error) {
                 console.error('Error submitting form:', error);
                 toast.error("Gagal menyimpan data", {
-                    id: toastId,
                     description: "Terjadi kesalahan saat menyimpan data.",
-                    duration: 5000,
+                    duration: 3000,
                 });
                 setIsLoading(false);
             }
         });
     };
+
     const handleFileChange = useCallback((e) => {
         const file = e.target.files[0];
         if (file) {
@@ -171,36 +202,37 @@ export default function KategoriPangan() {
             form.setValue('categoryImage', e.target.files);
         }
     }, [form]);
+
     return (
-        <div className="flex">
+        <div className="w-full">
             {/* Combined Form and Preview Section */}
-            <div className="flex gap-6 w-full rounded-lg overflow-hidden">
+            <div className="md:flex gap-6 rounded-lg overflow-hidden w-full">
                 {/* Form Section */}
-                <div className="w-2/5 p-6">
-                    <Toaster position="top-right" />
+                <div className="w-full md:w-2/5 p-6">
+                    <Toaster position="top-right" expand={false} />
                     <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)}>
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 w-full">
                             <div>
-                                <div className="flex justify-between items-center pb-4">
-                                    <h1 className="text-xl font-semibold">Kategori Pangan</h1>
+                                <div className="flex justify-between items-center pb-4 w-full">
+                                    <h1 className="text-xl font-semibold">Food Category</h1>
                                     <div className="flex gap-3">
                                         <Sheet>
                                             <SheetTrigger asChild>
-                                                <Button variant="outline">Kelola</Button>
+                                                <Button variant="outline" size="sm">Kelola</Button>
                                             </SheetTrigger>
-                                            <SheetContent>
+                                            <SheetContent className="w-full sm:max-w-[400px]">
                                                 <SheetHeader>
-                                                    <SheetTitle>Kelola Kategori Pangan</SheetTitle>
+                                                    <SheetTitle>Kelola Food Category</SheetTitle>
                                                 </SheetHeader>
-                                                <ScrollArea className="h-full">
-                                                    <div className="p-4">
-                                                        <div className="grid grid-cols-1 gap-4">
-                                                            {lpCategoriesPangan.map((category) => (
-                                                                <div key={category.food_categories_id} className="grid grid-cols-3 items-center justify-between p-2 border rounded-lg">
+                                                <ScrollArea className="h-full w-full">
+                                                    <div className="p-4 w-full">
+                                                        <div className="grid grid-cols-1 gap-4 w-full">
+                                                            {foodCategoryList.map((category) => (
+                                                                <div key={category.food_categories_id} className="flex items-center justify-between p-2 border rounded-lg w-full">
                                                                     <div className="flex items-center">
                                                                         <Image
                                                                             src={`https://xmlmcdfzbwjljhaebzna.supabase.co/storage/v1/object/public/${category.image_path}`}
-                                                                            alt="Kategori Image"
+                                                                            alt="Food Category Image"
                                                                             width={100}
                                                                             height={100}
                                                                             className="object-cover rounded-lg"
@@ -224,7 +256,7 @@ export default function KategoriPangan() {
                                                                                 <AlertDialogHeader>
                                                                                     <AlertDialogTitle>Konfirmasi Hapus</AlertDialogTitle>
                                                                                     <AlertDialogDescription>
-                                                                                        Apakah Anda yakin ingin menghapus kategori ini?
+                                                                                        Apakah Anda yakin ingin menghapus food category ini?
                                                                                     </AlertDialogDescription>
                                                                                 </AlertDialogHeader>
                                                                                 <AlertDialogFooter>
@@ -245,6 +277,7 @@ export default function KategoriPangan() {
                                         </Sheet>
                                         <Button
                                             type="submit"
+                                            size="sm"
                                             className={`bg-rose-600 hover:bg-rose-500 ${isPending ? 'cursor-not-allowed' : ''}`}
                                             disabled={isPending}
                                         >
@@ -252,27 +285,63 @@ export default function KategoriPangan() {
                                         </Button>
                                     </div>
                                 </div>
-                                <div className="space-y-6">
+                                <div className="space-y-4 w-full">
                                     <FormField
                                         control={form.control}
-                                        name="category"
+                                        name="category_id"
                                         render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Pilih Kategori</FormLabel>
-                                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                    <FormControl>
-                                                        <SelectTrigger>
-                                                            <SelectValue placeholder="Pilih Kategori" />
-                                                        </SelectTrigger>
-                                                    </FormControl>
-                                                    <SelectContent>
-                                                        {categories.map((category) => (
-                                                            <SelectItem key={category.categories_id} value={category.categories_id}>
-                                                                {category.categories_name}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
+                                            <FormItem className="flex flex-col w-full">
+                                                <FormLabel>Category ID</FormLabel>
+                                                <Popover>
+                                                    <PopoverTrigger asChild>
+                                                        <FormControl>
+                                                            <Button
+                                                                variant="outline"
+                                                                role="combobox"
+                                                                aria-expanded={open}
+                                                                className="w-full justify-between"
+                                                            >
+                                                                {field.value
+                                                                    ? (categories.find(
+                                                                        (category) => category.categories_id === field.value
+                                                                    )?.categories_name)
+                                                                    : "Select category..."}
+                                                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                                            </Button>
+                                                        </FormControl>
+                                                    </PopoverTrigger>
+                                                    <PopoverContent className="w-full p-0">
+                                                        <Command>
+                                                            <CommandList className="w-full">
+                                                                <CommandEmpty>No category found.</CommandEmpty>
+                                                                <CommandGroup className="w-full">
+                                                                    {categories.map((category) => (
+                                                                        <CommandItem
+                                                                            key={category.categories_id}
+                                                                            value={category.categories_name}
+                                                                            onSelect={() => {
+                                                                                field.onChange(category.categories_id);
+                                                                                setOpen(false);
+                                                                            }}
+                                                                            className="w-full"
+                                                                        >
+                                                                            <Check
+                                                                                className="mr-2 h-4 w-4"
+                                                                                style={{
+                                                                                    visibility:
+                                                                                        field.value === category.categories_id
+                                                                                            ? "visible"
+                                                                                            : "hidden",
+                                                                                }}
+                                                                            />
+                                                                            {category.categories_name}
+                                                                        </CommandItem>
+                                                                    ))}
+                                                                </CommandGroup>
+                                                            </CommandList>
+                                                        </Command>
+                                                    </PopoverContent>
+                                                </Popover>
                                                 <FormMessage />
                                             </FormItem>
                                         )}
@@ -281,36 +350,42 @@ export default function KategoriPangan() {
                                         control={form.control}
                                         name="categoryImage"
                                         render={({ field }) => (
-                                            <FormItem>
+                                            <FormItem className="w-full">
                                                 <FormLabel>Image</FormLabel>
-                                                <FormControl>
+                                                <FormControl className="w-full">
                                                     <Input
                                                         type="file"
                                                         accept="image/*"
                                                         onChange={handleFileChange}
                                                         ref={fileInputRef}
+                                                        className="w-full"
                                                     />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
                                         )}
                                     />
+
                                     {isLoading && (
-                                        <div className="mt-4">
+                                        <div className="mt-4 w-full">
                                             <Progress value={progress} className="w-full" />
                                             <p className="text-sm text-gray-500 mt-2">Mengunggah gambar: {Math.round(progress)}%</p>
                                         </div>
                                     )}
                                     {preview && (
-                                        <div className="mt-4">
-                                            <Image
-                                                src={preview}
-                                                alt="Preview"
-                                                width={200}
-                                                height={200}
-                                                className="object-cover rounded-lg"
-                                            />
-                                        </div>
+                                        <figure className="flex flex-col justify-start items-center flex-none w-32 md:w-48">
+                                            {/* Gambar Background */}
+                                            <AspectRatio ratio={1 / 1} className="w-full">
+                                                <Image
+                                                    src={preview}
+                                                    alt="Food Category"
+                                                    fill
+                                                    className="object-cover rounded-lg"
+
+                                                />
+                                            </AspectRatio>
+                                            {/* Label Nama Kategori */}
+                                        </figure>
                                     )}
                                 </div>
                             </div>
@@ -319,10 +394,9 @@ export default function KategoriPangan() {
                 </div>
 
                 {/* Preview Section */}
-
-                <div className="w-3/5 flex justify-center items-center p-">
-                    <div className="w-full max-w-4xl">
-                        <HomeKPanganPreview refresh={refreshPreview} />
+                <div className="w-full md:w-3/5 flex justify-center items-center">
+                    <div className="w-full">
+                        <FoodCategoryPreview refresh={refreshPreview} />
                     </div>
                 </div>
             </div>

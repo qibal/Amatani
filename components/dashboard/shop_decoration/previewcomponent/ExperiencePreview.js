@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-export default function StatikPreview({ fetchStatistics }) {
+export default function ExperiencePreview({ fetchStatistics }) {
     const [stats, setStats] = useState([]);
 
     // Fungsi untuk mengambil data statistik dari API
@@ -17,28 +17,25 @@ export default function StatikPreview({ fetchStatistics }) {
         }
     };
 
-    // Mengambil data statistik saat komponen pertama kali dirender
     useEffect(() => {
         fetchStatisticsInternal();
     }, []);
 
-    // Mengambil data statistik setiap kali fetchStatistics berubah
     useEffect(() => {
         fetchStatisticsInternal();
     }, [fetchStatistics]);
 
     return (
-        <section className="bg-white">
-            <div className="container mx-auto">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+        <section className="py-6 w-full">
+            <div className="container mx-auto w-full">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 w-full">
                     {stats.map((stat, index) => (
-                        <div key={index} className="flex flex-col">
-                            <p className="text-xl md:text-2xl font-bold text-gray-800">
-                                {stat.number}
-                            </p>
-                            <p className="text-gray-600 text-sm md:text-base">
-                                {stat.description}
-                            </p>
+                        <div
+                            key={index}
+                            className="w-full bg-white rounded-lg shadow-md p-4 flex flex-col items-center justify-center"
+                        >
+                            <p className="text-2xl font-bold text-gray-800">{stat.number}</p>
+                            <p className="text-gray-600">{stat.description}</p>
                         </div>
                     ))}
                 </div>

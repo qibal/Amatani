@@ -64,13 +64,13 @@ export default function ManageCategoryFaqDialog() {
                 fetchCategories();
                 form.reset();
                 toast("Category added successfully", {
-                    duration: 5000,
+                    duration: 3000,
                     description: `The category "${params.name}" has been added.`,
                 });
             } catch (error) {
                 console.error('Error adding category:', error);
                 toast("Failed to add category", {
-                    duration: 5000,
+                    duration: 3000,
                     description: "An error occurred while adding the category.",
                 });
             }
@@ -92,13 +92,13 @@ export default function ManageCategoryFaqDialog() {
                 await response.json();
                 fetchCategories();
                 toast("Category deleted successfully", {
-                    duration: 5000,
+                    duration: 3000,
                     description: `The category "${categoryName}" has been deleted.`,
                 });
             } catch (error) {
                 console.error('Failed to delete category:', error);
                 toast("Failed to delete category", {
-                    duration: 5000,
+                    duration: 3000,
                     description: "An error occurred while deleting the category.",
                 });
             } finally {

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
+import { AspectRatio } from "@/components/shadcnUi/aspect-ratio"
 
-export default function JasaGratisPreview({ refresh }) {
+export default function ServicePreview({ refresh }) {
     const [features, setFeatures] = useState([]);
 
     // Fungsi untuk mengambil data jasa dari API
@@ -29,8 +30,8 @@ export default function JasaGratisPreview({ refresh }) {
     }, [refresh]);
 
     return (
-        <section className="bg-white">
-            <div className="container mx-auto py-6">
+        <section className="bg-white w-full">
+            <div className="container mx-auto py-6 w-full">
                 <h2 className="text-2xl font-semibold text-center text-gray-800 mb-4">
                     Kostumisasi Produk <br /> Sesuai Kebutuhan Usaha Anda.
                 </h2>
@@ -39,21 +40,21 @@ export default function JasaGratisPreview({ refresh }) {
                         Gratis!
                     </span>
                 </div>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full">
                     {features.map((feature, index) => (
                         <div
                             key={index}
-                            className="relative group flex flex-col items-center overflow-hidden"
+                            className="relative group flex flex-col items-center overflow-hidden w-full md:w-full"
                         >
-                            <div className="w-full h-[300px] bg-cover bg-center transform group-hover:scale-105 transition duration-300">
+                            <AspectRatio ratio={1 / 2} className="w-full ">
                                 <Image
                                     src={`https://xmlmcdfzbwjljhaebzna.supabase.co/storage/v1/object/public/${feature.image_path}`}
                                     alt="Jasa Gratis"
-                                    width={300}
-                                    height={400}
-                                    className="object-contain"
+                                    fill
+                                    className="object-cover"
+                                    style={{ position: 'absolute' }}
                                 />
-                            </div>
+                            </AspectRatio>
                             <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white text-gray-800 text-sm font-semibold py-1 px-4 rounded-full shadow-md">
                                 {feature.service_name}
                             </div>

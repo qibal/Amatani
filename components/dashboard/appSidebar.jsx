@@ -61,8 +61,8 @@ export function AppSidebar({ user }) {
             {/* Home */}
             <SidebarMenu>
               <SidebarMenuItem >
-                <SidebarMenuButton asChild isActive={pathname === "/admin"}>
-                  <a href="/admin">
+                <SidebarMenuButton asChild isActive={pathname === "/admin"} className="w-full hover:bg-accent hover:text-accent-foreground">
+                  <a href="/admin" className="w-full">
                     <Home />
                     <span>Home</span>
                   </a>
@@ -72,14 +72,14 @@ export function AppSidebar({ user }) {
           </SidebarGroupContent>
         </SidebarGroup>
         {/* grouop 2 */}
-        <SidebarSeparator />
+        <SidebarSeparator className="md:block" />
         <SidebarGroup>
           <SidebarGroupContent>
             {/* Home */}
             <SidebarMenu>
               <SidebarMenuItem >
-                <SidebarMenuButton asChild isActive={pathname.startsWith('/admin/products')}>
-                  <a href="/admin/products">
+                <SidebarMenuButton asChild isActive={pathname.startsWith('/admin/products')} className="w-full hover:bg-accent hover:text-accent-foreground">
+                  <a href="/admin/products" className="w-full">
                     <Package2 />
                     <span>Produk</span>
                   </a>
@@ -92,8 +92,8 @@ export function AppSidebar({ user }) {
             {/* Home */}
             <SidebarMenu>
               <SidebarMenuItem >
-                <SidebarMenuButton asChild isActive={pathname.startsWith('/admin/orders')}>
-                  <a href="/admin/orders">
+                <SidebarMenuButton asChild isActive={pathname.startsWith('/admin/orders')} className="w-full hover:bg-accent hover:text-accent-foreground">
+                  <a href="/admin/orders" className="w-full">
                     <ShoppingCart />
                     <span>Pesanan</span>
                   </a>
@@ -106,8 +106,8 @@ export function AppSidebar({ user }) {
             {/* Home */}
             <SidebarMenu>
               <SidebarMenuItem >
-                <SidebarMenuButton asChild isActive={pathname.startsWith('/admin/reviews')}>
-                  <a href="/admin/reviews">
+                <SidebarMenuButton asChild isActive={pathname.startsWith('/admin/reviews')} className="w-full hover:bg-accent hover:text-accent-foreground">
+                  <a href="/admin/reviews" className="w-full">
                     <Star />
                     <span>Penilaian</span>
                   </a>
@@ -118,14 +118,14 @@ export function AppSidebar({ user }) {
           </SidebarGroupContent>
         </SidebarGroup>
         {/* group 3 */}
-        <SidebarSeparator />
+        <SidebarSeparator className="md:block" />
         <SidebarGroup>
           <SidebarGroupContent>
             {/* Home */}
             <SidebarMenu>
               <SidebarMenuItem >
-                <SidebarMenuButton asChild isActive={pathname.startsWith('/admin/wallet')}>
-                  <a href="/admin/wallet">
+                <SidebarMenuButton asChild isActive={pathname.startsWith('/admin/wallet')} className="w-full hover:bg-accent hover:text-accent-foreground">
+                  <a href="/admin/wallet" className="w-full">
                     <WalletMinimal />
                     <span>Dompet</span>
                   </a>
@@ -136,14 +136,14 @@ export function AppSidebar({ user }) {
           </SidebarGroupContent>
         </SidebarGroup>
         {/* group 3 */}
-        <SidebarSeparator />
+        <SidebarSeparator className="md:block" />
         <SidebarGroup>
           <SidebarGroupContent>
             {/* Home */}
             <SidebarMenu>
               <SidebarMenuItem >
-                <SidebarMenuButton asChild isActive={pathname.startsWith('/admin/customers')}>
-                  <a href="/admin/customers">
+                <SidebarMenuButton asChild isActive={pathname.startsWith('/admin/customers')} className="w-full hover:bg-accent hover:text-accent-foreground">
+                  <a href="/admin/customers" className="w-full">
                     <UsersRound />
                     <span>Customers</span>
                   </a>
@@ -154,8 +154,8 @@ export function AppSidebar({ user }) {
             {/* Home */}
             <SidebarMenu>
               <SidebarMenuItem >
-                <SidebarMenuButton asChild isActive={pathname.startsWith('/admin/faq')}>
-                  <a href="/admin/faq">
+                <SidebarMenuButton asChild isActive={pathname.startsWith('/admin/faq')} className="w-full hover:bg-accent hover:text-accent-foreground">
+                  <a href="/admin/faq" className="w-full">
                     <FileQuestion />
                     <span>FAQ</span>
                   </a>
@@ -166,14 +166,14 @@ export function AppSidebar({ user }) {
           </SidebarGroupContent>
         </SidebarGroup>
         {/* group 3 */}
-        <SidebarSeparator />
+        <SidebarSeparator className="md:block" />
         <SidebarGroup>
           <SidebarGroupContent>
             {/* Home */}
             <SidebarMenu>
               <SidebarMenuItem >
-                <SidebarMenuButton asChild isActive={pathname.startsWith('/admin/report')}>
-                  <a href="/admin/report">
+                <SidebarMenuButton asChild isActive={pathname.startsWith('/admin/report')} className="w-full hover:bg-accent hover:text-accent-foreground">
+                  <a href="/admin/report" className="w-full">
                     <ChartColumnIncreasing />
                     <span>Reports</span>
                   </a>
@@ -186,8 +186,8 @@ export function AppSidebar({ user }) {
             {/* Home */}
             <SidebarMenu>
               <SidebarMenuItem >
-                <SidebarMenuButton asChild isActive={pathname.startsWith('/admin/shop_decoration')}>
-                  <a href="/admin/shop_decoration">
+                <SidebarMenuButton asChild isActive={pathname.startsWith('/admin/shop_decoration')} className="w-full hover:bg-accent hover:text-accent-foreground">
+                  <a href="/admin/shop_decoration" className="w-full">
                     <ShoppingCart />
                     <span>Dekorasi Toko</span>
                   </a>
