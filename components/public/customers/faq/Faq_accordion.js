@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
     Accordion,
     AccordionContent,
@@ -11,35 +11,60 @@ import {
 export default function FaqAccordion({ searchTerm, selectedCategory }) {
     const [faqItems, setFaqItems] = useState([]);
 
-    // Ambil data FAQ dari API
-    useEffect(() => {
-        const fetchFaqs = async () => {
-            try {
-                const response = await fetch("/api/dashboard/faq");
-                const data = await response.json();
+    // Fungsi untuk mengambil data FAQ dari API
+    const fetchFaqs = useCallback(async () => {
+        try {
+            // Buat URL dengan query parameter
+            const url = new URL("/api/v2/public/faq", window.location.origin);
 
-                // Filter berdasarkan kategori
-                const filteredItems = data.filter(faq =>
-                    (selectedCategory === "all" || faq.category_name === selectedCategory) &&
-                    (faq.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                        faq.content.toLowerCase().includes(searchTerm.toLowerCase()))
-                );
+            // Tambahkan parameter kategori jika kategori dipilih (selain "all")
+            if (selectedCategory !== "all" && selectedCategory) {
+                // Fetch data kategori dari API
+                const responseCategory = await fetch(`/api/v2/public/faq/categories`);
+                const dataCategory = await responseCategory.json();
 
-                setFaqItems(filteredItems);
-            } catch (error) {
-                console.error("Failed to fetch FAQs:", error);
+                if (dataCategory && dataCategory.success && Array.isArray(dataCategory.data)) {
+                    // Cari nama kategori berdasarkan ID
+                    const categoryName = dataCategory.data.find(cat => cat.category_id === selectedCategory)?.category_name;
+
+                    if (categoryName) {
+                        url.searchParams.append("category", categoryName);
+                    }
+                }
             }
-        };
 
-        fetchFaqs();
+            // Tambahkan parameter pencarian jika ada
+            if (searchTerm) {
+                url.searchParams.append("search", searchTerm);
+            }
+
+            const response = await fetch(url);
+            const data = await response.json();
+            console.log("🚀 ~ fetchFaqs ~ data:", data);
+
+            if (data && data.success && Array.isArray(data.data)) {
+                setFaqItems(data.data);
+            } else {
+                console.error("Invalid data format from API");
+                setFaqItems([]);
+            }
+        } catch (error) {
+            console.error("Failed to fetch FAQs:", error);
+            setFaqItems([]);
+        }
     }, [searchTerm, selectedCategory]);
+
+    // Efek untuk memanggil fetchFaqs setiap kali searchTerm atau selectedCategory berubah
+    useEffect(() => {
+        fetchFaqs();
+    }, [fetchFaqs]);
 
     return (
         <Accordion type="single" collapsible className="w-full">
             {faqItems.map((item) => (
                 <AccordionItem key={item.faq_id} value={`item-${item.faq_id}`}>
-                    <AccordionTrigger>{item.title}</AccordionTrigger>
-                    <AccordionContent>{item.content}</AccordionContent>
+                    <AccordionTrigger className="w-full">{item.title}</AccordionTrigger>
+                    <AccordionContent className="w-full">{item.content}</AccordionContent>
                 </AccordionItem>
             ))}
         </Accordion>

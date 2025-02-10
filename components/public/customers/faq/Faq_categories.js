@@ -10,38 +10,47 @@ export default function FaqCategories({ onSelectCategory, selectedCategory }) {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await fetch("/api/dashboard/faq");
+                const response = await fetch("/api/v2/public/faq/categories");
                 const data = await response.json();
+                console.log("🚀 ~ fetchCategories ~ data:", data)
 
-                // Ambil kategori unik
-                const uniqueCategories = [
-                    { id: "all", name: "Semua Pertanyaan" }, // Tambahkan opsi "Semua"
-                    ...Array.from(new Set(data.map(faq => faq.category_name))).map(category => ({
-                        id: category,
-                        name: category.charAt(0).toUpperCase() + category.slice(1), // Format nama kategori
-                    })),
-                ];
-
-                setCategories(uniqueCategories);
+                if (data && data.success && Array.isArray(data.data)) {
+                    // Map data dari API ke format yang sesuai
+                    const formattedCategories = [
+                        {
+                            category_id: "all",
+                            category_name: "Semua Pertanyaan",
+                        },
+                        ...data.data.map(category => ({
+                            category_id: category.category_id,
+                            category_name: category.category_name,
+                        }))
+                    ];
+                    setCategories(formattedCategories);
+                } else {
+                    console.error("Invalid data format from API");
+                    setCategories([]);
+                }
             } catch (error) {
                 console.error("Failed to fetch categories:", error);
+                setCategories([]);
             }
         };
 
         fetchCategories();
-    }, []);
+    }, [onSelectCategory, selectedCategory]);
 
     return (
         <div className="space-y-2">
             <h2 className="text-xl font-semibold mb-4">Kategori</h2>
             {categories.map((category) => (
                 <Button
-                    key={category.id}
-                    variant={selectedCategory === category.id ? "default" : "ghost"}
+                    key={category.category_id}
+                    variant={selectedCategory === category.category_id ? "default" : "ghost"}
                     className="w-full justify-start"
-                    onClick={() => onSelectCategory(category.id)}
+                    onClick={() => onSelectCategory(category.category_id)}
                 >
-                    {category.name}
+                    {category.category_name}
                 </Button>
             ))}
         </div>

@@ -1,16 +1,20 @@
 "use client"
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Input } from "@/components/shadcnUi/input"
 import { Search } from 'lucide-react'
 
 export default function FaqSearch({ onSearch }) {
     const [search, setSearch] = useState('')
 
+    // Efek untuk memanggil onSearch setiap kali nilai search berubah
+    useEffect(() => {
+        onSearch(search);
+    }, [search, onSearch]);
+
     const handleSearch = (e) => {
         const value = e.target.value
         setSearch(value)
-        onSearch(value)
     }
 
     return (
@@ -26,4 +30,3 @@ export default function FaqSearch({ onSearch }) {
         </div>
     )
 }
-
