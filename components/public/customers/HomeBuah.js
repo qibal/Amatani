@@ -1,6 +1,5 @@
 "use client";
 
-
 import { useEffect, useState } from "react";
 import { ScrollArea, ScrollBar } from "@/components/shadcnUi/scroll-area";
 import { Card, CardHeader, CardContent } from "@/components/shadcnUi/card";
@@ -8,6 +7,7 @@ import { AspectRatio } from "@/components/shadcnUi/aspect-ratio";
 import { AlertCircle } from "lucide-react"; // Ikon untuk fallback
 import Image from "next/image";
 import Link from "next/link";
+import { Skeleton } from "@/components/shadcnUi/skeleton";
 
 export default function HomeBuah() {
     const [categories, setCategories] = useState([]);
@@ -19,14 +19,14 @@ export default function HomeBuah() {
         async function fetchProducts(retryCount = 0) {
             try {
                 setIsLoading(true);
-                const result = await fetch('/api/customer/home/home_buah');
+                const result = await fetch('/api/v2/public/lp/products');
                 if (!result.ok) {
                     throw new Error(`HTTP error! status: ${result.status}`);
                 }
                 const data = await result.json();
                 console.log("Data Kategori:", data);
                 console.log("Jumlah Kategori:", data.length);
-                setCategories(data);
+                setCategories(data.data);
                 setError(null);
             } catch (error) {
                 console.error("Error fetching products:", error);
@@ -40,12 +40,47 @@ export default function HomeBuah() {
                 setIsLoading(false);
             }
         }
-
         fetchProducts();
     }, []);
 
     if (isLoading) {
-        return <div>Loading...</div>;
+        return (
+            <section className="py-8 px-16 bg-white">
+                <div className="container mx-auto">
+                    <div className="flex flex-col gap-y-8">
+                        {/* Skeleton Loading */}
+                        {[...Array(3)].map((_, categoryIndex) => (
+                            <div key={categoryIndex} className="gap-y-4">
+                                <h2 className="text-2xl font-semibold mb-6 text-gray-800">
+                                    <Skeleton className="h-6 w-48" />
+                                </h2>
+                                <ScrollArea>
+                                    <div className="flex gap-4">
+                                        {[...Array(5)].map((_, productIndex) => (
+                                            <div key={productIndex} className="flex-shrink-0 w-80">
+                                                <Card className="border-none shadow-none">
+                                                    <CardHeader className="p-0">
+                                                        <AspectRatio ratio={1}>
+                                                            <Skeleton className="w-full h-full rounded-md" />
+                                                        </AspectRatio>
+                                                    </CardHeader>
+                                                    <CardContent className="space-y-2 p-4">
+                                                        <Skeleton className="h-4 w-52" />
+                                                        <Skeleton className="h-4 w-40" />
+                                                        <Skeleton className="h-4 w-32" />
+                                                    </CardContent>
+                                                </Card>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <ScrollBar orientation="horizontal" />
+                                </ScrollArea>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+        );
     }
 
     if (error) {
@@ -147,14 +182,3 @@ function ProductCard({ product_id, imageSrc, name, category, priceType, fixedPri
         </Link>
     );
 }
-
-// function NoProduct() {
-//     return (
-//         <Card className="flex items-center justify-center flex-shrink-0 w-80 h-80 bg-gray-100">
-//             <div className="flex flex-col items-center text-center space-y-2">
-//                 <AlertCircle className="w-8 h-8 text-gray-500" />
-//                 <p className="text-gray-500">Tidak ada produk!</p>
-//             </div>
-//         </Card>
-//     );
-// }

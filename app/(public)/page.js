@@ -5,8 +5,8 @@ import Footer from "@/components/public/customers/Footer";
 import Image from "next/image";
 import CompanyLogosCarousel from "@/components/public/customers/CarouselCompanyLogos";
 import SearchHomeCustomer from "@/components/public/customers/SearchProduct";
-import Statistics from "@/components/public/customers/Statistics";
 import FeatureGrid from "@/components/public/customers/FeatureGrid";
+import Experience from "@/components/public/customers/Experience";
 
 export default function CustomerPage() {
     return (
@@ -34,7 +34,7 @@ export default function CustomerPage() {
             </section>
 
             {/* Statistik Section */}
-            <Statistics />
+            <Experience />
 
             {/* Business Highlight Section */}
             <CompanyLogosCarousel />

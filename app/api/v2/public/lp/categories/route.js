@@ -1,8 +1,8 @@
-import { GetCountCartCustomers } from "@/app/actions/v2/customer/cartActions";
+import { GetCategoriesActionPublic } from "@/app/actions/v2/public/landingPage";
 
 export async function GET(req, { params }) {
     try {
-        const { success, data, error } = await GetCountCartCustomers(req, { params });
+        const { success, data, error } = await GetCategoriesActionPublic();
 
         if (success) {
             return new Response(JSON.stringify({ success: true, data }), {

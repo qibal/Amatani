@@ -2,14 +2,15 @@
 import { useState } from 'react';
 import { Button } from "@/components/shadcnUi/button"
 import { Input } from "@/components/shadcnUi/input"
+import { useRouter } from 'next/navigation';
 
 export default function SearchHomeCustomer() {
     const [searchQuery, setSearchQuery] = useState('');
-
+    const router = useRouter();
     const handleSearch = (e) => {
         e.preventDefault();
         if (searchQuery.trim()) {
-            window.location.href = `/products?products=${encodeURIComponent(searchQuery)}`;
+            router.push(`/products?search=${encodeURIComponent(searchQuery)}`);
         }
     };
 

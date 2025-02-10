@@ -1,8 +1,8 @@
-import { GetCountCartCustomers } from "@/app/actions/v2/customer/cartActions";
+import { GetAllProductPublic } from "@/app/actions/v2/public/landingPage";
 
 export async function GET(req, { params }) {
     try {
-        const { success, data, error } = await GetCountCartCustomers(req, { params });
+        const { success, data, error } = await GetAllProductPublic();
 
         if (success) {
             return new Response(JSON.stringify({ success: true, data }), {
@@ -10,7 +10,7 @@ export async function GET(req, { params }) {
                 headers: { "Content-Type": "application/json" },
             });
         } else {
-            console.error("GET categories failed:", error);
+            console.error("GET experiences failed:", error);
             return new Response(JSON.stringify({ success: false, error }), {
                 status: 500,
                 headers: { "Content-Type": "application/json" },
@@ -18,9 +18,12 @@ export async function GET(req, { params }) {
         }
     } catch (error) {
         console.error("Error in GET request:", error);
-        return new Response(JSON.stringify({ success: false, error: error.message }), {
-            status: 500,
-            headers: { "Content-Type": "application/json" },
-        });
+        return new Response(
+            JSON.stringify({ success: false, error: error.message }),
+            {
+                status: 500,
+                headers: { "Content-Type": "application/json" },
+            }
+        );
     }
 }

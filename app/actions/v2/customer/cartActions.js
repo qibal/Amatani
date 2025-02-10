@@ -1,8 +1,56 @@
+"use server";
+
 import sql from "@/lib/postgres";
 
-// http://localhost:3000/api/customer/cart/ea1975e8-e225-4988-9c31-e4e1d8d11693
-export async function GetCartActionCustomer({ user_id }) {
-    console.log("🚀 ~ GetCarttActionCustomers ~ query:", user_id)
+/**
+ * @description Menghitung total produk unik di dalam keranjang berdasarkan user_id.
+ * @param {Object} { user_id } - Objek yang berisi user_id.
+ * @returns {Promise<{success: boolean, data?: number, error?: any}>} Objek yang berisi status keberhasilan, jumlah produk unik jika berhasil, atau pesan error jika gagal.
+ */
+export async function GetCountCartCustomers(req, { params }) {
+    const user_id = await params.user_id;
+    try {
+        // Query untuk menghitung total produk unik di dalam keranjang berdasarkan user_id
+        const result = await sql`
+            SELECT
+                COUNT(DISTINCT ci.product_id) AS total_products
+            FROM carts c
+            LEFT JOIN carts_items ci ON ci.cart_id = c.carts_id
+            WHERE c.user_id = ${user_id}
+            LIMIT 1;
+        `;
+
+        // Jika tidak ada keranjang, kembalikan 0
+        if (result.length === 0) {
+            return {
+                success: true,
+                data: 0
+            };
+        }
+
+        // Ambil total_products dari baris pertama
+        return {
+            success: true,
+            data: result[0].total_products
+        };
+    } catch (error) {
+        console.error("Error GetCountCartCustomers:", error);
+        return {
+            success: false,
+            error: "Failed to get cart count",
+            details: error.message
+        };
+    }
+}
+
+
+/**
+ * @description Mengambil data keranjang berdasarkan user_id.
+ * @param {Object} { user_id } - Objek yang berisi user_id.
+ * @returns {Promise<{success: boolean, data?: any, error?: any}>} Objek yang berisi status keberhasilan, data keranjang jika berhasil, atau pesan error jika gagal.
+ */
+export async function GetCartActionCustomers({ user_id }) {
+    console.log("🚀 ~ GetCartActionCustomers ~ query:", user_id)
     try {
         const result = await sql`
             SELECT
@@ -62,20 +110,23 @@ export async function GetCartActionCustomer({ user_id }) {
             LIMIT 1;
         `;
 
-        if (result.count === 0) {
+        if (result.length === 0) {
             return { success: true, data: null };
         }
 
         return { success: true, data: result[0] };
     } catch (error) {
-        console.error("Error GetCarttActionCustomers:", error);
-        return { success: false, error: error.message };
+        console.error("Error GetCartActionCustomers:", error);
+        return { success: false, error: "Failed to get cart", details: error.message };
     }
 }
 
-// CartActions.js
-
-export async function DeleteCartItem({ cart_items_id, user_id }) {
+/**
+ * @description Menghapus item dari keranjang berdasarkan cart_items_id dan user_id.
+ * @param {Object} { cart_items_id, user_id } - Objek yang berisi cart_items_id dan user_id.
+ * @returns {Promise<{success: boolean, message?: string, error?: any}>} Objek yang berisi status keberhasilan, pesan jika berhasil, atau pesan error jika gagal.
+ */
+export async function DeleteCartItemCustomer({ cart_items_id, user_id }) {
     try {
         const result = await sql`
             DELETE FROM carts_items
@@ -84,17 +135,22 @@ export async function DeleteCartItem({ cart_items_id, user_id }) {
             RETURNING *;
         `;
 
-        if (result.count === 0) {
+        if (result.length === 0) {
             return { success: false, message: "Item not found or not authorized to delete" };
         }
 
         return { success: true, message: "Item deleted successfully" };
     } catch (error) {
-        console.error("Error DeleteCartItem:", error);
-        return { success: false, error: error.message };
+        console.error("Error DeleteCartItemCustomer:", error);
+        return { success: false, error: "Failed to delete cart item", details: error.message };
     }
 }
 
+/**
+ * @description Mengubah kuantitas item di dalam keranjang berdasarkan cart_items_id, quantity, dan user_id.
+ * @param {Object} { cart_items_id, quantity, user_id } - Objek yang berisi cart_items_id, quantity, dan user_id.
+ * @returns {Promise<{success: boolean, message?: string, data?: any, error?: any}>} Objek yang berisi status keberhasilan, pesan jika berhasil, data item yang diubah jika berhasil, atau pesan error jika gagal.
+ */
 export async function QuantityChangeCartCustomer({ cart_items_id, quantity, user_id }) {
     try {
         const result = await sql`
@@ -112,6 +168,6 @@ export async function QuantityChangeCartCustomer({ cart_items_id, quantity, user
         return { success: true, message: "Quantity updated successfully", data: result[0] };
     } catch (error) {
         console.error("Error QuantityChangeCartCustomer:", error);
-        return { success: false, error: error.message };
+        return { success: false, error: "Failed to update quantity", details: error.message };
     }
 }

@@ -1,14 +1,17 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { Card, CardHeader, CardContent } from "@/components/shadcnUi/card";
 import { AspectRatio } from "@/components/shadcnUi/aspect-ratio";
-import { AlertCircle, ChevronDown, Filter, Search, X } from "lucide-react"; // Ikon untuk fallback
+import { AlertCircle, AlignJustify, ChevronDown, Filter, Search, X } from "lucide-react"; // Ikon untuk fallback
 import { Input } from "@/components/shadcnUi/input";
 import { Button } from "@/components/shadcnUi/button";
 import Image from "next/image";
 import Link from "next/link";
+import CategoryMenu from '@/components/public/customers/Navbar/CategoryMenu';
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/shadcnUi/hover-card';
+import { Skeleton } from "@/components/shadcnUi/skeleton"; // Import Skeleton component
 
 export default function Product() {
     const [productsData, setProductsData] = useState([]);
@@ -16,50 +19,100 @@ export default function Product() {
     const [categoryName, setCategoryName] = useState('');
     const searchParams = useSearchParams();
     const [searchQuery, setSearchQuery] = useState('');
+    const router = useRouter();
+    const [isLoading, setIsLoading] = useState(true); // State untuk mengontrol loading
 
-    const categoriesQuery = searchParams.get('categories');
+    const categoriesQuery = searchParams.get('category');
     const productsQuery = searchParams.get('products');
-    const allProductsQuery = searchParams.get('all_product');
-    const query = categoriesQuery || productsQuery || '';
-    const type = categoriesQuery ? 'categories' : (productsQuery ? 'products' : 'all');
-    const formattedQuery = categoriesQuery;  // Hapus formatting tambahan
+    const search = searchParams.get('search');
+    const query = categoriesQuery || productsQuery || search || '';
+    const type = categoriesQuery ? 'categories' : (productsQuery ? 'products' : 'search');
+    const formattedQuery = categoriesQuery;
 
     console.log('Formatted Query:', formattedQuery);
     console.log('Query:', query);
     console.log('Type:', type);
 
     useEffect(() => {
+
+
         async function fetchProducts() {
-            const url = type === 'categories'
-                ? `/api/customer/products?categories=${formattedQuery}`
-                : (type === 'products' ? `/api/customer/products?products=${query}` : `/api/customer/products?all_product=true`);
-            const result = await fetch(url, {
-                method: "GET",
-            });
-            if (result.ok) {
-                const data = await result.json();
-                setProductsData(data);
-                if (data.length > 0) {
-                    setCategoryName(allProductsQuery ? 'Semua Produk' : data[0].categories_name);
-                } else {
-                    setCategoryName(allProductsQuery ? 'Semua Produk' : '');
+            setIsLoading(true); // Mulai loading sebelum fetch
+            let url = `/api/v2/public/products`;
+
+            if (formattedQuery) {
+                url += `?category=${formattedQuery}`;
+            } else if (search) {
+                url += `?search=${search}`;
+            }
+
+            try {
+                const result = await fetch(url, {
+                    method: "GET",
+                });
+
+                if (result.ok) {
+                    const data = await result.json();
+                    setProductsData(data.data);
+                    if (data.data.length > 0) {
+                        setCategoryName(categoriesQuery ? data.data[0].categories_name : 'Semua Produk');
+                    } else {
+                        setCategoryName(categoriesQuery ? formattedQuery : 'Semua Produk');
+                    }
                 }
+            } catch (error) {
+                console.error("Error fetching products:", error);
+            } finally {
+                setIsLoading(false); // Selesai loading setelah fetch (berhasil atau gagal)
             }
         }
-        if (query || type === 'all') {
-            fetchProducts();
-        }
-    }, [query, formattedQuery, type, allProductsQuery]);
+
+        fetchProducts();
+    }, [search]);
+    useEffect(() => {
+
+        // Fungsi untuk menghapus query params saat reload
+        const clearQueryParams = () => {
+            const currentUrl = window.location.origin + window.location.pathname;
+            router.replace(currentUrl);
+        };
+
+        // Panggil fungsi saat komponen di-mount
+        clearQueryParams();
+    }, []);
 
     const handleSearch = (e) => {
         e.preventDefault();
         if (searchQuery.trim()) {
-            window.location.href = `/products?products=${encodeURIComponent(searchQuery)}`;
+            router.push(`/products?search=${encodeURIComponent(searchQuery)}`);
         }
     };
+    const [Categories, SetCategories] = useState([])
+    console.log("🚀 ~ CategoryMenu ~ Categories:", Categories)
+    useEffect(() => {
+        async function GetCategories() {
+            try {
+                const result = await fetch('/api/v2/public/categories');
+                const data = await result.json();
+                console.log("🚀 ~ GetCategories ~ data:", data);
+
+                if (data && data.success && Array.isArray(data.data)) {
+                    SetCategories(data.data); // Mengakses data.data
+                } else {
+                    console.error("Invalid data format from API");
+                    SetCategories([]);
+                }
+            } catch (error) {
+                console.error("Error fetching categories:", error);
+                SetCategories([]);
+            }
+        }
+        GetCategories()
+    }, [])
+
 
     return (
-        <div className="mt-4 px-16 container mx-auto">
+        <div className="mt-4 px-4 lg:px-16 container mx-auto">
             {/* Mobile & Medium Layout */}
             <div className="flex flex-col gap-2 py-2 lg:hidden">
 
@@ -89,7 +142,7 @@ export default function Product() {
                 {/* Hasil Pencarian, Filter, dan Sort By */}
                 <div className="flex justify-between items-center w-full">
                     <p className="text-xl font-semibold text-gray-800">
-                        {allProductsQuery ? 'Semua Produk' : (categoryName ? categoryName : (formattedQuery ? formattedQuery : 'Kategori tidak tersedia'))} ({productsData.length})
+                        {categoryName ? categoryName : 'Semua Produk'} ({productsData.length})
                     </p>
                     {/* <div className="flex items-center gap-4">
                         <Button className="flex items-center gap-2 bg-gray-50 hover:bg-gray-100">
@@ -102,6 +155,7 @@ export default function Product() {
                         </Button>
                     </div> */}
                 </div>
+
             </div>
 
             {/* Desktop Layout */}
@@ -109,13 +163,13 @@ export default function Product() {
                 <div>
                     <p className="text-sm text-gray-800">Hasil pencarian:</p>
                     <p className="text-xl font-semibold text-gray-800">
-                        {allProductsQuery ? 'Semua Produk' : (categoryName ? categoryName : (formattedQuery ? formattedQuery : 'Kategori tidak tersedia'))} ({productsData.length})
+                        {categoryName ? categoryName : 'Semua Produk'} ({productsData.length})
                     </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-4 w-full lg:w-auto">
-                    <Button variant="outline">
+                    {/* <Button variant="outline">
                         <Link href="/products?all_product=true">Semua Produk</Link>
-                    </Button>
+                    </Button> */}
                     {/* Search Input */}
                     <form onSubmit={handleSearch} className="flex items-center gap-2 flex-grow lg:flex-grow-0 w-full lg:w-auto">
                         <div className="relative flex items-center w-full lg:w-[300px]">
@@ -155,7 +209,26 @@ export default function Product() {
 
             {/* Grid Produk */}
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-6">
-                {productsData.length > 0 ? (
+                {isLoading ? (
+                    // Tampilkan skeleton loading saat isLoading bernilai true
+                    [...Array(8)].map((_, i) => ( // Membuat 8 skeleton card
+                        <div key={i} className="w-full">
+                            <Card className="w-full border-0 shadow-none">
+                                <CardHeader className="p-0">
+                                    <AspectRatio ratio={1 / 1}>
+                                        <Skeleton className="w-full h-full rounded-none" />
+                                    </AspectRatio>
+                                </CardHeader>
+                                <CardContent className="space-y-2 p-4">
+                                    <Skeleton className="h-4 w-3/4" />
+                                    <Skeleton className="h-4 w-1/2" />
+                                    <Skeleton className="h-4 w-1/3" />
+                                </CardContent>
+                            </Card>
+                        </div>
+                    ))
+                ) : productsData.length > 0 ? (
+                    // Tampilkan data produk jika ada dan tidak sedang dalam keadaan loading
                     productsData.map((product) => (
                         <ProductCard
                             key={product.product_id}
@@ -170,6 +243,7 @@ export default function Product() {
                         />
                     ))
                 ) : (
+                    // Tampilkan NoProduct component jika tidak ada data produk
                     <NoProduct />
                 )}
             </div>

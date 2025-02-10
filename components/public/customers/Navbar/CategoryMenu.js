@@ -13,9 +13,21 @@ export default function CategoryMenu({ isRootPath }) {
     console.log("🚀 ~ CategoryMenu ~ Categories:", Categories)
     useEffect(() => {
         async function GetCategories() {
-            const result = await fetch('/api/customer')
-            const data = await result.json()
-            SetCategories(data)
+            try {
+                const result = await fetch('/api/v2/public/lp/categories');
+                const data = await result.json();
+                console.log("🚀 ~ GetCategories ~ data:", data);
+
+                if (data && data.success && Array.isArray(data.data)) {
+                    SetCategories(data.data); // Mengakses data.data
+                } else {
+                    console.error("Invalid data format from API");
+                    SetCategories([]);
+                }
+            } catch (error) {
+                console.error("Error fetching categories:", error);
+                SetCategories([]);
+            }
         }
         GetCategories()
     }, [])
@@ -39,7 +51,7 @@ export default function CategoryMenu({ isRootPath }) {
                                 className="w-full text-left mt-2 text-gray-950 bg-white hover:bg-rose-100 hover:outline hover:outline-2 hover:outline-rose-600"
                                 asChild
                             >
-                                <Link href={`/products?categories=${formattedCategoryName}`}>{category.categories_name}</Link>
+                                <Link href={`/products?category=${formattedCategoryName}`}>{category.categories_name}</Link>
                             </Button>
                         );
                     })

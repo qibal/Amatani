@@ -1,44 +1,72 @@
 'use client'
-import { Button } from "@/components/shadcnUi/button"
-import { Card } from "@/components/shadcnUi/card"
-import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
-} from "@/components/ui/accordion"
-import { Minus, Plus, Search, Star, Truck, X } from 'lucide-react'
-import { useEffect, useState } from "react"
-import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/shadcnUi/form"
-import { Input } from "@/components/shadcnUi/input"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
-import { useTransition } from 'react'
-import { useRouter } from 'next/navigation'
-import { useCart } from "../../Navbar/CartContext"
-import CarouselWithThumbnails from "./CarouselImages"
-import { Separator } from "@/components/shadcnUi/separator"
+
+import { Minus, Plus, Search, Star, Truck, X } from "lucide-react";
+import CarouselWithThumbnails from "./CarouselImages";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/shadcnUi/accordion";
+import { Input } from "@/components/shadcnUi/input";
+import { Button } from "@/components/shadcnUi/button";
+import { Separator } from "@/components/shadcnUi/separator";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/shadcnUi/form";
+import { z } from "zod";
+import { useEffect, useState, useTransition } from "react";
+import { useCart } from "../../Navbar/CartContext";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Skeleton } from "@/components/shadcnUi/skeleton";
 
 export default function ProductDetailComponent({ product_id }) {
 
     const [productsData, setProductsData] = useState(null);
     console.log("🚀 ~ Product ~ productsData:", productsData)
+    const [isLoading, setIsLoading] = useState(true); // Tambahkan state loading
 
     useEffect(() => {
         async function fetchProducts(product_id) {
             console.log("🚀 ~ fetchProducts ~ product_id:", product_id)
-            const result = await fetch(`/api/customer/products/products_detail/${product_id}`);
-            if (result.ok) {
-                const data = await result.json();
-                setProductsData(data[0]); // Assuming data is an array and we need the first item
+            setIsLoading(true); // Mulai loading sebelum fetch
+            try {
+                const result = await fetch(`/api/v2/public/products/${product_id}`);
+                if (result.ok) {
+                    console.log("🚀 ~ fetchProducts ~ result:", result)
+                    const data = await result.json();
+                    setProductsData(data.data); // Assuming data is an array and we need the first item
+                } else {
+                    console.error("Failed to fetch products");
+                }
+            } catch (error) {
+                console.error("Error fetching products:", error);
+            } finally {
+                setIsLoading(false); // Selesai loading setelah fetch (berhasil atau gagal)
             }
         }
         fetchProducts(product_id)
     }, [product_id]);
 
-    if (!productsData) {
-        return <div>Loading...</div>;
+    if (isLoading) {
+        return (
+            <div className="container mx-auto px-16 py-6">
+                <div className="grid gap-4 lg:grid-cols-3 ">
+                    {/* Image Gallery Skeleton */}
+                    <div className="lg:col-span-2 space-y-4">
+                        <Skeleton className="w-full aspect-video rounded-lg" />
+                        <div className="hidden lg:block">
+                            <Skeleton className="h-8 w-1/2" />
+                        </div>
+                        <Skeleton className="h-4 w-3/4" />
+                        <Skeleton className="h-4 w-1/2" />
+                        <Skeleton className="h-4 w-1/4" />
+                    </div>
+
+                    {/* Product Info Card Skeleton */}
+                    <div className="hidden lg:block lg:col-span-1">
+                        <div className="sticky top-4">
+                            <Skeleton className="w-full h-[400px] rounded-lg" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
     }
 
     // Pemetaan gambar untuk digabungkan dengan URL Supabase
@@ -168,6 +196,16 @@ function ProductInfoCard({ productsData }) {
         }
     })
     const router = useRouter()
+    const [isLoading, setIsLoading] = useState(false); // State untuk mengontrol loading
+
+    useEffect(() => {
+        // Efek ini akan dijalankan saat komponen di-mount atau productsData berubah
+        setIsLoading(true); // Mulai loading
+        if (productsData) {
+            setIsLoading(false); // Selesai loading jika productsData tersedia
+        }
+    }, [productsData]);
+
     const onSubmit = (data) => {
         startTransition(async () => {
             try {
@@ -230,12 +268,55 @@ function ProductInfoCard({ productsData }) {
     const handleSearch = (e) => {
         e.preventDefault();
         if (searchQuery.trim()) {
-            window.location.href = `/products?products=${encodeURIComponent(searchQuery)}`;
+            router.push(`/products?search=${encodeURIComponent(searchQuery)}`);
         }
     };
     const wholesalePrices = Array.isArray(productsData?.wholesale_prices)
         ? productsData.wholesale_prices
         : []
+
+    if (isLoading) {
+        return (
+            <div className="w-full max-w-lg mx-auto p-4">
+                {/* Skeleton Search Section */}
+                <div className="flex items-center gap-2 flex-grow lg:flex-grow-0 w-full lg:w-auto mb-12">
+                    <Skeleton className="h-10 w-full rounded-full" />
+                    <Skeleton className="h-10 w-24 rounded-full" />
+                </div>
+                <div className="flex flex-col justify-start items-center w-full gap-10 bg-white rounded-lg">
+                    {/* Skeleton Price Tiers */}
+                    <div className="flex flex-col justify-start items-center w-full gap-6">
+                        <div className="grid grid-cols-3 gap-4 text-center w-full">
+                            <Skeleton className="h-10 w-full" />
+                            <Skeleton className="h-10 w-full" />
+                            <Skeleton className="h-10 w-full" />
+                        </div>
+                        <Separator className="w-full" />
+                    </div>
+
+                    {/* Skeleton Quantity Selector and Action Buttons */}
+                    <div className="space-y-4 w-full">
+                        <div className="flex items-center gap-2 pb-5">
+                            <Skeleton className="w-14 h-10 rounded-full" />
+                            <Skeleton className="flex-1 h-10" />
+                            <Skeleton className="w-14 h-10 rounded-full" />
+                        </div>
+
+                        <div className="flex flex-col gap-4">
+                            <Skeleton className="w-full h-12 rounded-full" />
+                            <Skeleton className="w-full h-12 rounded-full" />
+                        </div>
+                    </div>
+
+                    {/* Skeleton Shipping Info */}
+                    <div className="flex justify-start items-center w-full gap-3 text-gray-500">
+                        <Skeleton className="w-4 h-4" />
+                        <Skeleton className="w-24 h-4" />
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="w-full max-w-lg mx-auto p-4 ">

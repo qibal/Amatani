@@ -10,7 +10,6 @@ import { Separator } from "@/components/shadcnUi/separator"
 import Link from 'next/link'
 import { useCart } from '@/components/public/customers/Navbar/CartContext'
 import { Trash2 } from 'lucide-react'
-import { toast } from 'sonner'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/shadcnUi/alert-dialog'
 
 export default function CartPage() {
@@ -21,11 +20,17 @@ export default function CartPage() {
     useEffect(() => {
         async function fetchCart() {
             try {
-                const res = await fetch(`/api/customer/cart/${userId}`)
+                const res = await fetch(`/api/v2/customer/cart/${userId}`)
                 const json = await res.json()
                 console.log("🚀 ~ fetchCart ~ json: berasil api", json)
                 setCartData(json)
-                setCartItems(json.data.items.map(item => ({ ...item, isSelected: false })))
+                // Tambahkan pengecekan null sebelum mengakses cartData.data.items
+                if (json && json.data && json.data.items) {
+                    setCartItems(json.data.items.map(item => ({ ...item, isSelected: false })))
+                } else {
+                    console.warn("Data keranjang tidak valid atau kosong.");
+                    setCartItems([]); // Set cartItems ke array kosong
+                }
             } catch (error) {
                 console.error('Fetch cart error:', error)
             }
@@ -35,7 +40,7 @@ export default function CartPage() {
 
     const removeItem = async (cart_items_id) => {
         try {
-            const response = await fetch(`/api/customer/cart/${userId}`, {
+            const response = await fetch(`/api/v2/customer/cart/${userId}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -76,7 +81,7 @@ export default function CartPage() {
 
     const updateQuantityInDatabase = async (id, newQuantity) => {
         try {
-            const response = await fetch(`/api/customer/cart/quantity_change`, {
+            const response = await fetch(`/api/v2/customer/cart/quantity`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -155,7 +160,8 @@ export default function CartPage() {
     }
     const isCheckoutDisabled = cartItems.every(item => !item.isSelected);
 
-    if (!cartData || !cartData.data || cartData.data.items.length === 0) {
+    // Tambahkan pengecekan null sebelum mengakses cartData.data.items.length
+    if (!cartData || !cartData.data || !cartData.data.items || cartData.data.items.length === 0) {
         return <EmptyCart />;
     }
 
