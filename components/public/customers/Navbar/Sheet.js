@@ -82,7 +82,7 @@ export default function NavbarSheet({ isLoggedIn, scrolled }) {
                 {/* Logout Button */}
                 {isLoggedIn && (
 
-                    <Button className="bg-rose-600 text-white w-full rounded-md hover:bg-rose-700 mt-6" variant='link' onClick={() => { Logout(); router.refresh(); }}>
+                    <Button type="button" className="bg-rose-600 text-white w-full rounded-md hover:bg-rose-700 mt-6" variant='link' onClick={() => { Logout(); router.refresh(); }}>
                         <Logout />
                         Log out
                     </Button>
