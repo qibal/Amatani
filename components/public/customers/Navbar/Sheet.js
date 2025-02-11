@@ -6,6 +6,7 @@ import { Button } from "@/components/shadcnUi/button";
 import Link from "next/link";
 import { usePathname } from 'next/navigation';
 import { useCart } from "./CartContext";
+import { Logout } from "@/api v1/actions v1/v1/Auth";
 
 export default function NavbarSheet({ isLoggedIn, scrolled }) {
     const pathname = usePathname(); // Mendapatkan URL saat ini
@@ -16,7 +17,7 @@ export default function NavbarSheet({ isLoggedIn, scrolled }) {
         <Sheet>
             <SheetTrigger asChild >
                 <AlignJustify
-                    className={`block md:hidden cursor-pointer ${isRootPath && !scrolled ? "text-white" : "text-gray-950" 
+                    className={`block md:hidden cursor-pointer ${isRootPath && !scrolled ? "text-white" : "text-gray-950"
                         }`}
                 />
             </SheetTrigger>
@@ -80,8 +81,10 @@ export default function NavbarSheet({ isLoggedIn, scrolled }) {
 
                 {/* Logout Button */}
                 {isLoggedIn && (
-                    <Button className="bg-rose-600 text-white w-full rounded-md hover:bg-rose-700 mt-6">
-                        <Link href="/logout">Logout</Link>
+
+                    <Button className="bg-rose-600 text-white w-full rounded-md hover:bg-rose-700 mt-6" variant='link' onClick={() => { Logout(); router.refresh(); }}>
+                        <Logout />
+                        Log out
                     </Button>
                 )}
             </SheetContent>
