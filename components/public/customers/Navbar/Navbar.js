@@ -56,7 +56,7 @@ export default function Navbar({ isAuthenticated }) {
 
     return (
         <header
-            className={`w-full navbar mx-auto z-50 transition-all duration-300 px-4 md:px-16 ${isRootPath ? "fixed" : "relative"} ${navbarClass}`}
+            className={`w-full  mx-auto z-50 transition-all duration-300 px-4 md:px-16 ${isRootPath ? "fixed" : "relative"} ${navbarClass}`}
         >
             <div className="max-w-full container mx-auto flex items-center justify-between py-4">
                 {/* Logo */}

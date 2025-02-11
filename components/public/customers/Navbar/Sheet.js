@@ -61,13 +61,13 @@ export default function NavbarSheet({ isLoggedIn, scrolled }) {
 
                     {/* Links */}
                     <div className="mt-6 space-y-4">
-                        <Link href="/about" className="block text-gray-950 hover:underline">
+                        <Link href="/about_us" className="block text-gray-950 hover:underline">
                             Tentang Kami
                         </Link>
-                        <Link href="/help" className="block text-gray-950 hover:underline">
+                        <Link href="/faq" className="block text-gray-950 hover:underline">
                             Pusat Bantuan
                         </Link>
-                        <Link href="/collaboration" className="block text-gray-950 hover:underline">
+                        <Link href="/bekerja-sama" className="block text-gray-950 hover:underline">
                             Bekerja Sama
                         </Link>
                     </div>
