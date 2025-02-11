@@ -1,6 +1,6 @@
-'use client'
+"use client"
 
-import { Minus, Plus, Search, Star, Truck, X } from "lucide-react";
+import { Minus, Plus, Search, Star, Truck, X, Heart } from "lucide-react";
 import CarouselWithThumbnails from "./CarouselImages";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/shadcnUi/accordion";
 import { Input } from "@/components/shadcnUi/input";
@@ -15,430 +15,309 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Skeleton } from "@/components/shadcnUi/skeleton";
 
-export default function ProductDetailComponent({ product_id }) {
-
-    const [productsData, setProductsData] = useState(null);
-    console.log("🚀 ~ Product ~ productsData:", productsData)
-    const [isLoading, setIsLoading] = useState(true); // Tambahkan state loading
-
-    useEffect(() => {
-        async function fetchProducts(product_id) {
-            console.log("🚀 ~ fetchProducts ~ product_id:", product_id)
-            setIsLoading(true); // Mulai loading sebelum fetch
-            try {
-                const result = await fetch(`/api/v2/public/products/${product_id}`);
-                if (result.ok) {
-                    console.log("🚀 ~ fetchProducts ~ result:", result)
-                    const data = await result.json();
-                    setProductsData(data.data); // Assuming data is an array and we need the first item
-                } else {
-                    console.error("Failed to fetch products");
-                }
-            } catch (error) {
-                console.error("Error fetching products:", error);
-            } finally {
-                setIsLoading(false); // Selesai loading setelah fetch (berhasil atau gagal)
-            }
-        }
-        fetchProducts(product_id)
-    }, [product_id]);
-
-    if (isLoading) {
-        return (
-            <div className="container mx-auto px-16 py-6">
-                <div className="grid gap-4 lg:grid-cols-3 ">
-                    {/* Image Gallery Skeleton */}
-                    <div className="lg:col-span-2 space-y-4">
-                        <Skeleton className="w-full aspect-video rounded-lg" />
-                        <div className="hidden lg:block">
-                            <Skeleton className="h-8 w-1/2" />
-                        </div>
-                        <Skeleton className="h-4 w-3/4" />
-                        <Skeleton className="h-4 w-1/2" />
-                        <Skeleton className="h-4 w-1/4" />
-                    </div>
-
-                    {/* Product Info Card Skeleton */}
-                    <div className="hidden lg:block lg:col-span-1">
-                        <div className="sticky top-4">
-                            <Skeleton className="w-full h-[400px] rounded-lg" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    // Pemetaan gambar untuk digabungkan dengan URL Supabase
-    const images = productsData.images
-        ? productsData.images.map((img) => ({
-            src: `https://xmlmcdfzbwjljhaebzna.supabase.co/storage/v1/object/public/${img}`, // Gabungkan URL dasar dengan path gambar
-            alt: productsData.products_name,
-        }))
-        : [];
-
-    return (
-        <div className="container mx-auto px-16 py-6">
-            <div className="grid gap-4 lg:grid-cols-3 ">
-                {/* Image Gallery and Main Image */}
-                <div className="lg:col-span-2 space-y-4">
-                    <div className="lg:hidden">
-                        <h1 className="text-2xl font-bold">{productsData.products_name}</h1>
-                        <div className="flex items-center gap-0.5 mt-2">
-                            {Array(4).fill(0).map((_, index) => (
-                                <Star key={index} className="w-5 h-5 fill-primary text-primary" />
-                            ))}
-                            <Star className="w-5 h-5 fill-muted text-muted-foreground" />
-                        </div>
-                    </div>
-
-                    {/* Carousel with Thumbnails */}
-                    <CarouselWithThumbnails images={images} />
-
-                    {/* Product Info Card for Mobile */}
-                    <div className="lg:hidden mt-4">
-                        <ProductInfoCard productsData={productsData} />
-                    </div>
-
-                    <div className="mt-6 space-y-6">
-                        <div className="hidden lg:block">
-                            <h1 className="text-3xl font-bold">{productsData.products_name}</h1>
-                            {/* <div className="flex items-center gap-0.5 mt-2">
-                                {Array(4).fill(0).map((_, index) => (
-                                    <Star key={index} className="w-5 h-5 fill-primary text-primary" />
-                                ))}
-                                <Star className="w-5 h-5 fill-muted text-muted-foreground" />
-                            </div> */}
-                        </div>
-
-                        {/* Description */}
-                        <div>
-                            <h2 className="text-lg font-semibold mb-2">Deskripsi produk</h2>
-                            <p className="text-sm text-muted-foreground">
-                                {productsData.products_description}
-                            </p>
-                        </div>
-
-                        {/* Product Attributes Accordion */}
-                        <Accordion type="single" collapsible>
-                            <AccordionItem value="attributes">
-                                <AccordionTrigger>Atribut produk</AccordionTrigger>
-                                <AccordionContent>
-                                    <div className="p-4 bg-muted rounded-lg">
-                                        <table className="w-full">
-                                            <tbody>
-                                                <tr>
-                                                    <td className="py-2">Stock</td>
-                                                    <td className="py-2">{productsData.stock}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td className="py-2">Kategori</td>
-                                                    <td className="py-2">{productsData.categories_name}</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </AccordionContent>
-                            </AccordionItem>
-                        </Accordion>
-
-                        {/* Reviews Section */}
-                        <div>
-                            <h2 className="text-lg font-semibold mb-4">Nilai dan Ulasan</h2>
-                            {/* <div className="space-y-4">
-                                {[1, 2].map((review) => (
-                                    <div key={review} className="border-b pb-4">
-                                        <div className="flex items-center gap-2 mb-2">
-                                            <div className="w-8 h-8 bg-primary rounded-full" />
-                                            <div>
-                                                <div className="font-semibold">User{review}</div>
-                                                <div className="text-sm text-muted-foreground">14 Nov 2024</div>
-                                            </div>
-                                        </div>
-                                        <div className="flex gap-0.5 mb-2">
-                                            {Array(5).fill(0).map((_, index) => (
-                                                <Star key={index} className="w-4 h-4 fill-primary text-primary" />
-                                            ))}
-                                        </div>
-                                        <p className="text-sm">
-                                            barang sampe rumah dengan aman, kualitasnya bagus besar besar
-                                        </p>
-                                    </div>
-                                ))}
-                            </div> */}
-                        </div>
-                    </div>
-                </div>
-
-                {/* Product Info Card for Desktop */}
-                <div className="hidden lg:block lg:col-span-1">
-                    <div className="sticky top-4">
-                        <ProductInfoCard productsData={productsData} />
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-}
-
 const formSchema = z.object({
-    quantity: z.number().min(1, "Quantity must be at least 1")
-})
+  quantity: z.number().min(1, "Quantity must be at least 1"),
+});
 
-function ProductInfoCard({ productsData }) {
-    const [isPending, startTransition] = useTransition()
-    const { userId, setUserId, fetchCartCount } = useCart()
-    const [searchQuery, setSearchQuery] = useState('');
-    const form = useForm({
-        resolver: zodResolver(formSchema),
-        defaultValues: {
-            quantity: 1
+export default function ProductDetailComponent({ product_id }) {
+  // State untuk data produk dan loading state
+  const [productsData, setProductsData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const { userId, setUserId, fetchCartCount } = useCart();
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
+
+  // Inisialisasi React Hook Form dengan Zod resolver
+  const form = useForm({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      quantity: 1,
+    },
+  });
+
+  // Fetch data produk berdasarkan product_id dengan error handling
+  useEffect(() => {
+    async function fetchProducts(product_id) {
+      try {
+        const result = await fetch(`/api/v2/public/products/${product_id}`);
+        if (result.ok) {
+          const data = await result.json();
+          setProductsData(data.data);
         }
-    })
-    const router = useRouter()
-    const [isLoading, setIsLoading] = useState(false); // State untuk mengontrol loading
-
-    useEffect(() => {
-        // Efek ini akan dijalankan saat komponen di-mount atau productsData berubah
-        setIsLoading(true); // Mulai loading
-        if (productsData) {
-            setIsLoading(false); // Selesai loading jika productsData tersedia
-        }
-    }, [productsData]);
-
-    const onSubmit = (data) => {
-        startTransition(async () => {
-            try {
-                const formData = new FormData()
-                formData.append('product_id', productsData.product_id)
-                formData.append('quantity', data.quantity)
-
-                const response = await fetch('/api/customer/products/products_detail/add_to_cart', {
-                    method: 'POST',
-                    credentials: 'include',
-                    body: formData
-                })
-
-                if (response.status === 401) {
-                    router.push('/login')
-                    return
-                }
-
-                const result = await response.json()
-                console.log("🚀 ~ startTransition ~ result:", result)
-
-                if (!response.ok) {
-                    throw new Error(result.message || 'Failed to add to cart')
-                }
-
-                console.log('Added to cart successfully')
-                if (userId) {
-                    fetchCartCount(userId)
-                } else if (result.data.user_id) {
-                    setUserId(result.data.user_id)
-                    fetchCartCount(result.data.user_id)
-                }
-            } catch (error) {
-                console.error('Error adding to cart:', error)
-            }
-        })
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+      setIsLoading(false);
     }
+    fetchProducts(product_id);
+  }, [product_id]);
 
-    const handleMinus = () => {
-        const currentValue = form.getValues("quantity")
-        if (currentValue > 1) {
-            form.setValue("quantity", currentValue - 1)
-        }
+  // Fetch cart count jika userId tersedia
+  useEffect(() => {
+    if (userId) {
+      fetchCartCount(userId);
     }
-
-    const handlePlus = () => {
-        const currentValue = form.getValues("quantity")
-        form.setValue("quantity", currentValue + 1)
-    }
-
-    const handleChange = (e) => {
-        const value = e.target.value
-        if (/^\d*$/.test(value) && value !== '') {
-            const numValue = parseInt(value)
-            if (numValue >= 1) {
-                form.setValue("quantity", numValue)
-            }
-        }
-    }
-    const handleSearch = (e) => {
-        e.preventDefault();
-        if (searchQuery.trim()) {
-            router.push(`/products?search=${encodeURIComponent(searchQuery)}`);
-        }
-    };
-    const wholesalePrices = Array.isArray(productsData?.wholesale_prices)
-        ? productsData.wholesale_prices
-        : []
+  }, [userId, fetchCartCount]);
 
     if (isLoading) {
-        return (
-            <div className="w-full max-w-lg mx-auto p-4">
-                {/* Skeleton Search Section */}
-                <div className="flex items-center gap-2 flex-grow lg:flex-grow-0 w-full lg:w-auto mb-12">
-                    <Skeleton className="h-10 w-full rounded-full" />
-                    <Skeleton className="h-10 w-24 rounded-full" />
-                </div>
-                <div className="flex flex-col justify-start items-center w-full gap-10 bg-white rounded-lg">
-                    {/* Skeleton Price Tiers */}
-                    <div className="flex flex-col justify-start items-center w-full gap-6">
-                        <div className="grid grid-cols-3 gap-4 text-center w-full">
-                            <Skeleton className="h-10 w-full" />
-                            <Skeleton className="h-10 w-full" />
-                            <Skeleton className="h-10 w-full" />
-                        </div>
-                        <Separator className="w-full" />
-                    </div>
-
-                    {/* Skeleton Quantity Selector and Action Buttons */}
-                    <div className="space-y-4 w-full">
-                        <div className="flex items-center gap-2 pb-5">
-                            <Skeleton className="w-14 h-10 rounded-full" />
-                            <Skeleton className="flex-1 h-10" />
-                            <Skeleton className="w-14 h-10 rounded-full" />
-                        </div>
-
-                        <div className="flex flex-col gap-4">
-                            <Skeleton className="w-full h-12 rounded-full" />
-                            <Skeleton className="w-full h-12 rounded-full" />
-                        </div>
-                    </div>
-
-                    {/* Skeleton Shipping Info */}
-                    <div className="flex justify-start items-center w-full gap-3 text-gray-500">
-                        <Skeleton className="w-4 h-4" />
-                        <Skeleton className="w-24 h-4" />
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
     return (
-        <div className="w-full max-w-lg mx-auto p-4 ">
-            {/* Search Section */}
-            <form onSubmit={handleSearch} className="flex items-center gap-2 flex-grow lg:flex-grow-0 w-full lg:w-auto mb-12">
-                <div className="relative flex items-center w-full lg:w-[300px]">
-                    <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 transform text-muted-foreground pointer-events-none" />
-                    <Input
-                        type="text"
-                        placeholder="Search..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-8 pr-8 rounded-full"
-                    />
-                    <Button
-                        size="icon"
-                        className="bg-transparent hover:bg-transparent hover:text-gray-800 shadow-none absolute right-1 top-1/2 -translate-y-1/2 transform"
-                    >
-                        <X className="h-4 w-4 text-gray-950" />
-                    </Button>
-                </div>
-
-                <Button type="submit" className="bg-rose-100 text-rose-600 hover:bg-rose-200 rounded-full">
-                    <Search className="w-4 h-4 mr-2" />
-                    Cari
-                </Button>
-            </form>
-            <div className="flex flex-col justify-start items-center w-full gap-10 bg-white rounded-lg">
-                {/* Price Tiers */}
-                <div className="flex flex-col justify-start items-center w-full gap-6">
-                    <div className="grid grid-cols-3 gap-4 text-center w-full">
-                        {productsData.price_type === 'fixed' ? (
-                            <div className="col-span-3 text-center">
-                                <div className="text-sm text-muted-foreground">
-                                    Harga
-                                </div>
-                                <div className="font-semibold">
-                                    Rp {productsData.fixed_price}
-                                </div>
-                            </div>
-                        ) : (
-                            wholesalePrices.map((price, index) => (
-                                <div key={index}>
-                                    <div className="text-sm text-muted-foreground">
-                                        {price.max_quantity === null ? `> ${price.min_quantity} kg` : `${price.min_quantity} - ${price.max_quantity === Infinity ? '∞' : price.max_quantity} kg`}                                    </div>
-                                    <div className="font-semibold">
-                                        Rp {price.price}
-                                    </div>
-                                </div>
-                            ))
-                        )}
-                    </div>
-                    <Separator className="w-full" />
-                </div>
-
-                {/* Quantity Selector and Action Buttons */}
-                <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 w-full">
-                        <div className="flex items-center gap-2 pb-5">
-                            <Button
-                                type="button"
-                                variant="outline"
-                                size="icon"
-                                onClick={handleMinus}
-                                className="w-14 h-10 "
-                            >
-                                <Minus className="h-4 w-4" />
-                            </Button>
-
-                            <FormField
-                                control={form.control}
-                                name="quantity"
-                                render={({ field }) => (
-                                    <FormItem className="flex-1">
-                                        <FormControl>
-                                            <Input
-                                                {...field}
-                                                onChange={handleChange}
-                                                className="text-center h-10"
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-
-                            <Button
-                                type="button"
-                                variant="outline"
-                                size="icon"
-                                onClick={handlePlus}
-                                className="w-14 h-10"
-                            >
-                                <Plus className="h-4 w-4" />
-                            </Button>
-                        </div>
-
-                        <div className="flex flex-col gap-4">
-                            <Button
-                                type="submit"
-                                className="w-full h-12 text-base bg-rose-600 hover:bg-rose-700 rounded-full"
-                                disabled={isPending}
-                            >
-                                {isPending ? "Adding..." : "Tambah Ke Keranjang"}
-                            </Button>
-                            <Button
-                                type="button"
-                                variant="outline"
-                                className="w-full h-12 text-base rounded-full"
-                            >
-                                Tambah Ke Favorit
-                            </Button>
-                        </div>
-                    </form>
-                </Form>
-
-                {/* Shipping Info */}
-                <div className="flex justify-start items-center w-full gap-3 text-gray-500">
-                    <Truck className="w-4 h-4" />
-                    <p className="text-sm">Dikirim dari gudang Tanggerang</p>
-                </div>
+      <div className="container mx-auto px-4 sm:px-4 md:px-16 lg:px-16 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-10 gap-8">
+          {/* Skeleton Carousel Section */}
+          <div className="order-1 lg:order-1 lg:col-span-7">
+            <div className="bg-white rounded-lg p-4 flex flex-col-reverse lg:flex-row gap-4">
+              {/* Thumbnail Skeletons (6 gambar) */}
+              <div className="flex lg:flex-col items-center gap-2">
+                {[...Array(6)].map((_, i) => (
+                  <Skeleton key={i} className="w-16 h-16 rounded-lg" />
+                ))}
+              </div>
+              {/* Main Image Skeleton */}
+              <div className="flex-1">
+                <Skeleton className="w-full h-[400px] rounded-lg" />
+              </div>
             </div>
+          </div>
+  
+          {/* Skeleton Product Details Section */}
+          <div className="order-2 lg:order-2 lg:col-span-3 lg:sticky lg:top-4">
+            <div className="bg-white rounded-lg p-4 flex flex-col gap-6">
+              {/* Judul Produk Skeleton */}
+              <Skeleton className="h-10 w-full rounded-full" />
+              {/* Price Tiers Skeleton */}
+              <div className="grid grid-cols-3 gap-4 text-center w-full">
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+              <Separator className="w-full" />
+              {/* Quantity Selector & Action Buttons Skeleton */}
+              <div className="flex items-center gap-2">
+                <Skeleton className="w-14 h-10 rounded-full" />
+                <Skeleton className="flex-1 h-10" />
+                <Skeleton className="w-14 h-10 rounded-full" />
+              </div>
+              <div className="flex flex-col gap-4">
+                <Skeleton className="w-full h-12 rounded-full" />
+                <Skeleton className="w-full h-12 rounded-full" />
+              </div>
+              {/* Shipping Info Skeleton */}
+              {/* <div className="flex items-center gap-3 text-gray-500">
+                <Skeleton className="w-4 h-4" />
+                <Skeleton className="w-24 h-4" />
+              </div> */}
+            </div>
+          </div>
+  
+          {/* Skeleton Product Description Section */}
+          <div className="order-3 lg:order-3 lg:col-span-7">
+            <div className="bg-white rounded-lg p-4 flex flex-col gap-4">
+              <Skeleton className="h-8 w-1/2 rounded" /> {/* Judul deskripsi */}
+              <Skeleton className="h-8 w-full rounded" />
+              <Skeleton className="h-24 w-full rounded" /> {/* Isi deskripsi */}
+            </div>
+          </div>
         </div>
-    )
+      </div>
+    );
+  }
+
+  // Mapping gambar untuk Carousel, jika ada
+  const images = productsData?.images
+    ? productsData.images.map((img) => ({
+        src: `https://xmlmcdfzbwjljhaebzna.supabase.co/storage/v1/object/public/${img}`,
+        alt: productsData.products_name,
+      }))
+    : [];
+
+  // Fungsi submit untuk form add-to-cart
+  const onSubmit = (data) => {
+    startTransition(async () => {
+      try {
+        const formData = new FormData();
+        formData.append("product_id", productsData.product_id);
+        formData.append("quantity", data.quantity);
+
+        const response = await fetch("/api/customer/products/products_detail/add_to_cart", {
+          method: "POST",
+          credentials: "include",
+          body: formData,
+        });
+
+        if (response.status === 401) {
+          router.push("/login");
+          return;
+        }
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.message || "Failed to add to cart");
+        }
+
+        if (userId) {
+          fetchCartCount(userId);
+        } else if (result.data.user_id) {
+          setUserId(result.data.user_id);
+          fetchCartCount(result.data.user_id);
+        }
+      } catch (error) {
+        console.error("Error adding to cart:", error);
+      }
+    });
+  };
+
+  // Mengurangi quantity
+  const handleMinus = () => {
+    const currentValue = form.getValues("quantity");
+    if (currentValue > 1) {
+      form.setValue("quantity", currentValue - 1);
+    }
+  };
+
+  // Menambah quantity
+  const handlePlus = () => {
+    const currentValue = form.getValues("quantity");
+    form.setValue("quantity", currentValue + 1);
+  };
+
+  // Menangani perubahan input quantity
+  const handleChange = (e) => {
+    const value = e.target.value;
+    if (/^\d*$/.test(value) && value !== "") {
+      const numValue = Number.parseInt(value);
+      if (numValue >= 1) {
+        form.setValue("quantity", numValue);
+      }
+    }
+  };
+
+  // Jika wholesale_prices ada, mapping ke variabel untuk ditampilkan
+  const wholesalePrices = Array.isArray(productsData?.wholesale_prices) ? productsData.wholesale_prices : [];
+
+  return (
+    <div className="max-w-full container mx-auto px-4 sm:px-4 md:px-16 lg:px-16 py-8">
+      <div className="grid grid-cols-1 lg:grid-cols-10 gap-8">
+        {/* Carousel Section */}
+        <div className="order-1 lg:order-1 lg:col-span-7">
+          <CarouselWithThumbnails images={images} />
+        </div>
+        {/* Product Details Section */}
+        <div className="order-2 lg:order-2 lg:col-span-3 lg:sticky lg:top-4">
+          <h1 className="text-3xl font-bold mb-4">{productsData.products_name}</h1>
+          <div className="space-y-6 w-full">
+            <Separator />
+            <div className="flex justify-around text-center">
+              {productsData.price_type === "fixed" ? (
+                <div className="text-center">
+                  <div className="text-sm text-muted-foreground">Harga</div>
+                  <div className="font-semibold text-2xl">Rp {productsData.fixed_price}</div>
+                </div>
+              ) : (
+                wholesalePrices.map((price, index) => (
+                  <div key={index} className="text-center">
+                    <div className="text-sm text-muted-foreground">
+                      {price.max_quantity === null
+                        ? `> ${price.min_quantity} kg`
+                        : `${price.min_quantity} - ${price.max_quantity === Number.POSITIVE_INFINITY ? "∞" : price.max_quantity} kg`}
+                    </div>
+                    <div className="font-semibold">Rp {price.price}</div>
+                  </div>
+                ))
+              )}
+            </div>
+            <Separator />
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                {/* Quantity Form */}
+                <div className="flex items-center gap-2">
+                  <Button type="button" variant="outline" size="icon" onClick={handleMinus}>
+                    <Minus className="h-4 w-4" />
+                  </Button>
+
+                  <FormField
+                    control={form.control}
+                    name="quantity"
+                    render={({ field }) => (
+                      <FormItem className="flex-1">
+                        <FormControl>
+                          <Input {...field} onChange={handleChange} className="text-center" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <Button type="button" variant="outline" size="icon" onClick={handlePlus}>
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+
+                <div className="flex flex-col gap-4">
+                  <Button
+                    type="submit"
+                    className="w-full h-12 text-base bg-rose-600 hover:bg-rose-700 rounded-full"
+                    disabled={isPending}
+                  >
+                    {isPending ? "Adding..." : "Tambah Ke Keranjang"}
+                  </Button>
+                  <Button type="button" variant="outline" className="w-full h-12 text-base rounded-full">
+                    <Heart className="w-4 h-4 mr-2" />
+                    Tambah Ke Favorit
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          </div>
+        </div>
+        {/* Product Description, Attributes and Reviews Section */}
+        <div className="order-3 lg:order-3 lg:col-span-7">
+          <div className="mt-8">
+            <h2 className="text-2xl font-semibold mb-4">Deskripsi Produk</h2>
+            <p className="text-gray-600">{productsData.products_description}</p>
+          </div>
+
+          <div className="mt-8">
+            <h2 className="text-2xl font-semibold mb-4">Atribut Produk</h2>
+            <Accordion type="single" collapsible className="w-full">
+              <AccordionItem value="attributes">
+                <AccordionTrigger>Lihat Atribut</AccordionTrigger>
+                <AccordionContent>
+                  <div className="p-4 bg-muted rounded-lg">
+                    <table className="w-full">
+                      <tbody>
+                        <tr>
+                          <td className="py-2">Stock</td>
+                          <td className="py-2">{productsData.stock}</td>
+                        </tr>
+                        <tr>
+                          <td className="py-2">Kategori</td>
+                          <td className="py-2">{productsData.categories_name}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </div>
+
+          <div className="mt-8">
+            <h2 className="text-2xl font-semibold mb-4">Nilai dan Ulasan</h2>
+            <div className="flex items-center mb-4">
+              <div className="flex items-center">
+                <Star className="w-5 h-5 text-yellow-400 fill-current" />
+                <Star className="w-5 h-5 text-yellow-400 fill-current" />
+                <Star className="w-5 h-5 text-yellow-400 fill-current" />
+                <Star className="w-5 h-5 text-yellow-400 fill-current" />
+                <Star className="w-5 h-5 text-gray-300 fill-current" />
+              </div>
+              <span className="ml-2 text-gray-600">4.0 out of 5</span>
+            </div>
+            <p className="text-gray-600">No reviews yet. Be the first to leave a review!</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }

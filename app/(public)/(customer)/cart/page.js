@@ -24,13 +24,7 @@ export default function CartPage() {
                 const json = await res.json()
                 console.log("🚀 ~ fetchCart ~ json: berasil api", json)
                 setCartData(json)
-                // Tambahkan pengecekan null sebelum mengakses cartData.data.items
-                if (json && json.data && json.data.items) {
-                    setCartItems(json.data.items.map(item => ({ ...item, isSelected: false })))
-                } else {
-                    console.warn("Data keranjang tidak valid atau kosong.");
-                    setCartItems([]); // Set cartItems ke array kosong
-                }
+                setCartItems(json.data.items.map(item => ({ ...item, isSelected: false })))
             } catch (error) {
                 console.error('Fetch cart error:', error)
             }
@@ -166,22 +160,17 @@ export default function CartPage() {
     }
 
     return (
-        <div className="container mx-auto pt-6 px-16">
-            <h1 className="text-2xl font-bold mb-4">Shopping Cart</h1>
+        <div className="container max-w-full mx-auto px-4 md:px-16">
+            <h1 className="text-2xl font-bold my-4">Shopping Cart</h1>
             <div className="flex flex-col md:flex-row gap-4">
                 <div className="w-full md:w-2/3">
                     {cartItems.map((item) => (
                         <Card key={item.cart_items_id} className="mb-4">
-                            <CardContent className="flex items-center justify-between p-4">
+                            <CardContent className="flex flex-col lg:flex-row items-start lg:items-center justify-between p-4 relative">
                                 {/* Kolom Kiri (Produk) */}
-                                <div className="flex items-center">
+                                <div className="flex flex-row items-center lg:items-center w-full lg:w-auto">
                                     {item.product_id === null ? (
                                         <>
-                                            {/* <Checkbox
-                                                checked={false}
-                                                disabled
-                                                className="mr-4"
-                                            /> */}
                                             <div
                                                 className="w-24 h-24 bg-gray-400 rounded-md mr-4 ml-8"
                                                 alt="Produk sudah di hapus"
@@ -198,13 +187,13 @@ export default function CartPage() {
                                                 <Checkbox
                                                     checked={item.isSelected}
                                                     onCheckedChange={() => toggleSelection(item.cart_items_id)}
-                                                    className="mr-4"
+                                                    className=""
                                                 />
                                             ) : (
                                                 <Checkbox
                                                     checked={false}
                                                     disabled
-                                                    className="mr-4"
+                                                    className=""
                                                 />
                                             )}
                                             <Image
@@ -212,22 +201,26 @@ export default function CartPage() {
                                                 alt={item.products_name}
                                                 width={100}
                                                 height={100}
-                                                className={`rounded-md mr-4 ${item.stock === 0 || item.stock === null ? 'grayscale' : ''}`}
+                                                className={`rounded-md m-4 flex items-center ${item.stock === 0 || item.stock === null ? 'grayscale' : ''}`}
                                             />
                                             <div className="flex-grow">
                                                 <h2 className={`text-lg font-semibold ${item.stock === 0 || item.stock === null ? 'text-rose-600' : ''}`}>
                                                     {item.stock === 0 || item.stock === null ? 'Produk sudah habis' : item.products_name}
                                                 </h2>
                                                 <p className="text-gray-600">
-                                                    Price Type: {item.price_type.charAt(0).toUpperCase() + item.price_type.slice(1)}
+                                                    {item.price_type === 'fixed'
+                                                    ? 'Tetap'
+                                                    : item.price_type === 'wholesale'
+                                                    ? 'Grosir'
+                                                    : item.price_type.charAt(0).toUpperCase() + item.price_type.slice(1)}
                                                 </p>
                                                 {item.price_type === 'fixed' ? (
-                                                    <p className="text-gray-600">
-                                                        Price: Rp {item.fixed_price ? item.fixed_price.toLocaleString() : '0'}
-                                                    </p>
+                                                    <span className="text-gray-600 ml-2">
+                                                        Rp {item.fixed_price ? item.fixed_price.toLocaleString() : '0'}
+                                                    </span>
                                                 ) : (
                                                     <div className="text-sm text-gray-500 mt-1">
-                                                        Wholesale Pricing:
+                                                        
                                                         {item.wholesale_prices.map((wp, index) => (
                                                             <span key={index} className="ml-2">
                                                                 {wp.min_quantity} - {wp.max_quantity}: Rp {wp.price ? wp.price.toLocaleString() : '0'}
@@ -242,9 +235,9 @@ export default function CartPage() {
                                 </div>
 
                                 {/* Kolom Kanan (Kontrol Kuantitas dan Hapus) */}
-                                <div className="flex items-center space-x-2 ml-4">
+                                <div className="flex justify-end items-center mt-4 lg:mt-0 ml-auto w-full lg:w-auto">
                                     {item.product_id !== null && item.stock !== 0 && item.stock !== null && (
-                                        <>
+                                        <div className="flex flex-row items-center space-x-2 md:w-auto">
                                             <Button
                                                 variant="outline"
                                                 size="sm"
@@ -269,7 +262,7 @@ export default function CartPage() {
                                             >
                                                 +
                                             </Button>
-                                        </>
+                                        </div>
                                     )}
                                     <AlertDialog>
                                         <AlertDialogTrigger asChild>
@@ -277,17 +270,17 @@ export default function CartPage() {
                                                 <Trash2 className="w-4 h-4" />
                                             </Button>
                                         </AlertDialogTrigger>
-                                        <AlertDialogContent>
-                                            <AlertDialogHeader>
-                                                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                            <AlertDialogContent>
+                                                <AlertDialogHeader>
+                                                <AlertDialogTitle>Yakin?</AlertDialogTitle>
                                                 <AlertDialogDescription>
-                                                    This action cannot be undone. This will permanently remove the item from your cart.
+                                                    Item bakal dihapus permanen dari keranjang.
                                                 </AlertDialogDescription>
                                             </AlertDialogHeader>
                                             <AlertDialogFooter>
-                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                <AlertDialogCancel>Batal</AlertDialogCancel>
                                                 <AlertDialogAction onClick={() => removeItem(item.cart_items_id)}>
-                                                    Remove
+                                                    Hapus
                                                 </AlertDialogAction>
                                             </AlertDialogFooter>
                                         </AlertDialogContent>
@@ -302,7 +295,7 @@ export default function CartPage() {
                 <div className="w-full md:w-1/3">
                     <Card className="sticky top-0">
                         <CardHeader>
-                            <CardTitle>Order Summary</CardTitle>
+                            <CardTitle>Total Pembayaran</CardTitle>
                         </CardHeader>
                         <CardContent>
                             {cartItems.filter(item => item.isSelected).map(item => {

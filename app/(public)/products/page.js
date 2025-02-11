@@ -138,10 +138,11 @@ export default function Product() {
                         Cari
                     </Button>
                 </form>
-                {/* Tombol Semua Produk */}
+
+                {/* Tombol Semua Produk
                 <Button variant="outline" className="w-full my-2">
                     <Link href="/products?all_product=true">Semua Produk</Link>
-                </Button>
+                </Button> */}
 
                 {/* Hasil Pencarian, Filter, dan Sort By */}
                 <div className="flex justify-between items-center w-full">
@@ -170,9 +171,9 @@ export default function Product() {
                     </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-4 w-full lg:w-auto">
-                    <Button variant="outline">
+                    {/* <Button variant="outline">
                         <Link href="/products?all_product=true">Semua Produk</Link>
-                    </Button>
+                    </Button> */}
                     {/* Search Input */}
                     <form onSubmit={handleSearch} className="flex items-center gap-2 flex-grow lg:flex-grow-0 w-full lg:w-auto">
                         <div className="relative flex items-center w-full lg:w-[300px]">
@@ -239,7 +240,7 @@ export default function Product() {
                             name={product.products_name || "Nama tidak tersedia"}
                             category={product.categories_name || "Kategori tidak tersedia"}
                             priceType={product.price_type}
-                            fixedPrice={product.fixed_price}
+                            fixedPrice={product.price}
                             wholesalePrices={product.wholesale_prices || []}
                             product_id={product.product_id}
                             stock={product.stock}
