@@ -3,35 +3,39 @@
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
-
 import { SidebarTrigger } from "@/components/shadcnUi/sidebar";
 import { Separator } from "@/components/shadcnUi/separator";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/shadcnUi/breadcrumb";
 import ProductForm from "@/components/dashboard/product/ProductForm";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { Toaster } from "@/components/shadcnUi/toaster";
 
 export default function EditProductPage({ params }) {
     const router = useRouter();
     const { product_id } = React.use(params);
     const [product, setProduct] = useState(null);
+    console.log("🚀 ~ EditProductPage semua ~ product:", product)
+
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
-
-    // Log untuk debugging
-    console.log('EditProductPage rendered, product_id:', product_id);
-
     useEffect(() => {
         const fetchProduct = async () => {
             try {
                 setIsLoading(true);
-                const response = await fetch(`/api/dashboard/products/edit/${product_id}`);
+                const response = await fetch(`/api/v2/admin/products/${product_id}`);
                 if (!response.ok) {
                     throw new Error('Gagal mengambil data produk');
                 }
                 const data = await response.json();
-                console.log('Fetched product data:', data[0]); // Log data produk
-                setProduct(data[0]);
+                console.log('Fetched product data:', data.data); // Log data produk
+                // Pastikan data.data adalah array dan memiliki elemen sebelum menetapkan ke state
+                if (Array.isArray(data.data) && data.data.length > 0) {
+                    setProduct(data.data[0]); // Mengakses objek produk pertama dari array
+                } else {
+                    setError("Produk tidak ditemukan"); // Set error jika produk tidak ditemukan
+                    toast.error("Produk tidak ditemukan");
+                }
             } catch (error) {
                 console.error('Error fetching product:', error);
                 setError(error.message);
@@ -48,11 +52,10 @@ export default function EditProductPage({ params }) {
 
     const handleEditProduct = async (params) => {
         console.log('handleEditProduct called with params:', params); // Log parameter
-        const toastId = toast.loading("Sedang memperbarui produk...");
+        // const toastId = toast.loading("Sedang memperbarui produk...");
 
         try {
             const formData = new FormData();
-            formData.append('product_id', params.product_id);
             formData.append('products_name', params.products_name);
             formData.append('products_description', params.products_description);
             formData.append('stock', params.stock);
@@ -72,24 +75,25 @@ export default function EditProductPage({ params }) {
 
             console.log('FormData created:', Object.fromEntries(formData)); // Log FormData
 
-            const result = await fetch('/api/dashboard/products/edit', {
-                method: 'POST',
+            const result = await fetch(`/api/v2/admin/products/${params.product_id}`, {
+                method: 'PUT',
                 body: formData
             });
 
             const data = await result.json();
             console.log('API response:', data); // Log response
 
-            if (!result.ok) {
-                throw new Error(data.message || 'Gagal memperbarui produk');
+            if (result.ok) {
+                // Menampilkan toast sukses dengan sonner
+                // toast.success("Produk berhasil diperbarui", { id: toastId });
+                // router.push('/dashboard/products');
+                return { success: true, data };
             }
 
-            toast.success("Produk berhasil diperbarui", { id: toastId });
-            router.push('/dashboard/products');
-            return { success: true, data };
+            throw new Error(data.message || 'Gagal memperbarui produk');
         } catch (error) {
             console.error('Error in handleEditProduct:', error);
-            toast.error(error.message || "Gagal memperbarui produk", { id: toastId });
+            // toast.error(error.message || "Gagal memperbarui produk", { id: toastId });
             return { success: false, message: error.message };
         }
     };
@@ -123,7 +127,7 @@ export default function EditProductPage({ params }) {
                     </Breadcrumb>
                 </div>
             </header>
-
+            {/* <Toaster position="top-right" /> */}
             <div className="mx-auto px-12 pb-10">
                 <div className="lg:flex justify-between sm:gap-x-12 xl:gap-x-20">
                     {product ? (
@@ -140,4 +144,3 @@ export default function EditProductPage({ params }) {
         </div>
     );
 }
-

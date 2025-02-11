@@ -161,7 +161,6 @@ const ProductCardSkeleton = () => (
 export default function ProductPage() {
     const [currentSort, setCurrentSort] = useState('Sort by')
     const [products, setProducts] = useState([]);
-    console.log("🚀 ~ ProductPage ~ products:", products)
     const [isPending, startTransition] = useTransition();
     const [searchQuery, setSearchQuery] = useState("");
     const [offset, setOffset] = useState(0);

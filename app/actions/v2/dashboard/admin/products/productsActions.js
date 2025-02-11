@@ -55,44 +55,46 @@ export async function GetProductAction(req, { params }) {
 
     return result;
 }
-export async function GetProductByIdAction(req, { params }) {
-    const product_id = await params.product_id;
-    const result = await sql.begin(async sql => {
-        const products = await sql`
-        SELECT
-            p.product_id,
-            p.products_name,
-            p.products_description,
-            p.stock,
-            p.categories_id,
-            c.categories_name,
-            p.created_at,
-            p.price_type,
-            f.price AS fixed_price,
-            (
-                SELECT json_agg(json_build_object('min_quantity', w.min_quantity, 'max_quantity', w.max_quantity, 'price', w.price))
-                FROM wholesale_prices w
-                WHERE w.product_id = p.product_id
-            ) AS wholesale_prices,
-            (
-                SELECT json_agg(pi.image_path)
-                FROM product_images pi
-                WHERE pi.product_id = p.product_id
-            ) AS images
-        FROM 
-            products p
-        LEFT JOIN 
-            fixed_prices f ON p.product_id = f.product_id AND p.price_type = 'fixed'
-        LEFT JOIN 
-            categories c ON p.categories_id = c.categories_id
-        WHERE p.product_id = ${product_id};
-        `;
 
-        return products;
-    });
+export async function GetProductByIdAction(req, { params }) {
+    console.log(params);
+    const data = await params.product_id
+
+    // Query untuk mendapatkan data produk berdasarkan kategori yang sesuai dengan query
+    const result = await sql`
+            SELECT 
+                p.product_id,
+                p.products_name,
+                p.products_description,
+                p.stock,
+                p.categories_id,
+                c.categories_name,
+                p.created_at,
+                p.price_type,
+                f.price AS fixed_price,
+                (
+                    SELECT json_agg(json_build_object('min_quantity', w.min_quantity, 'max_quantity', w.max_quantity, 'price', w.price))
+                    FROM wholesale_prices w
+                    WHERE w.product_id = p.product_id
+                ) AS wholesale_prices,
+                (
+                    SELECT json_agg(pi.image_path)
+                    FROM product_images pi
+                    WHERE pi.product_id = p.product_id
+                ) AS images
+            FROM 
+                products p
+            LEFT JOIN 
+                fixed_prices f ON p.product_id = f.product_id AND p.price_type = 'fixed'
+            LEFT JOIN 
+                categories c ON p.categories_id = c.categories_id
+            WHERE 
+                p.product_id = ${data};
+        `;
 
     return result;
 }
+
 export async function DeleteProductAction(req, { params }) {
     const product_id = await params.product_id
     console.log("🚀 ~ DeleteProductAction ~ product_id:", product_id)
@@ -291,8 +293,8 @@ export async function UpdateProductAction(req, { params }) {
         const stock = formData.get('stock');
         const price_type = formData.get('price_type');
         const fixed_price = formData.get('fixed_price');
-        const category = JSON.parse(formData.get('category') || '{}');
-        const wholesalePrices = JSON.parse(formData.get('wholesalePrices') || 'null');
+        const category = JSON.parse(formData.get('category'));
+        const wholesalePrices = JSON.parse(formData.get('wholesalePrices'));
         const product_images = formData.getAll('product_images');
 
         // Validasi data

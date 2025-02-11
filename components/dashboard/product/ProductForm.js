@@ -14,11 +14,12 @@ import { Trash2, Loader2, ChevronRight, ChevronLeft } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/shadcnUi/card';
 import { Separator } from '@/components/shadcnUi/separator';
 import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
+import { toast, Toaster } from 'sonner';
 import useEmblaCarousel from 'embla-carousel-react'
 import Image from 'next/image'
 import { ScrollArea } from "@/components/shadcnUi/scroll-area"
 
+// Define the form schema using Zod for validation
 const formSchema = z.object({
     products_name: z.string().min(1, { message: "Tidak boleh kosong" }),
     category: z.object({
@@ -75,9 +76,12 @@ const formSchema = z.object({
     }
 });
 
+// Define the ProductForm component
 export default function ProductForm({ mode, product, onSubmit }) {
+
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
+    // State for product preview
     const [productPreview, setProductPreview] = useState({
         products_name: '',
         products_description: '',
@@ -89,27 +93,11 @@ export default function ProductForm({ mode, product, onSubmit }) {
         product_images: [],
     });
 
-
-    // Log untuk debugging
-    console.log('Mode:', mode);
-    console.log('Product data:', product);
-
+    // Initialize the form using useForm hook
     const form = useForm({
         resolver: zodResolver(formSchema),
-        defaultValues: mode === 'edit' ? {
-            product_id: product?.product_id || '',
-            products_name: product?.products_name || '',
-            products_description: product?.products_description || '',
-            stock: product?.stock || 0,
-            category: {
-                categories_id: product?.categories_id || '',
-                categories_name: product?.categories_name || ''
-            },
-            price_type: product?.price_type || 'fixed',
-            fixed_price: product?.fixed_price || 0,
-            wholesalePrices: product?.wholesale_prices || [],
-            product_images: product?.images || []
-        } : {
+        defaultValues: {
+            product_id: '',
             products_name: '',
             products_description: '',
             stock: 0,
@@ -121,20 +109,24 @@ export default function ProductForm({ mode, product, onSubmit }) {
         }
     });
 
+    // Watch the price_type field
     const price_type = useWatch({
         control: form.control,
         name: "price_type",
     });
 
+    // State for categories
     const [categories, setCategories] = useState([]);
-    
+
+    // Update product preview when form values change
     useEffect(() => {
         const subscription = form.watch((value) => {
             setProductPreview(value);
         });
         return () => subscription.unsubscribe();
     }, [form]);
-    
+
+    // Fetch categories data from API
     useEffect(() => {
         async function GetData() {
             try {
@@ -154,13 +146,17 @@ export default function ProductForm({ mode, product, onSubmit }) {
         GetData();
     }, []);
 
+    // Populate form with product data when in edit mode
     useEffect(() => {
         if (mode === 'edit' && product && categories.length > 0) {
+            // Check if the category exists in the categories data
             const categoryExists = categories.some(
                 (category) => category.categories_id === product.categories_id
             );
 
+            // If the category exists, set the form values
             if (categoryExists) {
+                form.setValue("product_id", product.product_id);
                 form.setValue("products_name", product.products_name);
                 form.setValue("category", {
                     categories_id: product.categories_id,
@@ -175,13 +171,16 @@ export default function ProductForm({ mode, product, onSubmit }) {
                     product.price_type === 'wholesale' ? product.wholesale_prices : [{ min_quantity: 0, max_quantity: 0, price: 0 }]
                 );
                 form.setValue("product_images", product.images);
-                form.setValue("product_id", product.product_id);
             } else {
-                console.error("Category not found in categories data.");
+                // If the category does not exist, display a warning and set a default category
+                console.warn(`Category with ID ${product.categories_id} not found in categories data.`);
+                toast.error(`Kategori dengan ID ${product.categories_id} tidak ditemukan. Silakan pilih kategori lain.`);
+                form.setValue("category", { categories_id: "", categories_name: "Tidak ada kategori" });
             }
         }
     }, [mode, product, categories, form]);
 
+    // Handle changes based on the price type
     useEffect(() => {
         if (price_type === 'fixed') {
             form.setValue("wholesalePrices", null);
@@ -195,14 +194,17 @@ export default function ProductForm({ mode, product, onSubmit }) {
         }
     }, [price_type, form]);
 
+    // Function to add a wholesale price
     const addWholesalePrice = () => {
         form.setValue("wholesalePrices", [...form.watch("wholesalePrices"), { min_quantity: 0, max_quantity: 0, price: 0 }]);
     };
 
+    // Function to add a wholesale price with no max quantity
     const addMoreThanQuantity = () => {
         form.setValue("wholesalePrices", [...form.watch("wholesalePrices"), { min_quantity: 0, max_quantity: null, price: 0 }]);
     };
 
+    // Function to remove a wholesale price
     const removeWholesalePrice = (index) => {
         const wholesalePrices = form.watch("wholesalePrices");
         if (wholesalePrices.length > 1 && index > 0) {
@@ -211,20 +213,19 @@ export default function ProductForm({ mode, product, onSubmit }) {
         }
     };
 
+    // Handle form submission
     const handleSubmit = async (data) => {
         startTransition(async () => {
             try {
+                const toastId = toast.loading("Sedang memperbarui produk...");
+
                 if (mode === 'edit') {
                     data.product_id = product.product_id;
                 }
-
                 const result = await onSubmit(data);
-
+                // Menampilkan toast sukses jika operasi berhasil
                 if (result?.success) {
-                    toast.success(mode === 'add' ? "Produk berhasil ditambahkan" : "Produk berhasil diperbarui");
-                    router.push('/admin/products');
-                } else {
-                    throw new Error(result?.message || "Gagal memproses produk");
+                    toast.success(mode === 'add' ? "Produk berhasil ditambahkan" : "Produk berhasil diperbarui", { id: toastId });
                 }
             } catch (error) {
                 console.error('Error submitting form:', error);
@@ -233,13 +234,16 @@ export default function ProductForm({ mode, product, onSubmit }) {
         });
     };
 
+    // Show loading state when in edit mode and product data is not yet loaded
     if (mode === 'edit' && !product) {
         return <div>Loading...</div>;
     }
 
+    // Render the form
     return (
         <>
             <div className="w-2/4 flex gap-x-16">
+                <Toaster position="top-right" expand={false} />
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(handleSubmit)} className="w-full ">
                         <div className="sticky top-0 py-6 bg-white z-10 flex justify-between items-center pb-4">
@@ -584,9 +588,7 @@ export default function ProductForm({ mode, product, onSubmit }) {
     );
 }
 
-
-
-
+// CarouselWithThumbnails component
 function CarouselWithThumbnails({ images }) {
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [mainCarouselRef, mainEmbla] = useEmblaCarousel({ skipSnaps: false });
@@ -682,4 +684,3 @@ function CarouselWithThumbnails({ images }) {
         </div>
     );
 }
-
