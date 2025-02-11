@@ -11,26 +11,32 @@ import Link from 'next/link'
 import { useCart } from '@/components/public/customers/Navbar/CartContext'
 import { Trash2 } from 'lucide-react'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/shadcnUi/alert-dialog'
+import { Skeleton } from "@/components/shadcnUi/skeleton"
 
 export default function CartPage() {
-    const [cartData, setCartData] = useState(null)
-    const [cartItems, setCartItems] = useState([])
-    const [debounceTimeout, setDebounceTimeout] = useState(null)
-    const { userId, setUserId, fetchCartCount } = useCart()
+    const [cartData, setCartData] = useState(null);
+    const [cartItems, setCartItems] = useState([]);
+    const [debounceTimeout, setDebounceTimeout] = useState(null);
+    const [isLoading, setIsLoading] = useState(true); // Tambahkan state loading
+    const { userId, setUserId, fetchCartCount } = useCart();
+
     useEffect(() => {
         async function fetchCart() {
+            setIsLoading(true); // Set loading true saat fetch dimulai
             try {
-                const res = await fetch(`/api/v2/customer/cart/${userId}`)
-                const json = await res.json()
-                console.log("🚀 ~ fetchCart ~ json: berasil api", json)
-                setCartData(json)
-                setCartItems(json.data.items.map(item => ({ ...item, isSelected: false })))
+                const res = await fetch(`/api/v2/customer/cart/${userId}`);
+                const json = await res.json();
+                console.log("🚀 ~ fetchCart ~ json: berasil api", json);
+                setCartData(json);
+                setCartItems(json.data.items.map(item => ({ ...item, isSelected: false })));
             } catch (error) {
-                console.error('Fetch cart error:', error)
+                console.error('Fetch cart error:', error);
+            } finally {
+                setIsLoading(false); // Set loading false setelah fetch selesai
             }
         }
-        fetchCart()
-    }, [userId])
+        fetchCart();
+    }, [userId]);
 
     const removeItem = async (cart_items_id) => {
         try {
@@ -154,6 +160,63 @@ export default function CartPage() {
     }
     const isCheckoutDisabled = cartItems.every(item => !item.isSelected);
 
+    if (isLoading) {
+        return (
+            <div className="container max-w-full mx-auto px-4 md:px-16">
+                <h1 className="text-2xl font-bold my-4">Shopping Cart</h1>
+                <div className="flex flex-col md:flex-row gap-4">
+                    <div className="w-full md:w-2/3">
+                        {/* Skeleton Loading */}
+                        {Array.from({ length: 3 }).map((_, index) => (
+                            <Card key={index} className="mb-4">
+                                <CardContent className="flex flex-col lg:flex-row items-start lg:items-center justify-between p-4 relative">
+                                    <div className="flex flex-row items-center lg:items-center w-full lg:w-auto">
+                                        <Skeleton className="rounded-md m-4 w-24 h-24" />
+                                        <div className="flex-grow">
+                                            <Skeleton className="h-6 w-48 mb-2" />
+                                            <Skeleton className="h-4 w-32 mb-2" />
+                                            <Skeleton className="h-4 w-24" />
+                                        </div>
+                                    </div>
+                                    <div className="flex justify-end items-center mt-4 lg:mt-0 ml-auto w-full lg:w-auto">
+                                        <Skeleton className="h-8 w-16 rounded-md mr-2" />
+                                        <Skeleton className="h-8 w-16 rounded-md mr-2" />
+                                        <Skeleton className="h-8 w-8 rounded-full" />
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
+
+                    {/* Skeleton Ringkasan */}
+                    <div className="w-full md:w-1/3">
+                        <Card className="sticky top-0">
+                            <CardHeader>
+                                <Skeleton className="h-8 w-32 mb-2" />
+                            </CardHeader>
+                            <CardContent>
+                                {Array.from({ length: 2 }).map((_, index) => (
+                                    <div key={index} className="flex justify-between mb-2">
+                                        <Skeleton className="h-4 w-32" />
+                                        <Skeleton className="h-4 w-16" />
+                                    </div>
+                                ))}
+                                <Separator className="my-4" />
+                                <div className="flex justify-between font-bold">
+                                    <Skeleton className="h-6 w-24" />
+                                    <Skeleton className="h-6 w-16" />
+                                </div>
+                            </CardContent>
+                            <CardFooter>
+                                <Skeleton className="h-10 w-full rounded-full" />
+                            </CardFooter>
+                        </Card>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     // Tambahkan pengecekan null sebelum mengakses cartData.data.items.length
     if (!cartData || !cartData.data || !cartData.data.items || cartData.data.items.length === 0) {
         return <EmptyCart />;
@@ -209,10 +272,10 @@ export default function CartPage() {
                                                 </h2>
                                                 <p className="text-gray-600">
                                                     {item.price_type === 'fixed'
-                                                    ? 'Tetap'
-                                                    : item.price_type === 'wholesale'
-                                                    ? 'Grosir'
-                                                    : item.price_type.charAt(0).toUpperCase() + item.price_type.slice(1)}
+                                                        ? 'Tetap'
+                                                        : item.price_type === 'wholesale'
+                                                            ? 'Grosir'
+                                                            : item.price_type.charAt(0).toUpperCase() + item.price_type.slice(1)}
                                                 </p>
                                                 {item.price_type === 'fixed' ? (
                                                     <span className="text-gray-600 ml-2">
@@ -220,7 +283,7 @@ export default function CartPage() {
                                                     </span>
                                                 ) : (
                                                     <div className="text-sm text-gray-500 mt-1">
-                                                        
+
                                                         {item.wholesale_prices.map((wp, index) => (
                                                             <span key={index} className="ml-2">
                                                                 {wp.min_quantity} - {wp.max_quantity}: Rp {wp.price ? wp.price.toLocaleString() : '0'}
@@ -270,8 +333,8 @@ export default function CartPage() {
                                                 <Trash2 className="w-4 h-4" />
                                             </Button>
                                         </AlertDialogTrigger>
-                                            <AlertDialogContent>
-                                                <AlertDialogHeader>
+                                        <AlertDialogContent>
+                                            <AlertDialogHeader>
                                                 <AlertDialogTitle>Yakin?</AlertDialogTitle>
                                                 <AlertDialogDescription>
                                                     Item bakal dihapus permanen dari keranjang.
@@ -352,6 +415,7 @@ export default function CartPage() {
                                     <span>Rp {calculateSavings().reduce((total, saving) => total + saving.savings, 0).toLocaleString()}</span>
                                 </div>
                             )}
+
                         </CardContent>
                         <CardFooter>
                             <Button
