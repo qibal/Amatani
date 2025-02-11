@@ -75,12 +75,12 @@ export default function CartPage() {
 
     const updateQuantityInDatabase = async (id, newQuantity) => {
         try {
-            const response = await fetch(`/api/v2/customer/cart/quantity`, {
+            const response = await fetch(`/api/v2/customer/cart/${userId}/quantity`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ cart_items_id: id, quantity: newQuantity, user_id: userId }),
+                body: JSON.stringify({ cart_items_id: id, quantity: newQuantity }),
             });
 
             if (!response.ok) {

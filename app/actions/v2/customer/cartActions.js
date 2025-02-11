@@ -171,3 +171,81 @@ export async function QuantityChangeCartCustomer({ cart_items_id, quantity, user
         return { success: false, error: "Failed to update quantity", details: error.message };
     }
 }
+
+export async function AddToCartCustomers({ request, user }) {
+    try {
+        const formData = await request.formData()
+        const product_id = formData.get('product_id')
+        const quantity = parseInt(formData.get('quantity'))
+
+        // Check if cart exists for user
+        let cart = await sql`
+            SELECT carts_id 
+            FROM carts 
+            WHERE user_id = ${user.id}
+            LIMIT 1;
+        `;
+
+        // If no cart exists, create new cart
+        if (cart.length === 0) {
+            cart = await sql`
+                INSERT INTO carts (user_id)
+                VALUES (${user.id})
+                RETURNING carts_id;
+            `;
+        }
+
+        // Check if product_id already exists in carts_items
+        let cartItem = await sql`
+            SELECT * 
+            FROM carts_items 
+            WHERE cart_id = ${cart[0].carts_id} 
+            AND product_id = ${product_id}
+            LIMIT 1;
+        `;
+
+        if (cartItem.length > 0) {
+            // Update quantity if product_id exists
+            cartItem = await sql`
+                UPDATE carts_items
+                SET quantity = quantity + ${quantity}
+                WHERE cart_id = ${cart[0].carts_id}
+                AND product_id = ${product_id}
+                RETURNING *;
+            `;
+        } else {
+            // Insert new product_id and quantity if not exists
+            cartItem = await sql`
+                INSERT INTO carts_items (
+                    cart_id,
+                    product_id,
+                    quantity
+                )
+                VALUES (
+                    ${cart[0].carts_id},
+                    ${product_id},
+                    ${quantity}
+                )
+                RETURNING *;
+            `;
+        }
+
+        console.log("🚀 ~ AddToCartCustomers ~ Success:", {
+            user_id: user.id,
+            cart_id: cart[0].carts_id,
+            product_id,
+            quantity
+        });
+
+        return {
+            success: true,
+            data: {
+                user_id: user.id,
+                ...cartItem[0]
+            }
+        };
+    } catch (error) {
+        console.error("🚀 ~ AddToCartCustomers ~ Error:", error);
+        return { success: false, error: error.message };
+    }
+}
