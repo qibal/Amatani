@@ -16,7 +16,7 @@ export default function Footer() {
 
     return (
         <footer className="bg-white border-t py-8">
-            <div className="max-w-7xl mx-auto px-16 md:px-16">
+            <div className="max-w-full container mx-auto px-4 md:px-16">
                 {/* Navigation Links */}
                 <nav className="flex flex-wrap justify-center space-x-4 text-gray-600 text-sm mb-8">
                     <a href="#" className="hover:text-gray-800">
@@ -43,12 +43,12 @@ export default function Footer() {
                 <div className="flex flex-wrap justify-center items-center gap-4 mb-8">
                     {paymentIcons.map((icon, index) => (
                         <Image
-                            width={200}
-                            height={200}
+                            width={50}
+                            height={50}
                             key={index}
                             src={icon.src}
                             alt={icon.alt}
-                            className="h-10 w-auto"
+                            className="h-8 w-auto sm:h-10"
                         />
                     ))}
                 </div>

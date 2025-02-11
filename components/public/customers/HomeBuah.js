@@ -40,6 +40,7 @@ export default function HomeBuah() {
                 setIsLoading(false);
             }
         }
+
         fetchProducts();
     }, []);
 
@@ -98,18 +99,14 @@ export default function HomeBuah() {
     }
 
     return (
-        <section className="py-8 px-16 bg-white">
-            <div className="container mx-auto">
-                {/* Judul */}
-                {/* <h2 className="text-2xl font-semibold mb-6 text-gray-800">Buah-Buahan</h2> */}
-
+        <section className="py-8 px-4 md:px-16">
+            <div className="max-w-full container mx-auto ">
                 {/* Scrollable Area */}
                 <div className="flex flex-col gap-y-8">
-
                     {Array.isArray(categories) && categories.map((category, index) => (
                         <div key={category.categories_id} className={index > 0 ? "gap-y-4" : "gap-y-0"}>
                             {/* Tambahkan judul kategori */}
-                            <h2 className="text-2xl font-semibold mb-6 text-gray-800">
+                            <h2 className="text-xl md:text-2xl font-semibold mb-4 md:mb-6 text-gray-800">
                                 {category.categories_name}
                             </h2>
 
@@ -161,7 +158,7 @@ function ProductCard({ product_id, imageSrc, name, category, priceType, fixedPri
 
     return (
         <Link href={`/products/${product_id}`}>
-            <Card className="flex-shrink-0 w-80">
+            <Card className="flex-shrink-0 w-40 sm:w-60 md:w-72">
                 <CardHeader className="p-0">
                     <AspectRatio ratio={1}>
                         <Image
@@ -174,9 +171,9 @@ function ProductCard({ product_id, imageSrc, name, category, priceType, fixedPri
                     </AspectRatio>
                 </CardHeader>
                 <CardContent className="space-y-2 p-4">
-                    <p className="text-lg font-semibold text-gray-800">{name}</p>
-                    <p className="text-sm text-gray-500">{category}</p>
-                    <p className="text-base font-bold text-rose-600">{priceRange}</p>
+                    <p className="text-sm md:text-lg font-semibold text-gray-800">{name}</p>
+                    <p className="text-xs md:text-sm text-gray-500">{category}</p>
+                    <p className="text-xs md:text-base font-bold text-rose-600">{priceRange}</p>
                 </CardContent>
             </Card>
         </Link>

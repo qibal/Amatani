@@ -56,9 +56,9 @@ export default function Navbar({ isAuthenticated }) {
 
     return (
         <header
-            className={`navbar w-full z-50 transition-all duration-300 px-16  ${isRootPath ? "fixed" : "relative"} ${navbarClass}`}
+            className={`w-full navbar mx-auto z-50 transition-all duration-300 px-4 md:px-16 ${isRootPath ? "fixed" : "relative"} ${navbarClass}`}
         >
-            <div className="container mx-auto flex items-center justify-between py-4">
+            <div className="max-w-full container mx-auto flex items-center justify-between py-4">
                 {/* Logo */}
                 <Link href="/">
                     <div className="flex items-center space-x-4">
@@ -79,7 +79,7 @@ export default function Navbar({ isAuthenticated }) {
                     {/* Bahasa */}
                     <HoverCard openDelay={0} closeDelay={100}>
                         <HoverCardTrigger asChild>
-                            <div className={`flex items-center space-x-1 cursor-pointer ${textClass}`}>
+                            <div className={`hidden md:flex items-center space-x-1 cursor-pointer ${textClass}`}>
                                 <Globe className="w-5 h-5" />
                                 <span className="text-sm">Bahasa</span>
                             </div>
@@ -106,15 +106,15 @@ export default function Navbar({ isAuthenticated }) {
 
                     {/* Auth Buttons */}
                     {isAuthenticated ? (
-                        <Button onClick={() => { Logout() }} className="bg-rose-600 text-white rounded-md hover:bg-rose-700">
+                        <Button onClick={() => { Logout() }} className="hidden md:block bg-rose-600 text-white rounded-md hover:bg-rose-700">
                             Logout
                         </Button>
                     ) : (
                         <>
-                            <Button className="bg-white text-gray-950 outline-rose-600 hover:bg-gray-200">
+                            <Button className="hidden md:block bg-white text-gray-950 outline-rose-600 hover:bg-gray-200">
                                 <Link href="/login">Masuk</Link>
                             </Button>
-                            <Button className="bg-rose-600 text-white hover:bg-rose-700">
+                            <Button className="hidden md:block bg-rose-600 text-white hover:bg-rose-700">
                                 <Link href="/signup">Daftar</Link>
                             </Button>
                         </>
@@ -127,7 +127,7 @@ export default function Navbar({ isAuthenticated }) {
 
             {/* Tingkatan 2 - Hanya tampil jika di root path */}
             {(isRootPath || (pathname !== '/' && pathname !== '/products')) && (
-                <div className="hidden md:flex container mx-auto items-center justify-between pb-4 text-sm">
+                <div className="hidden md:flex max-w-full container mx-auto items-center justify-between pb-4 text-sm">
                     <CategoryMenu isRootPath={isRootPath && !scrolled} />
                     <div className="flex items-center space-x-6">
                         <Link className={`hover:underline ${textClass}`} href="/tentang-kami">
@@ -145,4 +145,3 @@ export default function Navbar({ isAuthenticated }) {
         </header>
     );
 }
-

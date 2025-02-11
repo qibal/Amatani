@@ -112,12 +112,12 @@ export default function Product() {
 
 
     return (
-        <div className="mt-4 px-4 lg:px-16 container mx-auto">
+        <div className="mx-auto px-4 md:px-16">
             {/* Mobile & Medium Layout */}
-            <div className="flex flex-col gap-2 py-2 lg:hidden">
+            <div className="flex mt-4 flex-col gap-2 lg:hidden">
 
                 {/* Search Input */}
-                <form onSubmit={handleSearch} className="flex items-center gap-4 w-full">
+                <form onSubmit={handleSearch} className="flex items-center gap-2 w-full">
                     <div className="relative flex items-center w-full">
                         <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 transform text-muted-foreground pointer-events-none" />
                         <Input
@@ -138,6 +138,10 @@ export default function Product() {
                         Cari
                     </Button>
                 </form>
+                {/* Tombol Semua Produk */}
+                <Button variant="outline" className="w-full my-2">
+                    <Link href="/products?all_product=true">Semua Produk</Link>
+                </Button>
 
                 {/* Hasil Pencarian, Filter, dan Sort By */}
                 <div className="flex justify-between items-center w-full">
@@ -155,7 +159,6 @@ export default function Product() {
                         </Button>
                     </div> */}
                 </div>
-
             </div>
 
             {/* Desktop Layout */}
@@ -167,9 +170,9 @@ export default function Product() {
                     </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-4 w-full lg:w-auto">
-                    {/* <Button variant="outline">
+                    <Button variant="outline">
                         <Link href="/products?all_product=true">Semua Produk</Link>
-                    </Button> */}
+                    </Button>
                     {/* Search Input */}
                     <form onSubmit={handleSearch} className="flex items-center gap-2 flex-grow lg:flex-grow-0 w-full lg:w-auto">
                         <div className="relative flex items-center w-full lg:w-[300px]">
@@ -243,7 +246,6 @@ export default function Product() {
                         />
                     ))
                 ) : (
-                    // Tampilkan NoProduct component jika tidak ada data produk
                     <NoProduct />
                 )}
             </div>
