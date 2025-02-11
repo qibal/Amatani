@@ -30,9 +30,9 @@ export default function Experience({ fetchTrigger }) {
         fetchStatistics();
     }, [fetchTrigger]);
 
-    return (
-        <section className="bg-white py-12">
-            <div className="container mx-auto px-6 md:px-12">
+    return(
+        <section className="bg-white">
+            <div className="max-w-full container mx-auto px-4 md:px-16 py-8">
                 {/* Grid untuk mobile dan tablet, flex untuk desktop */}
                 <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {isLoading ? ( // Tampilkan skeleton jika sedang loading
