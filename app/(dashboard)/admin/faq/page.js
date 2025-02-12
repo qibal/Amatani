@@ -27,7 +27,20 @@ export default function FaqPage() {
 
     const fetchFaqs = async (category = "", query = "") => {
         try {
-            const response = await fetch(`/api/v2/admin/faq${category || query ? `?${category ? `category=${category}&` : ''}${query ? `query=${query}` : ''}` : ''}`);
+            // Build the query string based on the category and query parameters
+            const params = new URLSearchParams();
+            if (category) {
+                params.append('category', category);
+            }
+            if (query) {
+                params.append('search', query);
+            }
+
+            // Construct the URL with the query parameters
+            const url = `/api/v2/admin/faq${params.toString() ? `?${params.toString()}` : ''}`;
+            console.log("🚀 ~ fetchFaqs ~ url:", url)
+
+            const response = await fetch(url);
             const result = await response.json();
             if (result.success && Array.isArray(result.data)) {
                 setFaqItems(result.data);
@@ -44,7 +57,7 @@ export default function FaqPage() {
 
     const fetchCategories = async () => {
         try {
-            const response = await fetch('/api/v2/admin/products/categories');
+            const response = await fetch('/api/v2/admin/faq/categories');
             const result = await response.json();
             if (result.success && Array.isArray(result.data)) {
                 setCategories(result.data);
