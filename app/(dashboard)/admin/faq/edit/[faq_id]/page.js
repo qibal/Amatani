@@ -36,11 +36,12 @@ export default function EditFaqPage() {
         console.log('Editing FAQ:', params);
 
         const formData = new FormData();
-        // formData.append('faq_id', faq_id);
         formData.append('title', params.title);
         formData.append('content', params.content);
-        formData.append('category_id', params.category_id);
+        formData.append('category_id', params.category.category_id);
 
+        // Menampilkan toast loading
+        toast.loading("Updating FAQ...", { id: "update-faq" });
 
         try {
             const result = await fetch(`/api/v2/admin/faq/${faq_id}`, {
@@ -52,18 +53,20 @@ export default function EditFaqPage() {
                 const data = await result.json();
                 console.log('result =', data);
                 console.log('FAQ berhasil diupdate');
-                toast.success("FAQ updated successfully");
+                // Memperbarui toast menjadi success
+                toast.success("FAQ updated successfully", { id: "update-faq" });
                 return;
             } else {
                 const errorData = await result.json();
                 console.error('Error:', errorData);
-                toast.error("Failed to update FAQ");
+                // Memperbarui toast menjadi error
+                toast.error("Failed to update FAQ", { id: "update-faq" });
             }
         } catch (error) {
             console.error('Error:', error);
-            toast.error("Failed to update FAQ");
+            // Memperbarui toast menjadi error
+            toast.error("Failed to update FAQ", { id: "update-faq" });
         }
-
     };
 
     return (

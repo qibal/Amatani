@@ -86,13 +86,13 @@ export default function FAQForm({ mode, faq, onSubmit }) {
         startTransition(async () => {
             try {
                 await onSubmit(data);
-                toast.success(`FAQ ${mode === 'add' ? 'added' : 'updated'} successfully!`);
+                // toast.success(`FAQ ${mode === 'add' ? 'added' : 'updated'} successfully!`);
                 if (mode === 'add') {
                     form.reset();
                 }
             } catch (error) {
                 console.error('Error submitting form:', error);
-                toast.error(`Failed to ${mode === 'add' ? 'add' : 'update'} FAQ`);
+                // toast.error(`Failed to ${mode === 'add' ? 'add' : 'update'} FAQ`);
             }
         });
     };
