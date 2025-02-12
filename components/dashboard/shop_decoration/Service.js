@@ -112,8 +112,8 @@ export default function Service() {
         startTransition(async () => {
             try {
                 const formData = new FormData();
-                formData.append('serviceName', data.serviceName);
-                formData.append('logo', data.logo[0]);
+                formData.append('service_name', data.serviceName);
+                formData.append('image', data.logo[0]);
 
                 setIsLoading(true);
                 setProgress(0);

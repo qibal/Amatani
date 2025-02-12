@@ -35,7 +35,9 @@ export async function POST(req, { params }) {
     try {
         const formData = await req.formData();
         const serviceName = formData.get("service_name");
+        console.log("🚀 ~ POST ~ serviceName:", serviceName)
         const image = formData.get("image");
+        console.log("🚀 ~ POST ~ image:", image)
 
         if (!serviceName || !image) {
             return new Response(
