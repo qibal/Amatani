@@ -44,7 +44,7 @@ export default function EditFaqPage() {
 
         try {
             const result = await fetch(`/api/v2/admin/faq/${faq_id}`, {
-                method: 'POST',
+                method: 'PUT',
                 body: formData
             });
 
