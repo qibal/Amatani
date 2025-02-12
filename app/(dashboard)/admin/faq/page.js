@@ -3,23 +3,50 @@
 import { useState, useEffect, useTransition } from "react";
 import { Button } from "@/components/shadcnUi/button";
 import { Input } from "@/components/shadcnUi/input";
-import { Edit, Trash, Plus, Filter, Search, X, Loader2 } from 'lucide-react';
+import { Edit, Trash, Plus, Search, X, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { SidebarTrigger } from "@/components/shadcnUi/sidebar";
 import { Separator } from "@/components/shadcnUi/separator";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/shadcnUi/breadcrumb";
+import {
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from "@/components/shadcnUi/breadcrumb";
 import ManageCategoryFaqDialog from "@/components/dashboard/faq/CategoryFaqDialog";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/shadcnUi/accordion";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/shadcnUi/alert-dialog";
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from "@/components/shadcnUi/accordion";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/shadcnUi/alert-dialog";
 import { Skeleton } from "@/components/shadcnUi/skeleton";
 import { Badge } from "@/components/shadcnUi/badge";
-import { Select, SelectItem, SelectTrigger, SelectContent, SelectValue } from "@/components/shadcnUi/select";
+import {
+    Select,
+    SelectItem,
+    SelectTrigger,
+    SelectContent,
+    SelectValue,
+} from "@/components/shadcnUi/select";
 import { toast } from "sonner";
 
 export default function FaqPage() {
     const [faqItems, setFaqItems] = useState([]);
     const [categories, setCategories] = useState([]);
-    console.log("🚀 ~ FaqPage ~ categories:", categories)
     const [selectedCategory, setSelectedCategory] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
     const [isPending, startTransition] = useTransition();
@@ -32,15 +59,16 @@ export default function FaqPage() {
             // Build the query string based on the category and query parameters
             const params = new URLSearchParams();
             if (category) {
-                params.append('category', category);
+                params.append("category", category);
             }
             if (query) {
-                params.append('search', query);
+                params.append("search", query);
             }
 
             // Construct the URL with the query parameters
-            const url = `/api/v2/admin/faq${params.toString() ? `?${params.toString()}` : ''}`;
-            console.log("🚀 ~ fetchFaqs ~ url:", url)
+            const url = `/api/v2/admin/faq${params.toString() ? `?${params.toString()}` : ""
+                }`;
+            console.log("🚀 ~ fetchFaqs ~ url:", url);
 
             const response = await fetch(url);
             const result = await response.json();
@@ -51,7 +79,7 @@ export default function FaqPage() {
                 setFaqItems([]);
             }
         } catch (error) {
-            console.error('Error fetching FAQs:', error);
+            console.error("Error fetching FAQs:", error);
         } finally {
             setLoading(false);
         }
@@ -60,7 +88,7 @@ export default function FaqPage() {
     // Function to fetch categories
     const fetchCategories = async () => {
         try {
-            const response = await fetch('/api/v2/admin/faq/categories');
+            const response = await fetch("/api/v2/admin/faq/categories");
             const result = await response.json();
             if (result.success && Array.isArray(result.data)) {
                 setCategories(result.data);
@@ -69,7 +97,7 @@ export default function FaqPage() {
                 setCategories([]);
             }
         } catch (error) {
-            console.error('Error fetching categories:', error);
+            console.error("Error fetching categories:", error);
         }
     };
 
@@ -83,20 +111,22 @@ export default function FaqPage() {
         startTransition(async () => {
             try {
                 const response = await fetch(`/api/v2/admin/faq/${faqId}`, {
-                    method: 'DELETE',
+                    method: "DELETE",
                 });
                 if (!response.ok) {
                     const errorData = await response.json();
-                    throw new Error(errorData.message || 'Failed to delete FAQ');
+                    throw new Error(errorData.message || "Failed to delete FAQ");
                 }
                 await response.json();
-                setFaqItems(prevFaqs => prevFaqs.filter(faq => faq.faq_id !== faqId));
-                toast.success('The FAQ has been successfully deleted.');
+                setFaqItems((prevFaqs) =>
+                    prevFaqs.filter((faq) => faq.faq_id !== faqId)
+                );
+                toast.success("The FAQ has been successfully deleted.");
                 setLoading(true); // Start skeleton loading
                 fetchFaqs(selectedCategory, searchQuery); // Refresh FAQs
             } catch (error) {
                 toast.error(`Failed to delete FAQ: ${error.message}`);
-                console.error('Failed to delete FAQ:', error);
+                console.error("Failed to delete FAQ:", error);
             } finally {
                 setPendingDeleteId(null);
                 setLoading(false); // Stop skeleton loading
@@ -119,14 +149,8 @@ export default function FaqPage() {
                     <Breadcrumb>
                         <BreadcrumbList>
                             <BreadcrumbItem className="hidden md:block">
-                                <BreadcrumbLink href="#">
-                                    FAQ
-                                </BreadcrumbLink>
+                                <BreadcrumbLink href="#">FAQ</BreadcrumbLink>
                             </BreadcrumbItem>
-                            {/* <BreadcrumbSeparator className="hidden md:block" /> */}
-                            {/* <BreadcrumbItem>
-                                <BreadcrumbPage>Data Fetching</BreadcrumbPage>
-                            </BreadcrumbItem> */}
                         </BreadcrumbList>
                     </Breadcrumb>
                 </div>
@@ -135,13 +159,17 @@ export default function FaqPage() {
                 <div className="space-y-2">
                     <h1 className="text-lg sm:text-xl font-semibold">All FAQs</h1>
                     <p className="text-xs text-gray-500">
-                        Total of {faqItems?.length > 0 ? `${faqItems.length} FAQs` : 'No FAQs available'}
+                        Total of {faqItems?.length > 0 ? `${faqItems.length} FAQs` : "No FAQs available"
+                        }
                     </p>
                 </div>
                 <div className="flex flex-wrap gap-4 items-center justify-between ">
                     <ManageCategoryFaqDialog />
                     <div className="flex flex-row gap-x-4">
-                        <form onSubmit={handleSearch} className="flex flex-wrap gap-4 items-center w-full sm:w-auto">
+                        <form
+                            onSubmit={handleSearch}
+                            className="flex flex-wrap gap-4 items-center w-full sm:w-auto"
+                        >
                             <div className="flex items-center w-full lg:w-auto">
                                 <div className="relative flex items-center w-full lg:w-[220px]">
                                     <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 transform text-muted-foreground pointer-events-none" />
@@ -186,10 +214,9 @@ export default function FaqPage() {
                         >
                             <SelectTrigger className="w-auto gap-4">
                                 <SelectValue placeholder="Filter" />
-                                {/* <Filter className="w-5 h-5 ml-2" /> */}
                             </SelectTrigger>
                             <SelectContent>
-                                {categories.map(category => (
+                                {categories.map((category) => (
                                     <SelectItem key={category.category_id} value={category.category_id}>
                                         {category.category_name}
                                     </SelectItem>
@@ -202,7 +229,10 @@ export default function FaqPage() {
                     {isPending || loading ? (
                         <div className="space-y-4">
                             {[...Array(2)].map((_, index) => (
-                                <div key={index} className="space-y-2 flex flex-row justify-between">
+                                <div
+                                    key={index}
+                                    className="space-y-2 flex flex-row justify-between"
+                                >
                                     <Skeleton className="h-8 w-1/2" />
                                     <div className="flex space-x-3">
                                         <Skeleton className="h-8 w-20" />
@@ -218,17 +248,24 @@ export default function FaqPage() {
                             ) : (
                                 <Accordion type="single" collapsible className="w-full">
                                     {faqItems.map((faq) => (
-                                        <AccordionItem key={faq.faq_id} value={`item-${faq.faq_id}`} className="border-b">
+                                        <AccordionItem
+                                            key={faq.faq_id}
+                                            value={`item-${faq.faq_id}`}
+                                            className="border-b"
+                                        >
                                             <div className="flex items-center justify-between">
                                                 <AccordionTrigger className="flex-grow text-left flex items-center">
                                                     {faq.title}
                                                     <Badge className="ml-2 bg-rose-100 text-rose-600 hover:bg-rose-200">
-                                                        {faq.category_name || 'tidak ada kategori'}
+                                                        {faq.category_name || "tidak ada kategori"}
                                                     </Badge>
                                                 </AccordionTrigger>
                                                 <div className="flex space-x-3">
                                                     <Link href={`/admin/faq/edit/${faq.faq_id}`} passHref>
-                                                        <Button variant="outline" className="flex items-center justify-center px-3 py-2 sm:px-4 sm:py-2 rounded-md">
+                                                        <Button
+                                                            variant="outline"
+                                                            className="flex items-center justify-center px-3 py-2 sm:px-4 sm:py-2 rounded-md"
+                                                        >
                                                             <Edit className="w-4 h-4 mr-2" />
                                                             Edit
                                                         </Button>
@@ -251,13 +288,15 @@ export default function FaqPage() {
                                                             <AlertDialogHeader>
                                                                 <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                                                                 <AlertDialogDescription>
-                                                                    This action cannot be undone. This will permanently delete the FAQ
-                                                                    from our servers.
+                                                                    This action cannot be undone. This will permanently
+                                                                    delete the FAQ from our servers.
                                                                 </AlertDialogDescription>
                                                             </AlertDialogHeader>
                                                             <AlertDialogFooter>
                                                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                                <AlertDialogAction onClick={() => handleDeleteFaq(faq.faq_id)}>
+                                                                <AlertDialogAction
+                                                                    onClick={() => handleDeleteFaq(faq.faq_id)}
+                                                                >
                                                                     Delete
                                                                 </AlertDialogAction>
                                                             </AlertDialogFooter>

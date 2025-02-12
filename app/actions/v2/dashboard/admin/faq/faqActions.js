@@ -25,52 +25,54 @@ import sql from "@/lib/postgres";
 
 export async function GetFaqAction(req, params) {
     const searchParams = req.nextUrl.searchParams;
-    const category = searchParams.get('category');
-    const search = searchParams.get('search');
+    const category = searchParams.get("category");
+    const search = searchParams.get("search");
 
     try {
         let faqs;
         if (category) {
+            // Modify the query to filter by category_id instead of category_name
             faqs = await sql`
-                SELECT
-                    f.faq_id,
-                    f.title,
-                    f.content,
-                    c.category_id,
-                    c.category_name,
-                    f.created_at
-                FROM faq f
-                LEFT JOIN faq_category c ON f.category_id = c.category_id
-                WHERE c.category_name ILIKE ${'%' + category + '%'}
-                ORDER BY f.created_at DESC
-            `;
+                  SELECT
+                      f.faq_id,
+                      f.title,
+                      f.content,
+                      c.category_id,
+                      c.category_name,
+                      f.created_at
+                  FROM faq f
+                  LEFT JOIN faq_category c ON f.category_id = c.category_id
+                  WHERE f.category_id = ${category}
+                  ORDER BY f.created_at DESC
+              `;
         } else if (search) {
             faqs = await sql`
-                SELECT
-                    f.faq_id,
-                    f.title,
-                    f.content,
-                    c.category_id,
-                    c.category_name,
-                    f.created_at
-                FROM faq f
-                LEFT JOIN faq_category c ON f.category_id = c.category_id
-                WHERE (f.title ILIKE ${'%' + search + '%'} OR f.content ILIKE ${'%' + search + '%'} OR c.category_name ILIKE ${'%' + category + '%'})
-                ORDER BY f.created_at DESC
-            `;
+                  SELECT
+                      f.faq_id,
+                      f.title,
+                      f.content,
+                      c.category_id,
+                      c.category_name,
+                      f.created_at
+                  FROM faq f
+                  LEFT JOIN faq_category c ON f.category_id = c.category_id
+                  WHERE (f.title ILIKE ${"%" + search + "%"} OR f.content ILIKE ${"%" + search + "%"
+                } OR c.category_name ILIKE ${"%" + category + "%"})
+                  ORDER BY f.created_at DESC
+              `;
         } else {
             faqs = await sql`
-                SELECT
-                    f.faq_id,
-                    f.title,
-                    f.content,
-                    c.category_id,
-                    c.category_name,
-                    f.created_at
-                FROM faq f
-                LEFT JOIN faq_category c ON f.category_id = c.category_id
-                ORDER BY f.created_at DESC
-            `;
+                  SELECT
+                      f.faq_id,
+                      f.title,
+                      f.content,
+                      c.category_id,
+                      c.category_name,
+                      f.created_at
+                  FROM faq f
+                  LEFT JOIN faq_category c ON f.category_id = c.category_id
+                  ORDER BY f.created_at DESC
+              `;
         }
         return faqs;
     } catch (error) {
