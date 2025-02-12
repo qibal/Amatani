@@ -19,6 +19,7 @@ import { toast } from "sonner";
 export default function FaqPage() {
     const [faqItems, setFaqItems] = useState([]);
     const [categories, setCategories] = useState([]);
+    console.log("🚀 ~ FaqPage ~ categories:", categories)
     const [selectedCategory, setSelectedCategory] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
     const [isPending, startTransition] = useTransition();
