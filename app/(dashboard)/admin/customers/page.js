@@ -4,7 +4,8 @@ import { Separator } from "@/components/shadcnUi/separator";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/shadcnUi/breadcrumb";
 import { UserTable } from "@/components/dashboard/customers/UserTable";
 import { useEffect, useState } from "react";
-import supabaseAuthAdmin from "@/lib/supabase/client_admin";
+import supabaseAuthAdmin from "../../../../lib/supabase/client_admin";
+
 
 export default function CustomersPage() {
     const [users, setUsers] = useState([]);
