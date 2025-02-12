@@ -35,7 +35,7 @@ export default function EditFaqPage() {
         console.log('Editing FAQ:', params);
 
         const formData = new FormData();
-        formData.append('faq_id', faq_id);
+        // formData.append('faq_id', faq_id);
         formData.append('title', params.title);
         formData.append('content', params.content);
         formData.append('category_id', params.category.category_id);
@@ -46,7 +46,7 @@ export default function EditFaqPage() {
 
         while (attempt < maxRetries) {
             try {
-                const result = await fetch(`/api/dashboard/faq/edit/`, {
+                const result = await fetch(`/api/v2/admin/faq/${faq_id}`, {
                     method: 'POST',
                     body: formData
                 });
