@@ -26,6 +26,7 @@ export default function FaqPage() {
     const [pendingDeleteId, setPendingDeleteId] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    // Function to fetch FAQs based on category and search query
     const fetchFaqs = async (category = "", query = "") => {
         try {
             // Build the query string based on the category and query parameters
@@ -56,6 +57,7 @@ export default function FaqPage() {
         }
     };
 
+    // Function to fetch categories
     const fetchCategories = async () => {
         try {
             const response = await fetch('/api/v2/admin/faq/categories');
@@ -176,6 +178,7 @@ export default function FaqPage() {
                         </Link>
                         <Select
                             onValueChange={(value) => {
+                                console.log("Selected category:", value); // Tambahkan log di sini
                                 setSelectedCategory(value);
                                 setLoading(true); // Start skeleton loading
                                 fetchFaqs(value, searchQuery);
@@ -187,8 +190,8 @@ export default function FaqPage() {
                             </SelectTrigger>
                             <SelectContent>
                                 {categories.map(category => (
-                                    <SelectItem key={category.categories_id} value={category.categories_id}>
-                                        {category.categories_name}
+                                    <SelectItem key={category.category_id} value={category.category_id}>
+                                        {category.category_name}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
