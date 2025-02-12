@@ -37,9 +37,9 @@ export default function EditFaqPage() {
 
         const formData = new FormData();
         // formData.append('faq_id', faq_id);
+        formData.append('category_id', params.category_id);
         formData.append('title', params.title);
         formData.append('content', params.content);
-        formData.append('category_id', params.category.category_id);
 
 
         try {
