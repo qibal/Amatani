@@ -17,7 +17,7 @@ export default function EditFaqPage() {
     useEffect(() => {
         const fetchFaq = async () => {
             try {
-                const response = await fetch(`/api/dashboard/faq/edit/${faq_id}`);
+                const response = await fetch(`/api/v2/admin/faq/${faq_id}`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch FAQ');
                 }
