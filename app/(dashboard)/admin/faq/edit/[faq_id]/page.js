@@ -13,6 +13,7 @@ export default function EditFaqPage() {
     const router = useRouter();
     const { faq_id } = useParams();
     const [faq, setFaq] = useState(null);
+    console.log("🚀 ~ EditFaqPage ~ faq:", faq)
 
     useEffect(() => {
         const fetchFaq = async () => {
@@ -22,7 +23,7 @@ export default function EditFaqPage() {
                     throw new Error('Failed to fetch FAQ');
                 }
                 const data = await response.json();
-                setFaq(data);
+                setFaq(data.data);
             } catch (error) {
                 console.error('Error fetching FAQ:', error);
                 alert('Failed to fetch FAQ');
@@ -40,35 +41,29 @@ export default function EditFaqPage() {
         formData.append('content', params.content);
         formData.append('category_id', params.category.category_id);
 
-        const maxRetries = 3;
-        let attempt = 0;
-        const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-        while (attempt < maxRetries) {
-            try {
-                const result = await fetch(`/api/v2/admin/faq/${faq_id}`, {
-                    method: 'POST',
-                    body: formData
-                });
+        try {
+            const result = await fetch(`/api/v2/admin/faq/${faq_id}`, {
+                method: 'POST',
+                body: formData
+            });
 
-                if (result.ok) {
-                    const data = await result.json();
-                    console.log('result =', data);
-                    console.log('FAQ berhasil diupdate');
-                    toast.success("FAQ updated successfully");
-                    return;
-                } else {
-                    const errorData = await result.json();
-                    console.error('Error:', errorData);
-                    toast.error("Failed to update FAQ");
-                }
-            } catch (error) {
-                console.error('Error:', error);
+            if (result.ok) {
+                const data = await result.json();
+                console.log('result =', data);
+                console.log('FAQ berhasil diupdate');
+                toast.success("FAQ updated successfully");
+                return;
+            } else {
+                const errorData = await result.json();
+                console.error('Error:', errorData);
                 toast.error("Failed to update FAQ");
             }
-            attempt++;
-            await delay(100); // Delay 1 second before retrying
+        } catch (error) {
+            console.error('Error:', error);
+            toast.error("Failed to update FAQ");
         }
+
     };
 
     return (
