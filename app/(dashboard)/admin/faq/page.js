@@ -210,7 +210,7 @@ export default function FaqPage() {
                                                     </Badge>
                                                 </AccordionTrigger>
                                                 <div className="flex space-x-3">
-                                                    <Link href={`/dashboard/faq/edit/${faq.faq_id}`} passHref>
+                                                    <Link href={`/admin/faq/edit/${faq.faq_id}`} passHref>
                                                         <Button variant="outline" className="flex items-center justify-center px-3 py-2 sm:px-4 sm:py-2 rounded-md">
                                                             <Edit className="w-4 h-4 mr-2" />
                                                             Edit
